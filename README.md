@@ -1,1 +1,1 @@
-# youtu-sdk
+#腾讯优图java SDK

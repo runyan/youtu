@@ -1,1 +1,1 @@
-#腾讯优图java SDK
+腾讯优图java SDK

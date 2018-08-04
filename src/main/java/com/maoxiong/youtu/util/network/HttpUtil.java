@@ -2,12 +2,14 @@ package com.maoxiong.youtu.util.network;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
+import com.maoxiong.youtu.cache.LRUCache;
 import com.maoxiong.youtu.callback.RequestCallback;
 import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.util.network.interceptor.HttpRetryInterceptor;
@@ -24,12 +26,27 @@ import okhttp3.Response;
 public class HttpUtil {
 	
 	private static final Logger logger = LogManager.getLogger(HttpUtil.class);
+	private static final LRUCache<String, BaseResult> RESULT_CACHE = new LRUCache<>(16);
 	
 	private HttpUtil() {
 		
 	}
 	
 	public static void post(String url, String paramJson, final RequestCallback callback, Class<? extends BaseResult> responseClass) {
+		String hash = String.valueOf(Objects.hash(url, paramJson));
+		synchronized (RESULT_CACHE) {
+			if(RESULT_CACHE.containsKey(hash)) {
+				logger.info("get response from cache");
+				BaseResult resultEntity = RESULT_CACHE.get(hash);
+				callback.onSuccess(true, "0", new Gson().toJson(resultEntity), resultEntity);
+				return ;
+			} else {
+				realCall(hash, url, paramJson, callback, responseClass);
+			}
+		}
+	}
+	
+	private static void realCall(String hash, String url, String paramJson, final RequestCallback callback, Class<? extends BaseResult> responseClass) {
 		logger.info("visit: " + url);
 		HttpRetryInterceptor interceptor = new HttpRetryInterceptor.Builder()
 				.executionCount(5)
@@ -59,6 +76,7 @@ public class HttpUtil {
 			String msgCode = isSuccessful ? "0" : "-1";
 			String msg = resultEntity.getErrorMsg();
 			if(isSuccessful) {
+				RESULT_CACHE.put(hash, resultEntity);
 				callback.onSuccess(isSuccessful, msgCode, responseBodyStr, gson.fromJson(responseBodyStr, responseClass));
 			} else {
 				callback.onFail(new RuntimeException(msg));
@@ -70,6 +88,7 @@ public class HttpUtil {
 			callback.onFail(e);
 		} 
 	}
+	
 }
 
 

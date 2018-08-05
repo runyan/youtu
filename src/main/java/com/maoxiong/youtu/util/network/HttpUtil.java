@@ -39,7 +39,6 @@ public class HttpUtil {
 				logger.info("get response from cache");
 				BaseResult resultEntity = RESULT_CACHE.get(hash);
 				callback.onSuccess(true, "0", new Gson().toJson(resultEntity), resultEntity);
-				return ;
 			} else {
 				realCall(hash, url, paramJson, callback, responseClass);
 			}

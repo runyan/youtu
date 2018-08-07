@@ -105,6 +105,14 @@ public class App {
     		
     	};
     	pool.addRequest(faceDetectClient, faceDetectCallBack);
+    	new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				pool.addRequest(faceDetectClient, faceDetectCallBack);
+				pool.execute();
+			}
+		}).start();
     	Request foodDetectRequest = new FoodDetectRequest();
     	FoodDetectRequestEntity requestEntity = new FoodDetectRequestEntity();
     	requestEntity.setFileUrl("https://pic3.zhimg.com/80/v2-8352df032c855c3967467d4101c2fe6b_hd.jpg");

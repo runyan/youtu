@@ -68,10 +68,10 @@ public class App {
 	
 	private static final Logger logger = LogManager.getLogger(App.class);
 	
-	private static final String QQ = "";
-	private static final String APP_ID = "";
-	private static final String SECRET_ID = "";
-	private static final String SECRET_KEY = "";
+	private static final String QQ = "530913397";
+	private static final String APP_ID = "10125863";
+	private static final String SECRET_ID = "AKIDnV8bFlTMRnPxMbhtoZEhzCIGyZ2K5aTB";
+	private static final String SECRET_KEY = "lLl613yk3kKxTp6LRXVJwPhonjopjT6b";
 	
     public static void main( String[] args ) {
     	Initializer.init(QQ, APP_ID, SECRET_ID, SECRET_KEY);
@@ -223,9 +223,9 @@ public class App {
     	pool.addRequest(iDDetectClient, iDDetectCallback);
     	Request text2AudioRequest = new TextToAudioRequest(true);
     	TextToAudioRequestEntity text2AudioRequestEntity = new TextToAudioRequestEntity();
-    	text2AudioRequestEntity.setModelType(ModelType.XIDAO);
+    	text2AudioRequestEntity.setModelType(ModelType.FEMALE);
     	text2AudioRequestEntity.setSpeed(VoiceSpeed.NORMAL);
-    	text2AudioRequestEntity.setText("猫熊最好看");
+    	text2AudioRequestEntity.setText("这是一个测试");
     	text2AudioRequest.setParams(text2AudioRequestEntity);
     	Client textToAudioClient = ClientFactory.constructClient(text2AudioRequest);
     	CallBack textToAudioCallback = new CallBack() {

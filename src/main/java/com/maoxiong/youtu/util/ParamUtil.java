@@ -22,7 +22,7 @@ public class ParamUtil {
 
 	private static final Logger logger = LogManager.getLogger(ParamUtil.class);
 	
-	private final Map<String, Object> paramMap = new HashMap<>(8);
+	private static final Map<String, Object> paramMap = new HashMap<>(8);
 	
 	private final String appId = String.valueOf(Context.get("app_id"));
 

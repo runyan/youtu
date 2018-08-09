@@ -54,39 +54,30 @@ public class ParamUtil {
 		if(!paramMap.isEmpty()) {
 			paramMap.clear();
 		}
-		paramMap.put("app_id", appId);
-		Gson gson = new Gson();
 		if(!StringUtils.isBlank(url)) {
-			return gson.toJson(handleUrl(url)); 
+			paramMap.put("url", url);
+			return buildParamJson(paramMap);
 		}
 		if(!StringUtils.isBlank(filePath)) {
-			return gson.toJson(handleFile(filePath)); 
+			byte[] imgData = null;
+			try {
+				imgData = FileUtil.readFileByBytes(filePath);
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.error("read file error, path:" + filePath);
+			} 
+	    	String image = Base64.encodeBase64String(imgData);
+	    	paramMap.put("image", image);
+			return buildParamJson(paramMap);
 		}
 		throw new NullPointerException("need param url or path");
 	}
 	
-	public synchronized String buildParamJson(Map<String, Object> params) {
+	public String buildParamJson(Map<String, Object> params) {
 		Objects.requireNonNull(params, "empty param");
 		params.put("app_id", appId);
 		Gson gson = new Gson();
 		return gson.toJson(params);
 	}
 	
-	private Map<String, Object> handleUrl(String url) {
-		paramMap.put("url", url);
-    	return paramMap;
-	}
-	
-	private Map<String, Object> handleFile(String imagePath) {
-		byte[] imgData = null;
-		try {
-			imgData = FileUtil.readFileByBytes(imagePath);
-		} catch (IOException e) {
-			e.printStackTrace();
-			logger.error("read file error, path:" + imagePath);
-		} 
-    	String image = Base64.encodeBase64String(imgData);
-    	paramMap.put("image", image);
-    	return paramMap;
-	}
 }

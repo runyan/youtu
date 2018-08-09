@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +43,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	private ThreadLocal<Boolean> executeLocal = new ThreadLocal<>();
 	private ThreadLocal<Set<RequestWrapper>> requestLocal = new ThreadLocal<>();
 	private static volatile boolean isClosed;
+	private static volatile Map<String, ExecutorService> exsitPools;
 	
 	private DefaultRequestPool() {
 		String sign = String.valueOf(Context.get("sign"));
@@ -48,6 +51,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 			logger.error("have not init properly");
 			throw new IllegalStateException("have not init properly");
 		}
+		exsitPools = new ConcurrentHashMap<>(16);
 	}
 	
 	enum SingletonHolder {
@@ -96,7 +100,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		requestSet.add(wrapper);
 		size = requestSet.size();
 		logger.info("added request: " + wrapper  + " for " + currentThreadName + ", "
-				+ "total " + size + " requests for " + currentThreadName);
+				+ "total " + size + (size == 1 ? " request" : " requests") + " for " + currentThreadName);
 	}
 	
 	@Override
@@ -122,6 +126,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		if(threadPool.isShutdown() || threadPool.isTerminated() || isClosed) {
 			throw new IllegalStateException("pool is already shut down");
 		}
+		exsitPools.put(currentThreadName, threadPool);
 		if(null == requestSet || requestSet.isEmpty()) {
 			logger.warn("nothing to execute");
 			return ;
@@ -157,11 +162,13 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	}
 	
 	private void cleanUp() {
-		if(null != threadPool) {
-			if(!threadPool.isShutdown() && !threadPool.isTerminated()) {
-				threadPool.shutdown();
+		exsitPools.forEach((threadName, pool) -> {
+			if(null != pool) {
+				if(!pool.isShutdown() && !pool.isTerminated()) {
+					pool.shutdown();
+				}
 			}
-		}
+		});
 	}
 	
 	private Set<RequestWrapper> getRequestSet() {

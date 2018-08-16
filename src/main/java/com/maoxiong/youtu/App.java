@@ -225,7 +225,7 @@ public class App {
     	TextToAudioRequestEntity text2AudioRequestEntity = new TextToAudioRequestEntity();
     	text2AudioRequestEntity.setModelType(ModelType.FEMALE);
     	text2AudioRequestEntity.setSpeed(VoiceSpeed.NORMAL);
-    	text2AudioRequestEntity.setText("两只老虎跑得快");
+    	text2AudioRequestEntity.setText("腾讯优图，让未来在你身边");
     	text2AudioRequest.setParams(text2AudioRequestEntity);
     	Client textToAudioClient = ClientFactory.constructClient(text2AudioRequest);
     	CallBack textToAudioCallback = new CallBack() {

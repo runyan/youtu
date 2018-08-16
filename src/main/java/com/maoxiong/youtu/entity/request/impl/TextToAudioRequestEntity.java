@@ -1,5 +1,7 @@
 package com.maoxiong.youtu.entity.request.impl;
 
+import java.io.UnsupportedEncodingException;
+
 import com.maoxiong.youtu.enums.ModelType;
 import com.maoxiong.youtu.enums.VoiceSpeed;
 
@@ -13,6 +15,14 @@ public class TextToAudioRequestEntity {
 		return text;
 	}
 	public void setText(String text) {
+		try {
+			text = new String(text.getBytes(), "utf-8");
+			if(text.getBytes("utf-8").length >= 216) {
+				throw new IllegalArgumentException("text too long, max length: 216 bytes");
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		this.text = text;
 	}
 	public ModelType getModelType() {

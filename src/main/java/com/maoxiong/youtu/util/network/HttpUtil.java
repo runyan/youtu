@@ -9,8 +9,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
-import com.maoxiong.youtu.cache.LRUCache;
 import com.maoxiong.youtu.callback.RequestCallback;
 import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.util.network.interceptor.HttpRetryInterceptor;
@@ -27,18 +28,21 @@ import okhttp3.Response;
 public class HttpUtil {
 	
 	private static final Logger logger = LogManager.getLogger(HttpUtil.class);
-	private static HttpRetryInterceptor RETRY_INTERCEPTOR = new HttpRetryInterceptor.Builder()
+	private static final HttpRetryInterceptor RETRY_INTERCEPTOR = new HttpRetryInterceptor.Builder()
 			.executionCount(5)
 			.retryInterval(500)
 			.build();
-	private static OkHttpClient CLIENT = new OkHttpClient.Builder()
+	private static final OkHttpClient CLIENT = new OkHttpClient.Builder()
 			.retryOnConnectionFailure(true)
 			.connectTimeout(3000, TimeUnit.MILLISECONDS)  
 			.readTimeout(10000, TimeUnit.MILLISECONDS)
 			.addInterceptor(RETRY_INTERCEPTOR)
 			.build();
 	
-	private static final LRUCache<String, BaseResult> RESULT_CACHE = new LRUCache<>(16);
+	private static final Cache<String, BaseResult> RESULT_CACHE = Caffeine.newBuilder()
+			.expireAfterWrite(10, TimeUnit.MINUTES)
+		    .maximumSize(16)
+		    .build();
 	
 	private HttpUtil() {
 		
@@ -46,9 +50,9 @@ public class HttpUtil {
 	
 	public static void post(String url, String paramJson, final RequestCallback callback, Class<? extends BaseResult> responseClass) {
 		String hash = String.valueOf(Objects.hash(url, paramJson));
-		if(RESULT_CACHE.containsKey(hash)) {
+		BaseResult resultEntity = RESULT_CACHE.getIfPresent(hash);
+		if(null != resultEntity) {
 			logger.info("get response from cache");
-			BaseResult resultEntity = RESULT_CACHE.get(hash);
 			callback.onSuccess(true, "0", new Gson().toJson(resultEntity), resultEntity);
 		} else {
 			realCall(hash, url, paramJson, callback, responseClass);

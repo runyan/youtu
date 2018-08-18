@@ -8,24 +8,82 @@ import com.maoxiong.youtu.util.SignUtil;
 public class Initializer {
 	
 	private static volatile boolean isInited = false;
+	public static String fileSavePath = System.getProperty("user.dir");
 	
-	public static void init(String userQQ, String appID, String secretID, String secretKey) {
+	private String QQ;
+	private String appId;
+	private String secretId;
+	private String secretKey;
+	
+	public Initializer(Builder builder) {
+		this.QQ = builder.QQ;
+		this.appId = builder.appId;
+		this.secretId = builder.secretId;
+		this.secretKey = builder.secretKey;
+		String builderFilePath = builder.fileSavePath;
+		if(!StringUtils.isBlank(builderFilePath)) {
+			fileSavePath = builderFilePath;
+		}
+	}
+	
+	public void init() {
 		if(isInited) {
 			throw new RuntimeException("should not init more than once");
 		}
-		if(StringUtils.isBlank(userQQ)) {
+		if(StringUtils.isBlank(QQ)) {
 			throw new IllegalArgumentException("need QQ");
 		}
-		if(StringUtils.isBlank(appID)) {
+		if(StringUtils.isBlank(appId)) {
 			throw new IllegalArgumentException("need appID");
 		}
-		if(StringUtils.isBlank(secretID)) {
+		if(StringUtils.isBlank(secretId)) {
 			throw new IllegalArgumentException("need secretID");
 		}
 		if(StringUtils.isBlank(secretKey)) {
 			throw new IllegalArgumentException("need secretKey");
 		}
-		Context.init(SignUtil.getSign(userQQ, appID, secretID, secretKey), appID);
+		Context.init(SignUtil.getSign(QQ, appId, secretId, secretKey), appId);
 		isInited = true;
+	}
+	
+	public static final class Builder {
+		private String QQ;
+		private String appId;
+		private String secretId;
+		private String secretKey;
+		private String fileSavePath;
+		
+		public Builder() {
+			super();
+		}
+		
+		public Builder QQ(String qq) {
+			this.QQ = qq;
+			return this;
+		}
+		
+		public Builder appId(String appId) {
+			this.appId = appId;
+			return this;
+		}
+		
+		public Builder secretId(String secretId) {
+			this.secretId = secretId;
+			return this;
+		}
+		
+		public Builder secretKey(String secretKey) {
+			this.secretKey = secretKey;
+			return this;
+		}
+		
+		public Builder fileSavePath(String fileSavePath) {
+			this.fileSavePath = fileSavePath;
+			return this;
+		}
+		
+		public Initializer bulid() {
+			return new Initializer(this);
+		}
 	}
 }

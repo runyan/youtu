@@ -7,6 +7,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
+
+import com.maoxiong.youtu.initializer.Initializer;
 
 /**
  * 
@@ -51,8 +54,10 @@ public class FileUtil {
 	public static String genFileFromBytes(byte[] src, String suffix) {
 		Path path;
 		String filePath = "";
+		String savePath = Initializer.fileSavePath;
+		Objects.requireNonNull(savePath, "path cannot be null");
 		try {
-			path = Paths.get(System.getProperty("user.dir") + "/" + System.currentTimeMillis() + suffix);
+			path = Paths.get(savePath + "/" + System.currentTimeMillis() + suffix);
 			if(!Files.exists(path)) {
 				path = Files.createFile(path);
 			}

@@ -74,7 +74,14 @@ public class App {
 	private static final String SECRET_KEY = "";
 	
     public static void main( String[] args ) {
-    	Initializer.init(QQ, APP_ID, SECRET_ID, SECRET_KEY);
+    	Initializer initializer = new Initializer.Builder()
+    			.QQ(QQ)
+    			.appId(APP_ID)
+    			.secretId(SECRET_ID)
+    			.secretKey(SECRET_KEY)
+    			.fileSavePath("D://")
+    			.bulid();
+    	initializer.init();
     	DefaultRequestPool pool = DefaultRequestPool.getInstace();
     	Request faceDetectRequest = new FaceDetectRequest();
     	FaceDectectRequestEntity faceRequestEntity = new FaceDectectRequestEntity();

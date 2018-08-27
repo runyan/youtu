@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.maoxiong.youtu.callback.RequestCallback;
 import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.util.network.interceptor.HttpRetryInterceptor;
+import com.maoxiong.youtu.util.network.interceptor.LogInterceptor;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -32,11 +33,13 @@ public class HttpUtil {
 			.executionCount(5)
 			.retryInterval(500)
 			.build();
+	private static final LogInterceptor LOG_INTERCEPTOR = new LogInterceptor();
 	private static final OkHttpClient CLIENT = new OkHttpClient.Builder()
 			.retryOnConnectionFailure(true)
 			.connectTimeout(3000, TimeUnit.MILLISECONDS)  
 			.readTimeout(10000, TimeUnit.MILLISECONDS)
 			.addInterceptor(RETRY_INTERCEPTOR)
+			.addInterceptor(LOG_INTERCEPTOR)
 			.build();
 	
 	private static final Cache<String, BaseResult> RESULT_CACHE = Caffeine.newBuilder()
@@ -45,7 +48,7 @@ public class HttpUtil {
 		    .build();
 	
 	private HttpUtil() {
-		
+		throw new RuntimeException("no constructor for you");
 	}
 	
 	public static void post(String url, String paramJson, final RequestCallback callback, Class<? extends BaseResult> responseClass) {
@@ -60,22 +63,15 @@ public class HttpUtil {
 	}
 	
 	private static void realCall(String hash, String url, String paramJson, final RequestCallback callback, Class<? extends BaseResult> responseClass) {
-		logger.info("visit: " + url);
 		Request request = HttpRequestBuilder.getInstance().buildRequest(url, paramJson);
 		try(Response response = CLIENT.newCall(request).execute()) {
-			logger.info("response time: " + (response.receivedResponseAtMillis() - response.sentRequestAtMillis()));
 			Gson gson = new Gson();
-			int responseCode = response.code();
 			boolean isSuccessful = response.isSuccessful();
 			if(!isSuccessful) {
-				logger.warn("visit: " + url + " error, response code: " + responseCode +
-						", message: " + response.message() + ", protocol: " + response.protocol());
 				return ;
 			}
 			String responseBodyStr = response.body().string();
 			BaseResult resultEntity = gson.fromJson(responseBodyStr, responseClass);
-			String responseErrorCode = resultEntity.getErrorCode();
-			logger.info("response code: " + responseCode + ", error code: " + responseErrorCode);
 			String msgCode = isSuccessful ? "0" : "-1";
 			String msg = resultEntity.getErrorMsg();
 			if(isSuccessful) {

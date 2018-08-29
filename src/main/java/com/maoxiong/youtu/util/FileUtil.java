@@ -1,6 +1,7 @@
 package com.maoxiong.youtu.util;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -51,13 +52,20 @@ public class FileUtil {
 		return Files.readAllBytes(path);
 	}
 	
+	/**
+	 * 将二进制数组转换成文件
+	 * @param src 源二进制数组
+	 * @param suffix 文件后缀
+	 * @return 文件路径
+	 */
 	public static String genFileFromBytes(byte[] src, String suffix) {
 		Path path;
 		String filePath = "";
 		String savePath = Initializer.fileSavePath;
+		String fileSeparator = File.separator;
 		Objects.requireNonNull(savePath, "path cannot be null");
 		try {
-			path = Paths.get(savePath + "/" + System.currentTimeMillis() + suffix);
+			path = Paths.get(savePath.concat(fileSeparator).concat(String.valueOf(System.currentTimeMillis())).concat(suffix));
 			if(!Files.exists(path)) {
 				path = Files.createFile(path);
 			}

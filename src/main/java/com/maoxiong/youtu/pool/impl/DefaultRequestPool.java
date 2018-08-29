@@ -36,6 +36,8 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	private static final Logger logger = LogManager.getLogger(DefaultRequestPool.class);
 
 	private final AtomicInteger threadSequance = new AtomicInteger();
+	private static final int MAX_THREAD_NUM = 50;
+	private static final Set<String> THREAD_SET = new HashSet<>(MAX_THREAD_NUM);
 	
 	private ExecutorService threadPool;
 	private Set<RequestWrapper> requestSet;
@@ -48,7 +50,6 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	private DefaultRequestPool() {
 		String sign = String.valueOf(Context.get("sign"));
 		if(StringUtils.isBlank(sign)) {
-			logger.error("have not init properly");
 			throw new IllegalStateException("have not init properly");
 		}
 		exsitPools = new ConcurrentHashMap<>(16);
@@ -78,24 +79,17 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	@Override
 	public void addRequest(Client requestClient, CallBack callback) {
 		if(isClosed) {
-			logger.warn("cannot add request to a closed pool");
-			return ;
+			throw new IllegalStateException("cannot add request to a closed pool");
 		}
 		String currentThreadName = Thread.currentThread().getName();
-		int activeThreadNum = Context.THREAD_SET.size();
-		int maxThreadNum = Context.MAX_THREAD_NUM;
+		THREAD_SET.add(currentThreadName);
+		int activeThreadNum = THREAD_SET.size();
+		int maxThreadNum = MAX_THREAD_NUM;
 		if(activeThreadNum > maxThreadNum) {
 			throw new RuntimeException("cannot add more requests, max active thread number allowed: " + maxThreadNum
 					+ ", current thread number: " + activeThreadNum);
 		}
-		Context.THREAD_SET.add(currentThreadName);
-		RequestWrapper wrapper;
-		synchronized(this) {
-			Request request =  Optional.ofNullable(requestClient.getRequest())
-				.orElseThrow(() -> new RuntimeException("have not set request for client:" + requestClient.getClass().getName()));
-			wrapper = new RequestWrapper();
-			wrapper.wrap(request, requestClient, callback);
-		}
+		RequestWrapper wrapper = wrapRequest(requestClient.getRequest(), requestClient, callback);
 		requestSet = getRequestSet();
 		requestSet.add(wrapper);
 		size = requestSet.size();
@@ -127,7 +121,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 			throw new IllegalStateException("pool is already shut down");
 		}
 		exsitPools.put(currentThreadName, threadPool);
-		if(null == requestSet || requestSet.isEmpty()) {
+		if(requestSet.isEmpty()) {
 			logger.warn("nothing to execute");
 			return ;
 		}
@@ -144,7 +138,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		}
 		executeLocal.set(false);
 		requestSet.clear();
-		Context.THREAD_SET.remove(currentThreadName);
+		THREAD_SET.remove(currentThreadName);
 	}
 	
 	@Override
@@ -155,6 +149,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	@Override
 	public void close() {
 		cleanUp();
+		THREAD_SET.clear();
 		isClosed = true;
 		poolLocal.remove();
 		requestLocal.remove();
@@ -177,6 +172,17 @@ public class DefaultRequestPool extends AbstractRequestPool {
 			requestLocal.set(initSet);
 			return initSet;
 		});
+	}
+	
+	private RequestWrapper wrapRequest(Request request, Client requestClient, CallBack callback) {
+		synchronized (request) {
+			RequestWrapper wrapper;
+			request =  Optional.ofNullable(requestClient.getRequest())
+					.orElseThrow(() -> new RuntimeException("have not set request for client:" + requestClient.getClass().getName()));
+			wrapper = new RequestWrapper();
+			wrapper.wrap(request, requestClient, callback);
+			return wrapper;
+		}
 	}
 	
 	private class RequestWrapper {

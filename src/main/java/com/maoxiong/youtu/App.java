@@ -79,7 +79,6 @@ public class App {
     			.appId(APP_ID)
     			.secretId(SECRET_ID)
     			.secretKey(SECRET_KEY)
-    			.fileSavePath("D://test//")
     			.bulid();
     	initializer.init();
     	DefaultRequestPool pool = DefaultRequestPool.getInstace();

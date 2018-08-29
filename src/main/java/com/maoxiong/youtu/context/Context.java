@@ -1,8 +1,6 @@
 package com.maoxiong.youtu.context;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -13,8 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Context {
 
 	private static final Map<String, Object> PARAM_MAP = new ConcurrentHashMap<>(4);
-	public static final int MAX_THREAD_NUM = 50;
-	public static final Set<String> THREAD_SET = new HashSet<>(MAX_THREAD_NUM);
 	
 	public static void init(String sign, String appId) {
 		PARAM_MAP.put("sign", sign);

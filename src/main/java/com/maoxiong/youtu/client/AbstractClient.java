@@ -1,6 +1,6 @@
 package com.maoxiong.youtu.client;
 
-import java.util.Optional;
+import java.util.Objects;
 
 import com.maoxiong.youtu.request.Request;
 
@@ -15,8 +15,7 @@ public abstract class AbstractClient implements Client {
 	
 	@Override
 	public void setRequest(Request request) {
-		request = Optional.ofNullable(request)
-				.orElseThrow(() -> new IllegalArgumentException("cannot set null request"));
+		Objects.requireNonNull(request, "cannot set null request");
 		this.request = request;
 	}
 

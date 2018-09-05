@@ -1,6 +1,6 @@
 package com.maoxiong.youtu.client.impl;
 
-import org.apache.commons.codec.binary.Base64;
+import java.util.Base64;
 
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.callback.RequestCallback;
@@ -33,7 +33,7 @@ public class TextToAudioClient extends AbstractClient {
 				}
 				TextToAudioResult textToAudioResult = (TextToAudioResult) result;
 				if(shouldSaveToFile) {
-					textToAudioResult.setVoice(FileUtil.genFileFromBytes(Base64.decodeBase64(textToAudioResult.getVoice()), ".mp3"));
+					textToAudioResult.setVoice(FileUtil.genFileFromBytes(Base64.getDecoder().decode(textToAudioResult.getVoice()), ".mp3"));
 				}
 				callback.onSuccess("0".equals(errorCode), errorCode, result.getErrorMsg(), textToAudioResult, textToAudioResult.getClass());
 			}

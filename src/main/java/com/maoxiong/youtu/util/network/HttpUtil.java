@@ -3,7 +3,6 @@ package com.maoxiong.youtu.util.network;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.UnknownHostException;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +13,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
 import com.maoxiong.youtu.callback.RequestCallback;
 import com.maoxiong.youtu.entity.result.BaseResult;
+import com.maoxiong.youtu.util.CacheKeyUtil;
 import com.maoxiong.youtu.util.network.interceptor.HttpRetryInterceptor;
 import com.maoxiong.youtu.util.network.interceptor.LogInterceptor;
 
@@ -52,13 +52,13 @@ public class HttpUtil {
 	}
 	
 	public static void post(String url, String paramJson, final RequestCallback callback, Class<? extends BaseResult> responseClass) {
-		String hash = String.valueOf(Objects.hash(url, paramJson));
-		BaseResult resultEntity = RESULT_CACHE.getIfPresent(hash);
+		String cacheKey = CacheKeyUtil.generateCacheKey(url, paramJson);
+		BaseResult resultEntity = RESULT_CACHE.getIfPresent(cacheKey);
 		if(null != resultEntity) {
 			logger.info("get response from cache");
 			callback.onSuccess(true, "0", new Gson().toJson(resultEntity), resultEntity);
 		} else {
-			realCall(hash, url, paramJson, callback, responseClass);
+			realCall(cacheKey, url, paramJson, callback, responseClass);
 		}
 	}
 	

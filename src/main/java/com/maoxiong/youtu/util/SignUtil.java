@@ -1,6 +1,6 @@
 package com.maoxiong.youtu.util;
 
-import org.apache.commons.codec.binary.Base64;
+import java.util.Base64;
 
 /**
  * 
@@ -22,7 +22,7 @@ public class SignUtil {
         byte[] all = new byte[hmacSignLength + paramBytesLength]; 
         System.arraycopy(hmacSign, 0, all, 0, hmacSignLength);  
         System.arraycopy(paramBytes, 0, all, hmacSignLength, paramBytesLength);  
-        return Base64.encodeBase64String(all);
+        return Base64.getEncoder().encodeToString(all);
     }  
 
 }

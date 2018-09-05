@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
+import java.util.Base64;
 
 import com.maoxiong.youtu.constants.Constants;
 import com.maoxiong.youtu.entity.request.impl.InvoiceDetectRequestEntity;
@@ -31,7 +31,7 @@ public class InvoiceDetectRequest implements Request {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
-    	String image = Base64.encodeBase64String(imgData);
+    	String image = Base64.getEncoder().encodeToString(imgData);
 		Map<String, Object> paramMap = new HashMap<>(4);
 		paramMap.put("image", image);
 		return ParamUtil.getInstance().buildParamJson(paramMap);

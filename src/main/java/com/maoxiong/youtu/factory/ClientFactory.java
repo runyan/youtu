@@ -10,6 +10,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.maoxiong.youtu.client.Client;
 import com.maoxiong.youtu.enhance.EnhancedClient;
 import com.maoxiong.youtu.request.Request;
+import com.maoxiong.youtu.util.CacheKeyUtil;
 
 /**
  * 
@@ -35,8 +36,8 @@ public class ClientFactory {
 		Objects.requireNonNull(request, "cannot create client for null request");
 		Class<?> requestClass = request.getClass();
 		String requestClassName = requestClass.getName();
-		String hash = String.valueOf(Objects.hash(requestClassName, request.getRequestUrl(), request.getParamsJsonString()));
-		return REQUEST_CACHE.get(hash, k -> createClientByReflect(requestClass, requestClassName));
+		String cacheKey = CacheKeyUtil.generateCacheKey(requestClassName, request.getRequestUrl(), request.getParamsJsonString());
+		return REQUEST_CACHE.get(cacheKey, k -> createClientByReflect(requestClass, requestClassName));
 	}
 	
 	private static Client createClientByReflect(Class<?> requestClass, String requestClassName) {

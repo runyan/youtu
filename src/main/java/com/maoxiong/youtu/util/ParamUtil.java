@@ -1,11 +1,11 @@
 package com.maoxiong.youtu.util;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,7 +66,7 @@ public class ParamUtil {
 				e.printStackTrace();
 				logger.error("read file error, path:" + filePath);
 			} 
-	    	String image = Base64.encodeBase64String(imgData);
+	    	String image = Base64.getEncoder().encodeToString(imgData);
 	    	paramMap.put("image", image);
 			return buildParamJson(paramMap);
 		}

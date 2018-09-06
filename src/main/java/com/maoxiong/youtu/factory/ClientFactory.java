@@ -8,7 +8,6 @@ import org.joor.Reflect;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.maoxiong.youtu.client.Client;
-import com.maoxiong.youtu.enhance.EnhancedClient;
 import com.maoxiong.youtu.request.Request;
 import com.maoxiong.youtu.util.CacheKeyUtil;
 
@@ -24,16 +23,19 @@ public class ClientFactory {
 		    .maximumSize(16)
 		    .build();
 	
+	private static Request internalRequest;
+	
 	private ClientFactory() {
 		throw new RuntimeException("no constructor for you");
 	}
 	
 	public static Client constructClient(Request request) {
-		return new EnhancedClient(createClientByRequest(request), request);
+		Objects.requireNonNull(request, "cannot create client for null request");
+		internalRequest = request;
+		return createClientByRequest(request);
 	}
 	
 	private static Client createClientByRequest(Request request) {
-		Objects.requireNonNull(request, "cannot create client for null request");
 		Class<?> requestClass = request.getClass();
 		String requestClassName = requestClass.getName();
 		String cacheKey = CacheKeyUtil.generateCacheKey(requestClassName, request.getRequestUrl(), request.getParamsJsonString());
@@ -45,7 +47,13 @@ public class ClientFactory {
 		String simpleRequestClassName = requestClass.getSimpleName();
 		String clientPackage = requestPackage.replace("request", "client");
 		String clientClassName = clientPackage.concat(".").concat(simpleRequestClassName.replace("Request", "Client"));
-		return (Client) Reflect.on(clientClassName).create().get();
+		try {
+			return (Client) Reflect.on(clientClassName).create()
+					.call("setRequest", internalRequest).get();
+		} catch(Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("cannot create client due to: " + e.getMessage());
+		}
 	}
 	
 }

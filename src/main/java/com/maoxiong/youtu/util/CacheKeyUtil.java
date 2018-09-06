@@ -3,6 +3,10 @@ package com.maoxiong.youtu.util;
 import java.util.Base64;
 
 public class CacheKeyUtil {
+	
+	private CacheKeyUtil() {
+		throw new RuntimeException("no constructor for you");
+	}
 
 	public static String generateCacheKey(String... params) {
 		if(null == params || params.length == 0) {

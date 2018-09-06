@@ -9,6 +9,10 @@ import java.util.Base64;
  */
 public class SignUtil {
 	
+	private SignUtil() {
+		throw new RuntimeException("no constructor for you");
+	}
+	
 	public static String getSign(String userQQ, String appID, String secretID, String secretKey) {  
 		long tnowTimes = System.currentTimeMillis() / 1000;  
         long enowTimes = tnowTimes + 2592000;  

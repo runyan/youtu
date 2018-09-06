@@ -13,6 +13,10 @@ import javax.crypto.spec.SecretKeySpec;
 public class HmacSha1 {
 
 	private static final String HMAC_SHA1 = "HmacSHA1";
+	
+	private HmacSha1() {
+		throw new RuntimeException("no constructor for you");
+	}
 
 	public static byte[] getSignature(String data, String key) {
 		try {

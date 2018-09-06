@@ -18,6 +18,10 @@ import com.maoxiong.youtu.initializer.Initializer;
  *
  */
 public class FileUtil {
+	
+	private FileUtil() {
+		throw new RuntimeException("no constructor for you");
+	}
 
 	/**
 	 * 读取文件内容，作为字符串返回

@@ -11,6 +11,7 @@ public class PlateDetectClient extends AbstractClient {
 
 	@Override
 	public void execute(CallBack callback) throws Exception {
+		callbackCheck(callback);
 		HttpUtil.post(request.getRequestUrl(), request.getParamsJsonString(), new RequestCallback() {
 
 			@Override

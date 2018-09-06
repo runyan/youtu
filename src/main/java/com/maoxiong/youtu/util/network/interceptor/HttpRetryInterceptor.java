@@ -33,22 +33,24 @@ public class HttpRetryInterceptor implements Interceptor {
 		Request request = chain.request();  
 		int retryNum = 0;  
 		Response response = null;
-        try {
+		try {
         	response = chain.proceed(request); 
-            while ((response == null || !response.isSuccessful()) && retryNum < executionCount) {  
-            	logger.warn("intercept Request is not successful - " + (retryNum + 1));  
-                final long nextInterval = getRetryInterval();  
-                try {  
-                	logger.warn("Wait for " + nextInterval);  
-                    Thread.sleep(nextInterval);  
-                } catch (final InterruptedException e) {  
-                    Thread.currentThread().interrupt();  
-                    throw new InterruptedIOException();  
+            synchronized (response) {
+            	while ((response == null || !response.isSuccessful()) && retryNum < executionCount) {  
+                	logger.warn("intercept Request is not successful - " + (retryNum + 1));  
+                    final long nextInterval = getRetryInterval();  
+                    try {  
+                    	logger.warn("Wait for " + nextInterval + "ms");  
+                        Thread.sleep(nextInterval);  
+                    } catch (final InterruptedException e) {  
+                        Thread.currentThread().interrupt();  
+                        throw new InterruptedIOException("thread interrputed while retrying");  
+                    }  
+                    retryNum++;  
+                    // retry the request  
+                    response = chain.proceed(request); 
                 }  
-                retryNum++;  
-                // retry the request  
-                response = chain.proceed(request); 
-            }  
+			}
         } catch(IOException e) {
         	e.printStackTrace();
         	logger.error("got an error while retrying");

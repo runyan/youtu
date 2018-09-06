@@ -32,13 +32,13 @@ public class ClientFactory {
 	public static Client constructClient(Request request) {
 		Objects.requireNonNull(request, "cannot create client for null request");
 		internalRequest = request;
-		return createClientByRequest(request);
+		return createClientByRequest();
 	}
 	
-	private static Client createClientByRequest(Request request) {
-		Class<?> requestClass = request.getClass();
+	private static Client createClientByRequest() {
+		Class<?> requestClass = internalRequest.getClass();
 		String requestClassName = requestClass.getName();
-		String cacheKey = CacheKeyUtil.generateCacheKey(requestClassName, request.getRequestUrl(), request.getParamsJsonString());
+		String cacheKey = CacheKeyUtil.generateCacheKey(requestClassName, internalRequest.getRequestUrl(), internalRequest.getParamsJsonString());
 		return REQUEST_CACHE.get(cacheKey, k -> createClientByReflect(requestClass, requestClassName));
 	}
 	

@@ -11,7 +11,7 @@ public class TextToAudioRequest implements Request {
 	
 	private String url;
 	private TextToAudioRequestEntity entity;
-	private Map<String, Object> paramMap = new HashMap<>(16);
+	private Map<String, Object> paramMap = new HashMap<>(8);
 	private boolean shouldSaveToFile;
 	
 	public TextToAudioRequest() {
@@ -30,7 +30,7 @@ public class TextToAudioRequest implements Request {
 
 	@Override
 	public String getParamsJsonString() {
-		synchronized (this) {
+		synchronized (paramMap) {
 			paramMap.put("text", entity.getText());
 			paramMap.put("model_type", entity.getModelType().getModelType());
 			paramMap.put("speed", entity.getSpeed().getSpeed());

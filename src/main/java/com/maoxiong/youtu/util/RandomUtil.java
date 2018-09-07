@@ -1,7 +1,5 @@
 package com.maoxiong.youtu.util;
 
-import java.util.Random;
-
 public class RandomUtil {
 
 	public RandomUtil() {
@@ -9,17 +7,10 @@ public class RandomUtil {
 	}
 	
 	public static String genRandomNum(int length) {
-		int i;
-		int count = 0;
-		StringBuffer pwd = new StringBuffer();
-		Random r = new Random();
-		while (count < length) {
-			i = r.nextInt(10);
-			if(i >= 0) {
-				pwd.append(String.valueOf(i));
-				count++;
-			}
-		}
-		return pwd.toString();
+		long timeInNano = System.nanoTime();
+		String nanoStr = String.valueOf(timeInNano);
+		int nanoLength = nanoStr.length();
+		length = nanoLength < 10 ? nanoLength : length;
+		return nanoStr.substring(0,  length);
 	}   
 }

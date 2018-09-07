@@ -1,6 +1,7 @@
 package com.maoxiong.youtu.pool.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,8 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	private static volatile boolean isClosed;
 	private static volatile Map<String, ExecutorService> exsitPools;
 	
+	private final String currentThreadName = Thread.currentThread().getName();
+	
 	private DefaultRequestPool() {
 		String sign = String.valueOf(Context.get("sign"));
 		if(StringUtils.isBlank(sign)) {
@@ -80,7 +83,6 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		if(isClosed) {
 			throw new IllegalStateException("cannot add request to a closed pool");
 		}
-		String currentThreadName = Thread.currentThread().getName();
 		THREAD_SET.add(currentThreadName);
 		int activeThreadNum = THREAD_SET.size();
 		int maxThreadNum = MAX_THREAD_NUM;
@@ -104,7 +106,6 @@ public class DefaultRequestPool extends AbstractRequestPool {
 			poolLocal.set(initPool);
 			return initPool;
 		});
-		String currentThreadName = Thread.currentThread().getName();
 		requestSet = getRequestSet();
 		boolean isExecuting = Optional.ofNullable(executeLocal.get()).orElseGet(() -> {
 			Boolean initExecuting = false;
@@ -153,6 +154,8 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		poolLocal.remove();
 		requestLocal.remove();
 		executeLocal.remove();
+		Context.JSON_MAP.clear();
+		Context.clear();
 	}
 	
 	private void cleanUp() {
@@ -167,7 +170,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	
 	private Set<RequestWrapper> getRequestSet() {
 		return Optional.ofNullable(requestLocal.get()).orElseGet(() -> {
-			Set<RequestWrapper> initSet = new HashSet<>(8);
+			Set<RequestWrapper> initSet = Collections.synchronizedSet(new HashSet<>(8));
 			requestLocal.set(initSet);
 			return initSet;
 		});

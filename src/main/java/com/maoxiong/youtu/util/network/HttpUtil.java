@@ -54,7 +54,7 @@ public class HttpUtil {
 		throw new RuntimeException("no constructor for you");
 	}
 	
-	public static void post(String url, String paramJson, final RequestCallback callback, Class<? extends BaseResult> responseClass) {
+	public static void post(String url, String paramJson, RequestCallback callback, Class<? extends BaseResult> responseClass) {
 		String cacheKey = CacheKeyUtil.generateCacheKey(url, paramJson);
 		BaseResult resultEntity = RESULT_CACHE.getIfPresent(cacheKey);
 		if(null != resultEntity) {
@@ -65,12 +65,14 @@ public class HttpUtil {
 		}
 	}
 	
-	private static void realCall(String hash, String url, String paramJson, final RequestCallback callback, Class<? extends BaseResult> responseClass) {
+	private static void realCall(String cacheKey, String url, String paramJson, RequestCallback callback, 
+			Class<? extends BaseResult> responseClass) {
 		Request request = HttpRequestBuilder.getInstance().buildRequest(url, paramJson);
 		try(Response response = CLIENT.newCall(request).execute()) {
 			Gson gson = new Gson();
 			boolean isSuccessful = response.isSuccessful();
 			if(!isSuccessful) {
+				logger.warn("request to: " + url + "failed");
 				return ;
 			}
 			String responseBodyStr = response.body().string();
@@ -78,7 +80,7 @@ public class HttpUtil {
 			String msgCode = isSuccessful ? "0" : "-1";
 			String msg = resultEntity.getErrorMsg();
 			if(isSuccessful) {
-				RESULT_CACHE.put(hash, resultEntity);
+				RESULT_CACHE.put(cacheKey, resultEntity);
 				callback.onSuccess(isSuccessful, msgCode, responseBodyStr, gson.fromJson(responseBodyStr, responseClass));
 			} else {
 				callback.onFail(new RuntimeException(msg));

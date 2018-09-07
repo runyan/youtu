@@ -8,7 +8,6 @@ import com.maoxiong.youtu.util.SignUtil;
 public class Initializer {
 	
 	private static volatile boolean isInited = false;
-	public static String fileSavePath = System.getProperty("user.dir");
 	
 	private String QQ;
 	private String appId;
@@ -21,9 +20,7 @@ public class Initializer {
 		this.secretId = builder.secretId;
 		this.secretKey = builder.secretKey;
 		String builderFilePath = builder.fileSavePath;
-		if(!StringUtils.isBlank(builderFilePath)) {
-			fileSavePath = builderFilePath;
-		}
+		Context.set("savePath", StringUtils.isBlank(builderFilePath) ? System.getProperty("user.dir") : builderFilePath);
 	}
 	
 	public void init() {

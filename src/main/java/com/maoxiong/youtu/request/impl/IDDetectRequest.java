@@ -11,7 +11,7 @@ public class IDDetectRequest implements Request {
 
 	private String url;
 	private IDDetectRequestEntity entity;
-	private Map<String, Object> paramMap = new HashMap<>(10);
+	private Map<String, Object> paramMap = new HashMap<>(8);
 
 	@Override
 	public void setParams(Object requestEntity) {
@@ -21,7 +21,7 @@ public class IDDetectRequest implements Request {
 
 	@Override
 	public String getParamsJsonString() {
-		synchronized (this) {
+		synchronized (paramMap) {
 			paramMap.put("url", entity.getFileUrl());
 			paramMap.put("image", entity.getFilePath());
 			paramMap.put("card_type", Integer.parseInt(entity.getCardType().toString()));

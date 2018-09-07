@@ -84,8 +84,8 @@ public class App {
     	DefaultRequestPool pool = DefaultRequestPool.getInstace();
     	Request faceDetectRequest = new FaceDetectRequest();
     	FaceDectectRequestEntity faceRequestEntity = new FaceDectectRequestEntity();
-//    	faceRequestEntity.setFilePath("D://b.png");
-    	faceRequestEntity.setFileUrl("https://pic4.zhimg.com/v2-334f7a126585e75a87c7a982cae77532_im.jpg");
+    	faceRequestEntity.setFilePath("D://a.jpg");
+//    	faceRequestEntity.setFileUrl("https://pic4.zhimg.com/v2-334f7a126585e75a87c7a982cae77532_im.jpg");
     	faceDetectRequest.setParams(faceRequestEntity);
     	Client faceDetectClient = ClientFactory.constructClient(faceDetectRequest);
     	CallBack faceDetectCallBack = new CallBack() {

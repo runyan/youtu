@@ -1,5 +1,7 @@
 package com.maoxiong.youtu.context;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,7 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Context {
 
-	private static final Map<String, Object> PARAM_MAP = new ConcurrentHashMap<>(4);
+	private static final Map<String, Object> PARAM_MAP = new ConcurrentHashMap<>(8);
+	private static final List<String> LEAGAL_KEYS = Arrays.asList(new String[] {"sign", "app_id", "savePath"});
+	
+	public static final Map<String, String> JSON_MAP = new ConcurrentHashMap<>(16);
 	
 	public static void init(String sign, String appId) {
 		PARAM_MAP.put("sign", sign);
@@ -27,11 +32,13 @@ public class Context {
 		PARAM_MAP.put(key, value);
 	}
 	
+	public static void clear() {
+		PARAM_MAP.clear();
+	}
+	
 	private static void keyCheck(String key) {
-		final String signKeyName = "sign";
-		final String appIdKeyName = "app_id";
-		if(!signKeyName.equals(key) && !appIdKeyName.equals(key)) {
-			throw new IllegalArgumentException("Illegal key");
+		if(!LEAGAL_KEYS.contains(key)) {
+			throw new IllegalArgumentException("Illegal key:" + key);
 		}
 	}
 	

@@ -1,10 +1,8 @@
 package com.maoxiong.youtu.request.impl;
 
-import java.io.IOException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-
-import java.util.Base64;
 
 import com.maoxiong.youtu.constants.Constants;
 import com.maoxiong.youtu.context.Context;
@@ -33,12 +31,7 @@ public class InvoiceDetectRequest implements Request {
 		if(Context.JSON_MAP.containsKey(cacheKey)) {
 			return Context.JSON_MAP.get(cacheKey);
 		} else {
-			byte[] imgData = null;
-			try {
-				imgData = FileUtil.readFileByBytes(this.params.getFileUrl());
-			} catch (IOException e) {
-				e.printStackTrace();
-			} 
+			byte[] imgData = FileUtil.readFileByBytes(this.params.getFileUrl());
 	    	String image = Base64.getEncoder().encodeToString(imgData);
 			Map<String, Object> paramMap = new HashMap<>(4);
 			paramMap.put("image", image);

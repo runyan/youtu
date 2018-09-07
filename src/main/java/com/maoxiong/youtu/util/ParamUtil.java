@@ -1,14 +1,11 @@
 package com.maoxiong.youtu.util;
 
-import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 import com.maoxiong.youtu.context.Context;
@@ -20,8 +17,6 @@ import com.maoxiong.youtu.context.Context;
  */
 public class ParamUtil {
 
-	private static final Logger logger = LogManager.getLogger(ParamUtil.class);
-	
 	private static final Map<String, Object> paramMap = new HashMap<>(8);
 	
 	private final String appId = String.valueOf(Context.get("app_id"));
@@ -59,13 +54,7 @@ public class ParamUtil {
 			return buildParamJson(paramMap);
 		}
 		if(!StringUtils.isBlank(filePath)) {
-			byte[] imgData = null;
-			try {
-				imgData = FileUtil.readFileByBytes(filePath);
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.error("read file error, path:" + filePath);
-			} 
+			byte[] imgData = FileUtil.readFileByBytes(filePath);
 	    	String image = Base64.getEncoder().encodeToString(imgData);
 	    	paramMap.put("image", image);
 			return buildParamJson(paramMap);

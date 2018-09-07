@@ -250,7 +250,6 @@ public class App {
 			}
     		
     	};
-    	pool.addRequest(textToAudioClient, textToAudioCallback);
     	Request invoiceDetectRequest = new InvoiceDetectRequest();
     	InvoiceDetectRequestEntity invoiceDetectRequestEntity = new InvoiceDetectRequestEntity();
     	invoiceDetectRequestEntity.setFileUrl("D://invoice.jpg");
@@ -275,7 +274,10 @@ public class App {
 			}
     		
     	};
-    	pool.addRequest(invoiceDetectClient, invoiceDetectCallback);
+    	java.util.Map<Client, CallBack> map = new java.util.HashMap<>();
+    	map.put(invoiceDetectClient, invoiceDetectCallback);
+    	map.put(textToAudioClient, textToAudioCallback);
+    	pool.addRequestsByMap(map);
     	pool.execute();
     	pool.close();
     }

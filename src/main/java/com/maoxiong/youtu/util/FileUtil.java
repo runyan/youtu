@@ -2,7 +2,6 @@ package com.maoxiong.youtu.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -11,10 +10,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.maoxiong.youtu.context.Context;
 
 /**
@@ -26,6 +28,11 @@ public class FileUtil {
 	
 	private static final Logger logger = LogManager.getLogger(FileUtil.class);
 	
+	private static final Cache<String, byte[]> BYTE_CACHE = Caffeine.newBuilder()
+			.expireAfterWrite(10, TimeUnit.MINUTES)
+		    .maximumSize(16)
+		    .build();
+	
 	private FileUtil() {
 		throw new RuntimeException("no constructor for you");
 	}
@@ -33,31 +40,39 @@ public class FileUtil {
 	/**
 	 * 根据文件路径读取byte[] 数组
 	 */
-	public static byte[] readFileByBytes(String filePath) throws IOException {
-		Path path = Paths.get(filePath);
-		if (!Files.exists(path)) {
-			throw new FileNotFoundException(filePath);
-		}
-		if(Files.isDirectory(path) || !Files.isReadable(path)) {
-			throw new IllegalArgumentException("file " + filePath + " is either a directory or is not readdable");
-		}
-		long fileSize = Files.size(path);
-		long fileSizeInMB = fileSize / 1024 / 1024;
-		if(fileSizeInMB >= 1) {
-			logger.warn(filePath + "'s size exceeds 1MB which may result in slow response");
-		}
-		try (FileChannel fc = new RandomAccessFile(filePath, "r").getChannel()) {
-			long channelSize = fc.size();
-			MappedByteBuffer byteBuffer = fc.map(MapMode.READ_ONLY, 0, channelSize).load();
-			byte[] result = new byte[(int) channelSize];
-			int remainingBytes = byteBuffer.remaining();
-			if (remainingBytes > 0) {
-				byteBuffer.get(result, 0, remainingBytes);
+	public static byte[] readFileByBytes(String filePath) {
+		return BYTE_CACHE.get(filePath, k -> readFile(filePath));
+	}
+	
+	private static byte[] readFile(String filePath) {
+		try {
+			Path path = Paths.get(filePath);
+			if (!Files.exists(path)) {
+				throw new FileNotFoundException(filePath);
 			}
-			return result;
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("cannot convert file: " + filePath + " to bytes");
+			if(Files.isDirectory(path) || !Files.isReadable(path)) {
+				throw new IllegalArgumentException("file " + filePath + " is either a directory or is not readdable");
+			}
+			long fileSize = Files.size(path);
+			long fileSizeInMB = fileSize / 1024 / 1024;
+			if(fileSizeInMB >= 1) {
+				logger.warn(filePath + "'s size exceeds 1MB which may result in slow response");
+			}
+			try (FileChannel fc = new RandomAccessFile(filePath, "r").getChannel()) {
+				long channelSize = fc.size();
+				MappedByteBuffer byteBuffer = fc.map(MapMode.READ_ONLY, 0, channelSize).load();
+				byte[] result = new byte[(int) channelSize];
+				int remainingBytes = byteBuffer.remaining();
+				if (remainingBytes > 0) {
+					byteBuffer.get(result, 0, remainingBytes);
+				}
+				return result;
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException("cannot convert file: " + filePath + " to bytes");
+			}
+		} catch(Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 

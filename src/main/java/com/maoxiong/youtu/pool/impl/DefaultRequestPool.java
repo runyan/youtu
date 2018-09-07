@@ -99,6 +99,17 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	}
 	
 	@Override
+	public void addRequestsByMap(Map<Client, CallBack> requestMap) {
+		List<RequestWrapper> wrapperList = new ArrayList<>(requestMap.size());
+		requestMap.forEach((client, callback) -> {
+			RequestWrapper wrapper = wrapRequest(client.getRequest(), client, callback);
+			wrapperList.add(wrapper);
+			wrapper = null;
+		});
+		requestSet.addAll(wrapperList);
+	}
+	
+	@Override
 	public void execute() {
 		threadPool = Optional.ofNullable(poolLocal.get()).orElseGet(() -> {
 			ExecutorService initPool = new ThreadPoolExecutor(6, 50, 500, TimeUnit.MILLISECONDS, 

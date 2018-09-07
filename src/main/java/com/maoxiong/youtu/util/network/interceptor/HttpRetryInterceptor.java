@@ -37,7 +37,7 @@ public class HttpRetryInterceptor implements Interceptor {
         	response = chain.proceed(request); 
             synchronized (response) {
             	while ((response == null || !response.isSuccessful()) && retryNum < executionCount) {  
-                	logger.warn("intercept Request is not successful - " + (retryNum + 1));  
+            		logger.warn("intercept Request is not successful - " + (retryNum + 1));  
                     final long nextInterval = getRetryInterval();  
                     try {  
                     	logger.warn("Wait for " + nextInterval + "ms");  

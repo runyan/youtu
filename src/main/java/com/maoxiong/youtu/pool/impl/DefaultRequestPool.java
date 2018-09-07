@@ -1,7 +1,6 @@
 package com.maoxiong.youtu.pool.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -168,7 +167,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	
 	private Set<RequestWrapper> getRequestSet() {
 		return Optional.ofNullable(requestLocal.get()).orElseGet(() -> {
-			Set<RequestWrapper> initSet = Collections.synchronizedSet(new HashSet<>(8));
+			Set<RequestWrapper> initSet = new HashSet<>(8);
 			requestLocal.set(initSet);
 			return initSet;
 		});
@@ -196,6 +195,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		public void wrap(Request request, Client requestClient, CallBack callback) {
 			Objects.requireNonNull(requestClient, "null requestClient");
 			Objects.requireNonNull(callback, "null callback");
+			Objects.requireNonNull(request, "null request");
 			this.request = request;
 			this.requestClient = requestClient;
 			this.callback = callback;

@@ -29,11 +29,14 @@ import okhttp3.Response;
 public class HttpUtil {
 	
 	private static final Logger logger = LogManager.getLogger(HttpUtil.class);
+	
 	private static final HttpRetryInterceptor RETRY_INTERCEPTOR = new HttpRetryInterceptor.Builder()
 			.executionCount(5)
 			.retryInterval(500)
 			.build();
+	
 	private static final LogInterceptor LOG_INTERCEPTOR = new LogInterceptor();
+	
 	private static final OkHttpClient CLIENT = new OkHttpClient.Builder()
 			.retryOnConnectionFailure(true)
 			.connectTimeout(3000, TimeUnit.MILLISECONDS)  

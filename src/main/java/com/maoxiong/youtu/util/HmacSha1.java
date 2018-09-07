@@ -1,7 +1,5 @@
 package com.maoxiong.youtu.util;
 
-import java.util.Random;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -31,18 +29,4 @@ public class HmacSha1 {
 		}
 	}
 	
-	public static String genRandomNum(int length) {
-		int i;
-		int count = 0;
-		StringBuffer pwd = new StringBuffer();
-		Random r = new Random();
-		while (count < length) {
-			i = r.nextInt(10);
-			if(i >= 0) {
-				pwd.append(String.valueOf(i));
-				count++;
-			}
-		}
-		return pwd.toString();
-	}   
 }

@@ -16,7 +16,7 @@ public class SignUtil {
 	public static String getSign(String userQQ, String appID, String secretID, String secretKey) {  
 		long tnowTimes = System.currentTimeMillis() / 1000;  
         long enowTimes = tnowTimes + 2592000;  
-        String rRandomNum = HmacSha1.genRandomNum(10);  
+        String rRandomNum = RandomUtil.genRandomNum(10);  
         String param = "u=" + userQQ + "&a=" + appID + "&k=" + secretID + "&e="  
                 + enowTimes + "&t=" + tnowTimes + "&r=" + rRandomNum + "&f=";  
         byte[] paramBytes = param.getBytes();

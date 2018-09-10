@@ -68,10 +68,10 @@ public class App {
 	
 	private static final Logger logger = LogManager.getLogger(App.class);
 	
-	private static final String QQ = "530913397";
-	private static final String APP_ID = "10125863";
-	private static final String SECRET_ID = "AKIDnV8bFlTMRnPxMbhtoZEhzCIGyZ2K5aTB";
-	private static final String SECRET_KEY = "lLl613yk3kKxTp6LRXVJwPhonjopjT6b";
+	private static final String QQ = "";
+	private static final String APP_ID = "";
+	private static final String SECRET_ID = "";
+	private static final String SECRET_KEY = "";
 	
     public static void main( String[] args ) {
     	Initializer initializer = new Initializer.Builder()

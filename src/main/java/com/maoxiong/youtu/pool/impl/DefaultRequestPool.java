@@ -80,6 +80,37 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	
 	@Override
 	public void addRequest(Client requestClient, CallBack callback) {
+		checkBeforeAdd();
+		Objects.requireNonNull(requestClient, "null requestClient");
+		Objects.requireNonNull(callback, "null callback");
+		RequestWrapper wrapper = wrapRequest(requestClient.getRequest(), requestClient, callback);
+		requestSet.add(wrapper);
+		size = requestSet.size();
+		logger.info("added request: " + wrapper  + " for " + currentThreadName + ", "
+				+ "total " + size + (size == 1 ? " request" : " requests") + " for " + currentThreadName);
+	}
+	
+	@Override
+	public void addRequestsByMap(Map<Client, CallBack> requestMap) {
+		checkBeforeAdd();
+		Objects.requireNonNull(requestMap, "requestMap is null");
+		int mapSize = requestMap.size();
+		if(mapSize == 0) {
+			return ;
+		}
+		List<RequestWrapper> wrapperList = new ArrayList<>(mapSize);
+		requestMap.forEach((client, callback) -> {
+			RequestWrapper wrapper = wrapRequest(client.getRequest(), client, callback);
+			wrapperList.add(wrapper);
+			wrapper = null;
+		});
+		requestSet.addAll(wrapperList);
+		size = requestSet.size();
+		logger.info("added " + (mapSize == 1 ? " request" : " requests") + " for "
+				+ currentThreadName + " total " + size + " for " + currentThreadName);
+	}
+	
+	private void checkBeforeAdd() {
 		if(isClosed) {
 			throw new IllegalStateException("cannot add request to a closed pool");
 		}
@@ -90,23 +121,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 			throw new RuntimeException("cannot add more requests, max active thread number allowed: " + maxThreadNum
 					+ ", current thread number: " + activeThreadNum);
 		}
-		RequestWrapper wrapper = wrapRequest(requestClient.getRequest(), requestClient, callback);
 		requestSet = getRequestSet();
-		requestSet.add(wrapper);
-		size = requestSet.size();
-		logger.info("added request: " + wrapper  + " for " + currentThreadName + ", "
-				+ "total " + size + (size == 1 ? " request" : " requests") + " for " + currentThreadName);
-	}
-	
-	@Override
-	public void addRequestsByMap(Map<Client, CallBack> requestMap) {
-		List<RequestWrapper> wrapperList = new ArrayList<>(requestMap.size());
-		requestMap.forEach((client, callback) -> {
-			RequestWrapper wrapper = wrapRequest(client.getRequest(), client, callback);
-			wrapperList.add(wrapper);
-			wrapper = null;
-		});
-		requestSet.addAll(wrapperList);
 	}
 	
 	@Override
@@ -207,9 +222,6 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		private String requestParam;
 		
 		public void wrap(Request request, Client requestClient, CallBack callback) {
-			Objects.requireNonNull(requestClient, "null requestClient");
-			Objects.requireNonNull(callback, "null callback");
-			Objects.requireNonNull(request, "null request");
 			this.request = request;
 			this.requestClient = requestClient;
 			this.callback = callback;

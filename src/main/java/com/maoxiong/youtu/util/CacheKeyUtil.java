@@ -1,6 +1,6 @@
 package com.maoxiong.youtu.util;
 
-import java.util.Base64;
+import java.util.Objects;
 
 public class CacheKeyUtil {
 	
@@ -8,20 +8,7 @@ public class CacheKeyUtil {
 		throw new RuntimeException("no constructor for you");
 	}
 
-	public static String generateCacheKey(String... params) {
-		if(null == params || params.length == 0) {
-			return "";
-		}
-		StringBuilder strBuilder = new StringBuilder();
-		int index = 0;
-		int paramLength = params.length;
-		for(String str : params) {
-			strBuilder.append(str);
-			if(index != paramLength - 1) {
-				strBuilder.append(",");
-			}
-			index++;
-		}
-		return Base64.getEncoder().encodeToString(strBuilder.toString().getBytes());
+	public static String generateCacheKey(Object... params) {
+		return String.valueOf(Objects.hash(params));
 	}
 }

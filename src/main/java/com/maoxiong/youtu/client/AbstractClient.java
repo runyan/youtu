@@ -2,7 +2,10 @@ package com.maoxiong.youtu.client;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.maoxiong.youtu.callback.CallBack;
+import com.maoxiong.youtu.context.Context;
 import com.maoxiong.youtu.request.Request;
 
 public abstract class AbstractClient implements Client {
@@ -12,6 +15,16 @@ public abstract class AbstractClient implements Client {
 	@Override
 	public Request getRequest() {
 		return request;
+	}
+	
+	@Override
+	public void execute(CallBack callback) throws Exception {
+		Object signObj = Context.get("sign");
+		signObj = null == signObj ? "" : signObj;
+		String sign = String.valueOf(signObj);
+		if(StringUtils.isBlank(sign)) {
+			throw new IllegalStateException("have not init properly");
+		}
 	}
 	
 	@Override

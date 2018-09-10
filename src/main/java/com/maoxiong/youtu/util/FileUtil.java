@@ -19,6 +19,8 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.maoxiong.youtu.context.Context;
 
+import net.coobird.thumbnailator.Thumbnails;
+
 /**
  * 
  * @author yanrun
@@ -55,8 +57,14 @@ public class FileUtil {
 			}
 			long fileSize = Files.size(path);
 			long fileSizeInMB = fileSize / 1024 / 1024;
+			String tempFilePath = "";
 			if(fileSizeInMB >= 1) {
-				logger.warn(filePath + "'s size exceeds 1MB which may result in slow response");
+				logger.warn(filePath + "'s size exceeds 1MB, compress file");
+				tempFilePath = System.getProperty("user.dir").concat(File.separator).concat("temp.png");
+				Files.deleteIfExists(Paths.get(tempFilePath));
+				Thumbnails.of(filePath).scale(fileSizeInMB >= 2 ? 0.25 : 0.5).toFile(tempFilePath);
+				filePath = tempFilePath;
+				Context.set("tempFilePath", tempFilePath);
 			}
 			try (FileChannel fc = new RandomAccessFile(filePath, "r").getChannel()) {
 				long channelSize = fc.size();

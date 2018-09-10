@@ -23,6 +23,7 @@ public class TextToAudioClient extends AbstractClient {
 	@Override
 	public void execute(CallBack callback) throws Exception {
 		callbackCheck(callback);
+		super.execute(callback);
 		TextToAudioRequest textToAudioRequest = (TextToAudioRequest) request;
 		shouldSaveToFile = textToAudioRequest.shouldSaveToFile();
 		HttpUtil.post(textToAudioRequest.getRequestUrl(), textToAudioRequest.getParamsJsonString(), new RequestCallback() {

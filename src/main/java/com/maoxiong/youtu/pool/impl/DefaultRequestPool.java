@@ -50,7 +50,9 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	private final String currentThreadName = Thread.currentThread().getName();
 	
 	private DefaultRequestPool() {
-		String sign = String.valueOf(Context.get("sign"));
+		Object signObj = Context.get("sign");
+		signObj = null == signObj ? "" : signObj;
+		String sign = String.valueOf(signObj);
 		if(StringUtils.isBlank(sign)) {
 			throw new IllegalStateException("have not init properly");
 		}
@@ -112,7 +114,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	@Override
 	public void execute() {
 		threadPool = Optional.ofNullable(poolLocal.get()).orElseGet(() -> {
-			ExecutorService initPool = new ThreadPoolExecutor(6, 50, 500, TimeUnit.MILLISECONDS, 
+			ExecutorService initPool = new ThreadPoolExecutor(size, 50, 500, TimeUnit.MILLISECONDS, 
 					new ArrayBlockingQueue<Runnable>(100), (r) -> new Thread(r, "ThreadPool thread: "  + threadSequance.incrementAndGet()));
 			poolLocal.set(initPool);
 			return initPool;
@@ -165,8 +167,6 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		poolLocal.remove();
 		requestLocal.remove();
 		executeLocal.remove();
-		Context.JSON_MAP.clear();
-		Context.clear();
 	}
 	
 	private void cleanUp() {

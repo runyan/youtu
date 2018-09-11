@@ -1,4 +1,4 @@
-package com.maoxiong.facedetect;
+package com.maoxiong.youtu;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

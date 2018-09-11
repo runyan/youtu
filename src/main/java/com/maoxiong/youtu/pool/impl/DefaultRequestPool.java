@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -98,18 +99,26 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		Objects.requireNonNull(requestMap, "requestMap is null");
 		int mapSize = requestMap.size();
 		if(mapSize == 0) {
+			logger.info("nothing to add");
 			return ;
 		}
-		List<RequestWrapper> wrapperList = new ArrayList<>(mapSize);
-		requestMap.forEach((client, callback) -> {
-			RequestWrapper wrapper = wrapRequest(client.getRequest(), client, callback);
-			wrapperList.add(wrapper);
-			wrapper = null;
-		});
-		requestSet.addAll(wrapperList);
-		size = requestSet.size();
-		logger.info("added " + mapSize + (mapSize == 1 ? " request" : " requests") + " for "
-				+ currentThreadName + "， total " + size + " for " + currentThreadName);
+		if(mapSize == 1) {
+			Entry<Client, CallBack> mapEntry = requestMap.entrySet().iterator().next();
+			Client client = mapEntry.getKey();
+			CallBack callback = mapEntry.getValue();
+			addRequest(client, callback);
+		} else {
+			List<RequestWrapper> wrapperList = new ArrayList<>(mapSize);
+			requestMap.forEach((client, callback) -> {
+				RequestWrapper wrapper = wrapRequest(client.getRequest(), client, callback);
+				wrapperList.add(wrapper);
+				wrapper = null;
+			});
+			requestSet.addAll(wrapperList);
+			size = requestSet.size();
+			logger.info("added " + mapSize + (mapSize == 1 ? " request" : " requests") + ": " + wrapperList.toString() 
+					+ " for " + currentThreadName + "， total " + size + " for " + currentThreadName);
+		}
 	}
 	
 	private void checkBeforeAdd() {

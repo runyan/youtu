@@ -33,7 +33,7 @@ public class Context {
 				String tempFilePath = null == pathObj ? "" : String.valueOf(pathObj);
 				if(!StringUtils.isBlank(tempFilePath)) {
 					try {
-						Files.delete(Paths.get(tempFilePath));
+						Files.deleteIfExists(Paths.get(tempFilePath));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

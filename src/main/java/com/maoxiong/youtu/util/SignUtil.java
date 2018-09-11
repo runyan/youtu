@@ -27,6 +27,6 @@ public class SignUtil {
         System.arraycopy(hmacSign, 0, all, 0, hmacSignLength);  
         System.arraycopy(paramBytes, 0, all, hmacSignLength, paramBytesLength);  
         return Base64.getEncoder().encodeToString(all);
-    }  
-
+    }
+	
 }

@@ -67,9 +67,9 @@ public class HttpUtil {
 	
 	private static void realCall(String cacheKey, String url, String paramJson, RequestCallback callback, 
 			Class<? extends BaseResult> responseClass) {
+		Gson gson = new Gson();
 		Request request = HttpRequestBuilder.getInstance().buildRequest(url, paramJson);
 		try(Response response = CLIENT.newCall(request).execute()) {
-			Gson gson = new Gson();
 			boolean isSuccessful = response.isSuccessful();
 			if(!isSuccessful) {
 				logger.warn("request to: " + url + "failed");

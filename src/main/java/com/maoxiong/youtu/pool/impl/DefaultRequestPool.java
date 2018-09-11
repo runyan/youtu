@@ -265,7 +265,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 			Request anotherRequest = anotherWrapper.getRequest();
 			String anotherUrl = anotherRequest.getRequestUrl();
 			String anotherParam = anotherRequest.getParamsJsonString();
- 			return anotherUrl.equals(requestUrl) && anotherParam.equals(requestParam);
+ 			return StringUtils.equalsIgnoreCase(requestUrl, anotherUrl) && StringUtils.equalsIgnoreCase(requestParam, anotherParam);
 		}
 		
 		@Override

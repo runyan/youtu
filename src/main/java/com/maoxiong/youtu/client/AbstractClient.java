@@ -59,7 +59,7 @@ public abstract class AbstractClient implements Client {
 		}
 		String anotherUrl = anotherRequest.getRequestUrl();
 		String anotherParam = anotherRequest.getParamsJsonString();
-		return url.equalsIgnoreCase(anotherUrl) && param.equalsIgnoreCase(anotherParam);
+		return StringUtils.equalsIgnoreCase(url, anotherUrl) && StringUtils.equalsIgnoreCase(param, anotherParam);
 	}
 
 }

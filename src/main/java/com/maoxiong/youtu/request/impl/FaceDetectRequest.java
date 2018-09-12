@@ -1,7 +1,10 @@
 package com.maoxiong.youtu.request.impl;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.maoxiong.youtu.cache.Cache;
+import com.maoxiong.youtu.cache.impl.LRUCache;
 import com.maoxiong.youtu.constants.Constants;
-import com.maoxiong.youtu.context.Context;
 import com.maoxiong.youtu.entity.request.impl.FaceDectectRequestEntity;
 import com.maoxiong.youtu.request.Request;
 import com.maoxiong.youtu.util.CacheKeyUtil;
@@ -15,6 +18,8 @@ public class FaceDetectRequest implements Request {
 	
 	private FaceDectectRequestEntity params;
 	private String url;
+	
+	private static Cache<String, String> cache = new LRUCache<>(16);
 
 	@Override
 	public void setParams(Object requestEntity) {
@@ -27,13 +32,12 @@ public class FaceDetectRequest implements Request {
 		String filePath = params.getFilePath();
 		String url = params.getFileUrl();
 		String cacheKey = CacheKeyUtil.generateCacheKey(filePath, url);
-		if(Context.JSON_MAP.containsKey(cacheKey)) {
-			return Context.JSON_MAP.get(cacheKey);
-		} else {
-			String json = PARAM_UTIL.buildParamJson(filePath, url);
-			Context.JSON_MAP.put(cacheKey, json);
-			return json;
-		}
+		String jsonStr = cache.getIfPresent(cacheKey);
+		if(StringUtils.isBlank(jsonStr)) {
+			jsonStr = PARAM_UTIL.buildParamJson(filePath, url);
+			cache.set(cacheKey, jsonStr);
+		} 
+		return jsonStr;
 	}
 	
 	@Override

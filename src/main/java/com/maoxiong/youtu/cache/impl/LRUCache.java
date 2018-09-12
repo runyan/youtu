@@ -1,12 +1,13 @@
-package com.maoxiong.youtu.cache;
+package com.maoxiong.youtu.cache.impl;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Function;
 
-@Deprecated
-public class LRUCache<K, V> {
+import com.maoxiong.youtu.cache.Cache;
+
+public class LRUCache<K, V> implements Cache<K, V> {
 	
     private final int MAX_CACHE_SIZE;
     private final float DEFAULT_LOAD_FACTOR = 0.75f;
@@ -29,30 +30,41 @@ public class LRUCache<K, V> {
             }
         });
     }
-
-    public void put(K key, V value) {
-        map.put(key, value);
-    }
-
-    public V get(K key) {
-        return map.get(key);
-    }
-
-    public void remove(K key) {
-        map.remove(key);
-    }
-
-    public Set<Map.Entry<K, V>> getAll() {
-        return map.entrySet();
-    }
     
-    public boolean containsKey(Object key) {
-    	return map.containsKey(key);
+    @Override
+    public void set(K key, V value) {
+    	map.put(key, value);
     }
-    
-    public int size() {
-    	return map.size();
-    }
+
+	@Override
+	public V getIfPresent(K key) {
+		return map.get(key);
+	}
+
+	@Override
+	public V get(K key, Function<? super K, ? extends V> supplier) {
+		return map.computeIfAbsent(key, supplier);
+	}
+
+	@Override
+	public int getSize() {
+		return map.size();
+	}
+
+	@Override
+	public void invalidate(K key) {
+		map.remove(key);
+	}
+
+	@Override
+	public void invalidateAll() {
+		map.clear();
+	}
+
+	@Override
+	public void cleanUp() {
+		map.clear();
+	}
     
     @Override
     public int hashCode() {
@@ -67,5 +79,5 @@ public class LRUCache<K, V> {
         });
         return stringBuilder.toString();
     }
-    
+
 }

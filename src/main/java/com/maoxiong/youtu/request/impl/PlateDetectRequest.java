@@ -1,7 +1,10 @@
 package com.maoxiong.youtu.request.impl;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.maoxiong.youtu.cache.Cache;
+import com.maoxiong.youtu.cache.impl.LRUCache;
 import com.maoxiong.youtu.constants.Constants;
-import com.maoxiong.youtu.context.Context;
 import com.maoxiong.youtu.entity.request.impl.PlateDetectRequestEntity;
 import com.maoxiong.youtu.request.Request;
 import com.maoxiong.youtu.util.CacheKeyUtil;
@@ -10,6 +13,8 @@ public class PlateDetectRequest implements Request {
 
 	private String url;
 	private PlateDetectRequestEntity entity;
+	
+	private Cache<String, String> cache = new LRUCache<>(16);
 	
 	@Override
 	public void setParams(Object requestEntity) {
@@ -22,13 +27,12 @@ public class PlateDetectRequest implements Request {
 		String filePath = entity.getFilePath();
 		String url = entity.getFileUrl();
 		String cacheKey = CacheKeyUtil.generateCacheKey(filePath, url);
-		if(Context.JSON_MAP.containsKey(cacheKey)) {
-			return Context.JSON_MAP.get(cacheKey);
-		} else {
-			String json = PARAM_UTIL.buildParamJson(filePath, url);
-			Context.JSON_MAP.put(cacheKey, json);
-			return json;
-		}
+		String jsonStr = cache.getIfPresent(cacheKey);
+		if(StringUtils.isBlank(jsonStr)) {
+			jsonStr = PARAM_UTIL.buildParamJson(filePath, url);
+			cache.set(cacheKey, jsonStr);
+		} 
+		return jsonStr;
 	}
 
 	@Override

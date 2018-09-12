@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 public class Context {
 
 	private static final Map<String, Object> PARAM_MAP = new ConcurrentHashMap<>(8);
-	public static final Map<String, String> JSON_MAP = new ConcurrentHashMap<>(16);
 	
 	private static final List<String> LEAGAL_KEYS = Arrays.asList(new String[] {"sign", "app_id", "savePath", "tempFilePath"});
 	
@@ -38,7 +37,7 @@ public class Context {
 						e.printStackTrace();
 					}
 				}
-				clear();
+				PARAM_MAP.clear();
 			}
 			
 		}));
@@ -52,11 +51,6 @@ public class Context {
 	public static void set(String key, Object value) {
 		keyCheck(key);
 		PARAM_MAP.put(key, value);
-	}
-	
-	private static void clear() {
-		JSON_MAP.clear();
-		PARAM_MAP.clear();
 	}
 	
 	private static void keyCheck(String key) {

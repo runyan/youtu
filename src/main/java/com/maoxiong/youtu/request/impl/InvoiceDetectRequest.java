@@ -4,8 +4,11 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.maoxiong.youtu.cache.Cache;
+import com.maoxiong.youtu.cache.impl.LRUCache;
 import com.maoxiong.youtu.constants.Constants;
-import com.maoxiong.youtu.context.Context;
 import com.maoxiong.youtu.entity.request.impl.InvoiceDetectRequestEntity;
 import com.maoxiong.youtu.request.Request;
 import com.maoxiong.youtu.util.CacheKeyUtil;
@@ -16,6 +19,8 @@ public class InvoiceDetectRequest implements Request {
 	
 	private InvoiceDetectRequestEntity params;
 	private String url;
+	
+	private static Cache<String, String> cache = new LRUCache<>(16);
 
 	@Override
 	public void setParams(Object requestEntity) {
@@ -28,17 +33,16 @@ public class InvoiceDetectRequest implements Request {
 		String className = getClass().getName();
 		String url = params.getFileUrl();
 		String cacheKey = CacheKeyUtil.generateCacheKey(className, url);
-		if(Context.JSON_MAP.containsKey(cacheKey)) {
-			return Context.JSON_MAP.get(cacheKey);
-		} else {
+		String jsonStr = cache.getIfPresent(cacheKey);
+		if(StringUtils.isBlank(jsonStr)) {
 			byte[] imgData = FileUtil.readFileByBytes(this.params.getFileUrl());
 	    	String image = Base64.getEncoder().encodeToString(imgData);
 			Map<String, Object> paramMap = new HashMap<>(4);
 			paramMap.put("image", image);
-			String json = ParamUtil.getInstance().buildParamJson(paramMap);
-			Context.JSON_MAP.put(cacheKey, json);
-			return json;
-		}
+			jsonStr = ParamUtil.getInstance().buildParamJson(paramMap);
+			cache.set(cacheKey, jsonStr);
+		} 
+		return jsonStr;
 	}
 
 	@Override

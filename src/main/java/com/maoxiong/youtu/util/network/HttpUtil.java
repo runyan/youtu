@@ -8,9 +8,9 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
+import com.maoxiong.youtu.cache.Cache;
+import com.maoxiong.youtu.cache.impl.CaffeineCache;
 import com.maoxiong.youtu.callback.RequestCallback;
 import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.util.CacheKeyUtil;
@@ -45,10 +45,7 @@ public class HttpUtil {
 			.addInterceptor(LOG_INTERCEPTOR)
 			.build();
 	
-	private static final Cache<String, BaseResult> RESULT_CACHE = Caffeine.newBuilder()
-			.expireAfterWrite(10, TimeUnit.MINUTES)
-		    .maximumSize(16)
-		    .build();
+	private static final Cache<String, BaseResult> RESULT_CACHE = new CaffeineCache<>();
 	
 	private HttpUtil() {
 		throw new RuntimeException("no constructor for you");
@@ -80,7 +77,7 @@ public class HttpUtil {
 			String msgCode = isSuccessful ? "0" : "-1";
 			String msg = resultEntity.getErrorMsg();
 			if(isSuccessful) {
-				RESULT_CACHE.put(cacheKey, resultEntity);
+				RESULT_CACHE.set(cacheKey, resultEntity);
 				callback.onSuccess(isSuccessful, msgCode, responseBodyStr, gson.fromJson(responseBodyStr, responseClass));
 			} else {
 				callback.onFail(new RuntimeException(msg));

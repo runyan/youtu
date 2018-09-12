@@ -10,11 +10,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -163,15 +165,33 @@ public class DefaultRequestPool extends AbstractRequestPool {
 			return ;
 		}
 		executeLocal.set(true);
-		List<Callable<Boolean>> requestList = new ArrayList<>(size);
-		requestSet.forEach(wrapper -> {
-			requestList.add(new ExecuteTask(wrapper));
-		});
+		List<CompletableFuture<Void>> futureList = new ArrayList<>(size);
+		CompletableFuture<Void> future;
+		for(RequestWrapper wrapper : requestSet) {
+			future = CompletableFuture.runAsync(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						wrapper.getRequestClient().execute(wrapper.getCallback());
+					} catch (Exception e) {
+						e.printStackTrace();
+						logger.error("error while executing: " + wrapper.getRequest());
+					}
+				}
+				
+			}, threadPool);
+			futureList.add(future);
+		}
+		CompletableFuture<Void> completedFutures = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[size]));
 		try {
-			threadPool.invokeAll(requestList, 5, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			logger.error("error while executing tasks");
+			completedFutures.get(10, TimeUnit.SECONDS);
+		} catch(TimeoutException e) {
 			e.printStackTrace();
+			logger.error("execute timeout");
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+			logger.error("execute exception");
 		}
 		executeLocal.set(false);
 		requestSet.clear();
@@ -201,6 +221,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 				}
 			}
 		});
+		exsitPools.clear();
 	}
 	
 	private Set<RequestWrapper> getRequestSet() {
@@ -274,25 +295,4 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		}
 	}
 	
-	private class ExecuteTask implements Callable<Boolean> {
-
-		private RequestWrapper request;
-		
-		ExecuteTask(RequestWrapper wrapper) {
-			this.request = wrapper;
-		}
-		
-		@Override
-		public Boolean call() throws Exception {
-			try {
-				request.getRequestClient().execute(request.getCallback());
-			} catch(Exception e) {
-				logger.error(request + " error");
-				return false;
-			}
-			return true;
-		}
-		
-	}
-
 }

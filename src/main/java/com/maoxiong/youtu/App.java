@@ -2,8 +2,8 @@ package com.maoxiong.youtu;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
@@ -66,7 +66,7 @@ import com.maoxiong.youtu.request.impl.TextToAudioRequest;
 *************************************************************/
 public class App {
 	
-	private static final Logger logger = LogManager.getLogger(App.class);
+	private static final Logger logger = LoggerFactory.getLogger(App.class);
 	
 	private static final String QQ = "";
 	private static final String APP_ID = "";

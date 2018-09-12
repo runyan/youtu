@@ -2,8 +2,8 @@ package com.maoxiong.youtu.util.network.interceptor;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -19,7 +19,7 @@ import okio.Buffer;
  */
 public class LogInterceptor implements Interceptor {
 	
-	private static final Logger logger = LogManager.getLogger(LogInterceptor.class);
+	private static final Logger logger = LoggerFactory.getLogger(LogInterceptor.class);
 
 	@Override
 	public Response intercept(Chain chain) throws IOException {

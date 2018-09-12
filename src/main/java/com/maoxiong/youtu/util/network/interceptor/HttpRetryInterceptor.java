@@ -3,8 +3,8 @@ package com.maoxiong.youtu.util.network.interceptor;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -17,7 +17,7 @@ import okhttp3.Response;
  */
 public class HttpRetryInterceptor implements Interceptor {
 	
-	private static final Logger logger = LogManager.getLogger(HttpRetryInterceptor.class);
+	private static final Logger logger = LoggerFactory.getLogger(HttpRetryInterceptor.class);
 	
 	private final int executionCount;
 	private final long retryInterval;

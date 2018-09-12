@@ -5,8 +5,8 @@ import java.io.InterruptedIOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -28,7 +28,7 @@ import okhttp3.Response;
  */
 public class HttpUtil {
 	
-	private static final Logger logger = LogManager.getLogger(HttpUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(HttpUtil.class);
 	
 	private static final HttpRetryInterceptor RETRY_INTERCEPTOR = new HttpRetryInterceptor.Builder()
 			.executionCount(5)

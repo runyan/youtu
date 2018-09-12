@@ -20,8 +20,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
@@ -36,7 +36,7 @@ import com.maoxiong.youtu.request.Request;
  */
 public class DefaultRequestPool extends AbstractRequestPool {
 	
-	private static final Logger logger = LogManager.getLogger(DefaultRequestPool.class);
+	private static final Logger logger = LoggerFactory.getLogger(DefaultRequestPool.class);
 
 	private final AtomicInteger threadSequance = new AtomicInteger();
 	private static final int MAX_THREAD_NUM = 50;

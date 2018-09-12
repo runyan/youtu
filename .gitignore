@@ -6,3 +6,6 @@ target/
 .settings
 .project
 .classpath
+*.log
+*.zip
+

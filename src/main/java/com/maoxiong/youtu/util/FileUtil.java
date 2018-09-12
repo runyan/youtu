@@ -12,8 +12,8 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -28,7 +28,7 @@ import net.coobird.thumbnailator.Thumbnails;
  */
 public class FileUtil {
 	
-	private static final Logger logger = LogManager.getLogger(FileUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 	
 	private static final Cache<String, byte[]> BYTE_CACHE = Caffeine.newBuilder()
 			.expireAfterWrite(10, TimeUnit.MINUTES)

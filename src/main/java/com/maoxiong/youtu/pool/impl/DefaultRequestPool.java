@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
-import com.maoxiong.youtu.context.Context;
+import com.maoxiong.youtu.initializer.Initializer;
 import com.maoxiong.youtu.pool.AbstractRequestPool;
 import com.maoxiong.youtu.request.Request;
 
@@ -53,12 +53,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	private final String currentThreadName = Thread.currentThread().getName();
 	
 	private DefaultRequestPool() {
-		Object signObj = Context.get("sign");
-		signObj = null == signObj ? "" : signObj;
-		String sign = String.valueOf(signObj);
-		if(StringUtils.isBlank(sign)) {
-			throw new IllegalStateException("have not init properly");
-		}
+		Initializer.initCheck();
 		exsitPools = new ConcurrentHashMap<>(16);
 	}
 	

@@ -35,6 +35,8 @@ public class FileUtil {
 		    .maximumSize(16)
 		    .build();
 	
+	private static final int MB = 1024 * 1024;
+	
 	private FileUtil() {
 		throw new RuntimeException("no constructor for you");
 	}
@@ -49,20 +51,22 @@ public class FileUtil {
 	private static byte[] readFile(String filePath) {
 		try {
 			Path path = Paths.get(filePath);
-			if (!Files.exists(path)) {
+			if (Files.notExists(path)) {
 				throw new FileNotFoundException(filePath);
 			}
 			if(Files.isDirectory(path) || !Files.isReadable(path)) {
 				throw new IllegalArgumentException("file " + filePath + " is either a directory or is not readdable");
 			}
 			long fileSize = Files.size(path);
-			long fileSizeInMB = fileSize / 1024 / 1024;
+			long fileSizeInMB = fileSize / MB;
 			String tempFilePath = "";
 			if(fileSizeInMB >= 1) {
 				logger.warn(filePath + "'s size exceeds 1MB, compress file");
-				tempFilePath = System.getProperty("user.dir").concat(File.separator).concat("temp.png");
+				String fileType = FileTypeUtil.getFileType(filePath);
+				tempFilePath = System.getProperty("user.dir").concat(File.separator).concat("temp")
+						.concat(String.valueOf(System.currentTimeMillis())).concat(".").concat(fileType);
 				Files.deleteIfExists(Paths.get(tempFilePath));
-				Thumbnails.of(filePath).scale(fileSizeInMB >= 2 ? 0.25 : 0.5).toFile(tempFilePath);
+				Thumbnails.of(filePath).scale(fileSizeInMB >= 2 ? 0.25 : 0.5).useOriginalFormat().toFile(tempFilePath);
 				filePath = tempFilePath;
 				Context.set("tempFilePath", tempFilePath);
 			}

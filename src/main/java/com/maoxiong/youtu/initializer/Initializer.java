@@ -25,7 +25,7 @@ public class Initializer {
 	
 	public void init() {
 		if(isInited) {
-			throw new RuntimeException("should not init more than once");
+			throw new IllegalStateException("should not init more than once");
 		}
 		if(StringUtils.isBlank(QQ)) {
 			throw new IllegalArgumentException("need QQ");
@@ -41,6 +41,15 @@ public class Initializer {
 		}
 		Context.init(SignUtil.getSign(QQ, appId, secretId, secretKey), appId);
 		isInited = true;
+	}
+	
+	public static void initCheck() {
+		Object signObj = Context.get("sign");
+		signObj = null == signObj ? "" : signObj;
+		String sign = String.valueOf(signObj);
+		if(StringUtils.isBlank(sign)) {
+			throw new IllegalStateException("have not init properly");
+		}
 	}
 	
 	public static final class Builder {

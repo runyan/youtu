@@ -2,8 +2,7 @@ package com.maoxiong.youtu.util.network.interceptor;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.maoxiong.youtu.util.LogUtil;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -19,8 +18,6 @@ import okio.Buffer;
  */
 public class LogInterceptor implements Interceptor {
 	
-	private static final Logger logger = LoggerFactory.getLogger(LogInterceptor.class);
-
 	@Override
 	public Response intercept(Chain chain) throws IOException {
 		Request request = chain.request();
@@ -39,15 +36,15 @@ public class LogInterceptor implements Interceptor {
 		String requestUrl = request.url().toString();
 		String responseBodyStr = responseBody.string();
 		if(response.isSuccessful()) {
-			if (logger.isDebugEnabled()) {
-                logger.debug("[--> {} {} {} ({}ms)]", requestMethod, responseCode, requestUrl, responseTime);
-                logger.debug("[--> body: {}]", requestString);
-                logger.debug("[<-- resp: {}]\n", responseBodyStr);
+			if (LogUtil.isDebugEnabled()) {
+				LogUtil.debug("[--> {} {} {} ({}ms)]", requestMethod, responseCode, requestUrl, responseTime);
+				LogUtil.debug("[--> body: {}]", requestString);
+				LogUtil.debug("[<-- resp: {}]\n", responseBodyStr);
             }
 		} else {
-			logger.warn("[--> {} {} {} ({}ms)]", requestMethod, responseCode, requestUrl, responseTime);
-            logger.warn("[--> body: {}]", requestString);
-            logger.warn("[<-- resp: {}]\n", responseBodyStr);
+			LogUtil.warn("[--> {} {} {} ({}ms)]", requestMethod, responseCode, requestUrl, responseTime);
+			LogUtil.warn("[--> body: {}]", requestString);
+			LogUtil.warn("[<-- resp: {}]\n", responseBodyStr);
 		}
 		return response;
 	}

@@ -20,14 +20,13 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
 import com.maoxiong.youtu.initializer.Initializer;
 import com.maoxiong.youtu.pool.AbstractRequestPool;
 import com.maoxiong.youtu.request.Request;
+import com.maoxiong.youtu.util.LogUtil;
 
 /**
  * 
@@ -36,8 +35,6 @@ import com.maoxiong.youtu.request.Request;
  */
 public class DefaultRequestPool extends AbstractRequestPool {
 	
-	private static final Logger logger = LoggerFactory.getLogger(DefaultRequestPool.class);
-
 	private final AtomicInteger threadSequance = new AtomicInteger();
 	private static final int MAX_THREAD_NUM = 50;
 	private static final Set<String> THREAD_SET = new HashSet<>(MAX_THREAD_NUM);
@@ -86,8 +83,8 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		RequestWrapper wrapper = wrapRequest(requestClient.getRequest(), requestClient, callback);
 		requestSet.add(wrapper);
 		size = requestSet.size();
-		logger.info("added request: " + wrapper  + " for " + currentThreadName + ", "
-				+ "total " + size + (size == 1 ? " request" : " requests") + " for " + currentThreadName);
+		LogUtil.info("added request: {} for {} total {}, for {}", 
+				wrapper, currentThreadName, size + (size == 1 ? " request" : " requests"), currentThreadName);
 	}
 	
 	@Override
@@ -96,7 +93,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		Objects.requireNonNull(requestMap, "requestMap is null");
 		int mapSize = requestMap.size();
 		if(mapSize == 0) {
-			logger.info("nothing to add");
+			LogUtil.info("nothing to add");
 			return ;
 		}
 		if(mapSize == 1) {
@@ -113,8 +110,9 @@ public class DefaultRequestPool extends AbstractRequestPool {
 			});
 			requestSet.addAll(wrapperList);
 			size = requestSet.size();
-			logger.info("added " + mapSize + (mapSize == 1 ? " request" : " requests") + ": " + wrapperList.toString() 
-					+ " for " + currentThreadName + "， total " + size + " for " + currentThreadName);
+			LogUtil.info("added {} {} for {}, total {} for {}", 
+					mapSize, (mapSize == 1 ? " request" : " requests") + ": ", 
+					wrapperList.toString(), currentThreadName, size + (size == 1 ? " request" : " requests"), currentThreadName);
 		}
 	}
 	
@@ -147,8 +145,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 			return initExecuting;
 		});
 		if(isExecuting) {
-			logger.warn("abort execute for " + currentThreadName + 
-					", request pool is executing, should not call execute more than once");
+			LogUtil.warn("abort execute for {}, request pool is executing, should not call execute more than once", currentThreadName);
 			return ;
 		}
 		if(threadPool.isShutdown() || threadPool.isTerminated() || isClosed) {
@@ -156,7 +153,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		}
 		exsitPools.put(currentThreadName, threadPool);
 		if(requestSet.isEmpty()) {
-			logger.warn("nothing to execute");
+			LogUtil.warn("nothing to execute");
 			return ;
 		}
 		executeLocal.set(true);
@@ -171,7 +168,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 						wrapper.getRequestClient().execute(wrapper.getCallback());
 					} catch (Exception e) {
 						e.printStackTrace();
-						logger.error("error while executing: " + wrapper.getRequest());
+						LogUtil.error("error while executing: {}", wrapper.getRequest());
 					}
 				}
 				
@@ -183,10 +180,10 @@ public class DefaultRequestPool extends AbstractRequestPool {
 			completedFutures.get(10, TimeUnit.SECONDS);
 		} catch(TimeoutException e) {
 			e.printStackTrace();
-			logger.error("execute timeout");
+			LogUtil.error("execute timeout");
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
-			logger.error("execute exception");
+			LogUtil.error("execute exception");
 		}
 		executeLocal.set(false);
 		requestSet.clear();

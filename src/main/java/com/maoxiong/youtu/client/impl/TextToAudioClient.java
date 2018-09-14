@@ -16,7 +16,7 @@ import com.maoxiong.youtu.util.network.HttpUtil;
  * @author yanrun
  *
  */
-public class TextToAudioClient extends AbstractClient {
+public final class TextToAudioClient extends AbstractClient {
 	
 	private boolean shouldSaveToFile;
 

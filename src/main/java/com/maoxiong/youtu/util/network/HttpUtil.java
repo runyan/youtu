@@ -5,15 +5,13 @@ import java.io.InterruptedIOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
 import com.maoxiong.youtu.cache.Cache;
 import com.maoxiong.youtu.cache.impl.CaffeineCache;
 import com.maoxiong.youtu.callback.RequestCallback;
 import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.util.CacheKeyUtil;
+import com.maoxiong.youtu.util.LogUtil;
 import com.maoxiong.youtu.util.network.interceptor.HttpRetryInterceptor;
 import com.maoxiong.youtu.util.network.interceptor.LogInterceptor;
 
@@ -27,8 +25,6 @@ import okhttp3.Response;
  *
  */
 public class HttpUtil {
-	
-	private static final Logger logger = LoggerFactory.getLogger(HttpUtil.class);
 	
 	private static final HttpRetryInterceptor RETRY_INTERCEPTOR = new HttpRetryInterceptor.Builder()
 			.executionCount(5)
@@ -55,7 +51,7 @@ public class HttpUtil {
 		String cacheKey = CacheKeyUtil.generateCacheKey(url, paramJson);
 		BaseResult resultEntity = RESULT_CACHE.getIfPresent(cacheKey);
 		if(null != resultEntity) {
-			logger.info("get response from cache");
+			LogUtil.info("get response from cache");
 			callback.onSuccess(true, "0", new Gson().toJson(resultEntity), resultEntity);
 		} else {
 			realCall(cacheKey, url, paramJson, callback, responseClass);
@@ -69,7 +65,7 @@ public class HttpUtil {
 		try(Response response = CLIENT.newCall(request).execute()) {
 			boolean isSuccessful = response.isSuccessful();
 			if(!isSuccessful) {
-				logger.warn("request to: " + url + "failed");
+				com.maoxiong.youtu.util.LogUtil.warn("request to: {} failed", url);
 				return ;
 			}
 			String responseBodyStr = response.body().string();
@@ -83,9 +79,9 @@ public class HttpUtil {
 				callback.onFail(new RuntimeException(msg));
 			}
 		} catch (UnknownHostException uhe) {
-			logger.error("cannot reach: " + url);
+			LogUtil.error("cannot reach: {}", url);
 		} catch(InterruptedIOException ioe) {
-			logger.error("connection interuptted: " + url);
+			LogUtil.error("connection interuptted: {}", url);
 			ioe.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();

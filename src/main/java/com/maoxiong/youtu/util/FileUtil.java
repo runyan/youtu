@@ -12,8 +12,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -27,8 +26,6 @@ import net.coobird.thumbnailator.Thumbnails;
  *
  */
 public class FileUtil {
-	
-	private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 	
 	private static final Cache<String, byte[]> BYTE_CACHE = Caffeine.newBuilder()
 			.expireAfterWrite(10, TimeUnit.MINUTES)
@@ -61,10 +58,11 @@ public class FileUtil {
 			long fileSizeInMB = fileSize / MB;
 			String tempFilePath = "";
 			if(fileSizeInMB >= 1) {
-				logger.warn(filePath + "'s size exceeds 1MB, compress file");
+				LogUtil.warn("{}'s size exceeds 1MB, compress file", filePath);
 				String fileType = FileTypeUtil.getFileType(filePath);
-				tempFilePath = System.getProperty("user.dir").concat(File.separator).concat("temp")
-						.concat(String.valueOf(System.currentTimeMillis())).concat(".").concat(fileType);
+				String fileName = System.getProperty("user.dir").concat(File.separator).concat("temp")
+						.concat(String.valueOf(System.currentTimeMillis()));
+				tempFilePath = StringUtils.isBlank(fileType) ? fileName : fileName.concat(".").concat(fileType);
 				Files.deleteIfExists(Paths.get(tempFilePath));
 				Thumbnails.of(filePath).scale(fileSizeInMB >= 2 ? 0.25 : 0.5).useOriginalFormat().toFile(tempFilePath);
 				filePath = tempFilePath;

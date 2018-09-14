@@ -7,7 +7,7 @@ import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.entity.result.impl.FoodDetectResult;
 import com.maoxiong.youtu.util.network.HttpUtil;
 
-public class FoodDetectClient extends AbstractClient {
+public final class FoodDetectClient extends AbstractClient {
 
 	@Override
 	public void execute(CallBack callback) throws Exception {

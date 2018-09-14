@@ -7,7 +7,7 @@ import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.entity.result.impl.CorDetectResult;
 import com.maoxiong.youtu.util.network.HttpUtil;
 
-public class CreditCardDetectClient extends AbstractClient {
+public final class CreditCardDetectClient extends AbstractClient {
 	
 	@Override
 	public void execute(CallBack callback) throws Exception {

@@ -3,8 +3,7 @@ package com.maoxiong.youtu.util.network.interceptor;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.maoxiong.youtu.util.LogUtil;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -16,8 +15,6 @@ import okhttp3.Response;
  *
  */
 public class HttpRetryInterceptor implements Interceptor {
-	
-	private static final Logger logger = LoggerFactory.getLogger(HttpRetryInterceptor.class);
 	
 	private final int executionCount;
 	private final long retryInterval;
@@ -37,10 +34,10 @@ public class HttpRetryInterceptor implements Interceptor {
         	response = chain.proceed(request); 
             synchronized (response) {
             	while ((response == null || !response.isSuccessful()) && retryNum < executionCount) {  
-            		logger.warn("intercept Request is not successful - " + (retryNum + 1));  
+            		LogUtil.warn("intercept Request is not successful - {}", (retryNum + 1));  
                     final long nextInterval = getRetryInterval();  
                     try {  
-                    	logger.warn("Wait for " + nextInterval + "ms");  
+                    	LogUtil.warn("Wait for {}ms", nextInterval);  
                         Thread.sleep(nextInterval);  
                     } catch (final InterruptedException e) {  
                         Thread.currentThread().interrupt();  
@@ -53,7 +50,7 @@ public class HttpRetryInterceptor implements Interceptor {
 			}
         } catch(IOException e) {
         	e.printStackTrace();
-        	logger.error("got an error while retrying");
+        	LogUtil.error("got an error while retrying");
         }
         return response;  
 	}

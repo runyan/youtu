@@ -2,9 +2,6 @@ package com.maoxiong.youtu;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
 import com.maoxiong.youtu.entity.FaceItem;
@@ -39,6 +36,7 @@ import com.maoxiong.youtu.request.impl.IDDetectRequest;
 import com.maoxiong.youtu.request.impl.InvoiceDetectRequest;
 import com.maoxiong.youtu.request.impl.PlateDetectRequest;
 import com.maoxiong.youtu.request.impl.TextToAudioRequest;
+import com.maoxiong.youtu.util.LogUtil;
 
 
 /************************************************************
@@ -66,8 +64,6 @@ import com.maoxiong.youtu.request.impl.TextToAudioRequest;
 *************************************************************/
 public class App {
 	
-	private static final Logger logger = LoggerFactory.getLogger(App.class);
-	
 	private static final String QQ = "";
 	private static final String APP_ID = "";
 	private static final String SECRET_ID = "";
@@ -84,7 +80,7 @@ public class App {
     	DefaultRequestPool pool = DefaultRequestPool.getInstace();
     	Request faceDetectRequest = new FaceDetectRequest();
     	FaceDectectRequestEntity faceRequestEntity = new FaceDectectRequestEntity();
-    	faceRequestEntity.setFilePath("D://a.jpg");
+    	faceRequestEntity.setFilePath("D://b.png");
 //    	faceRequestEntity.setFileUrl("https://pic4.zhimg.com/v2-334f7a126585e75a87c7a982cae77532_im.jpg");
     	faceDetectRequest.setParams(faceRequestEntity);
     	Client faceDetectClient = ClientFactory.constructClient(faceDetectRequest);
@@ -92,20 +88,20 @@ public class App {
 
 			@Override
 			public void onFail(Exception e) {
-				logger.error(e.getMessage());
+				LogUtil.error(e.getMessage());
 				e.printStackTrace();
 			}
 
 			@Override
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result,
 					Class<? extends BaseResult> responseClass) {
-				logger.info(isSuccess + " " + errorCode + " " + errorMsg);
+				LogUtil.info(isSuccess + " " + errorCode + " " + errorMsg);
 				FaceDetectResult detectResult = (FaceDetectResult) result;
 				List<FaceItem> faceList = detectResult.getFaceItemList();
 				faceList.forEach(face -> {
-					logger.info("Gender: " + face.getGender());
-					logger.info("Beauty: " + face.getBeauty());
-					logger.info("Age: " + face.getAge());
+					LogUtil.info("Gender: " + face.getGender());
+					LogUtil.info("Beauty: " + face.getBeauty());
+					LogUtil.info("Age: " + face.getAge());
 				});
 			}
     		
@@ -122,12 +118,12 @@ public class App {
 			public void onSuccess(boolean isSuccess, String errorCode, String responseString, BaseResult responseEntity,
 					Class<? extends BaseResult> responseClass) {
 				FoodDetectResult result = (FoodDetectResult) responseEntity;
-				logger.info(result.isFood() + " " + result.getFoodConfidence() * 100);
+				LogUtil.info(result.isFood() + " " + result.getFoodConfidence() * 100);
 			}
 
 			@Override
 			public void onFail(Exception e) {
-				logger.error(e.getMessage());
+				LogUtil.error(e.getMessage());
 				e.printStackTrace();
 			}
     		
@@ -144,22 +140,22 @@ public class App {
 			@Override
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result,
 					Class<? extends BaseResult> responseClass) {
-				logger.info(isSuccess + " " + errorCode + " " + errorMsg);
+				LogUtil.info(isSuccess + " " + errorCode + " " + errorMsg);
 				CorDetectResult creditCardDetectResult = (CorDetectResult) result;
 				List<Item> itemList = creditCardDetectResult.getItems();
 				itemList.forEach(item -> {
-					logger.info("item: " + item.getItem());
-					logger.info("itemString: " + item.getItemString());
-					logger.info("itemConf: " + item.getItemConf() * 100);
+					LogUtil.info("item: " + item.getItem());
+					LogUtil.info("itemString: " + item.getItemString());
+					LogUtil.info("itemConf: " + item.getItemConf() * 100);
 					final ItemCor cor = item.getCor();
-					logger.info("itemCor x: " + cor.getX() + " " + "y: " + cor.getY() + " " + "height: " + cor.getHeight() + " " 
+					LogUtil.info("itemCor x: " + cor.getX() + " " + "y: " + cor.getY() + " " + "height: " + cor.getHeight() + " " 
 							+ "width: " + cor.getWidth());
 				});
 			}
 
 			@Override
 			public void onFail(Exception e) {
-				logger.error(e.getMessage());
+				LogUtil.error(e.getMessage());
 				e.printStackTrace();
 			}
     		
@@ -175,22 +171,22 @@ public class App {
 			@Override
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result,
 					Class<? extends BaseResult> responseClass) {
-				logger.info(isSuccess + " " + errorCode + " " + errorMsg);
+				LogUtil.info(isSuccess + " " + errorCode + " " + errorMsg);
 				CorDetectResult creditCardDetectResult = (CorDetectResult) result;
 				List<Item> itemList = creditCardDetectResult.getItems();
 				itemList.forEach(item -> {
-					logger.info("item: " + item.getItem());
-					logger.info("itemString: " + item.getItemString());
-					logger.info("itemConf: " + item.getItemConf() * 100);
+					LogUtil.info("item: " + item.getItem());
+					LogUtil.info("itemString: " + item.getItemString());
+					LogUtil.info("itemConf: " + item.getItemConf() * 100);
 					final ItemCor cor = item.getCor();
-					logger.info("itemCor x: " + cor.getX() + " " + "y: " + cor.getY() + " " + "height: " + cor.getHeight() + " " 
+					LogUtil.info("itemCor x: " + cor.getX() + " " + "y: " + cor.getY() + " " + "height: " + cor.getHeight() + " " 
 							+ "width: " + cor.getWidth());
 				});
 			}
 
 			@Override
 			public void onFail(Exception e) {
-				logger.error(e.getMessage());
+				LogUtil.error(e.getMessage());
 				e.printStackTrace();
 			}
     		
@@ -208,20 +204,20 @@ public class App {
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result,
 					Class<? extends BaseResult> responseClass) {
 				IDDetectResult idCard = (IDDetectResult) result;
-				logger.info("authority: " + idCard.getAuthority());
-				logger.info("validDate: " + idCard.getValidDate());
-				logger.info("id: " + idCard.getId());
-				logger.info("name: " + idCard.getName());
-				logger.info("address: " + idCard.getAddress());
-				logger.info("sex: " + idCard.getSex());
-				logger.info("nation: " + idCard.getNation());
-				logger.info("birth: " + idCard.getBirth());
-				logger.info("watermaskStatus: " + idCard.getWatermaskStatus());
+				LogUtil.info("authority: " + idCard.getAuthority());
+				LogUtil.info("validDate: " + idCard.getValidDate());
+				LogUtil.info("id: " + idCard.getId());
+				LogUtil.info("name: " + idCard.getName());
+				LogUtil.info("address: " + idCard.getAddress());
+				LogUtil.info("sex: " + idCard.getSex());
+				LogUtil.info("nation: " + idCard.getNation());
+				LogUtil.info("birth: " + idCard.getBirth());
+				LogUtil.info("watermaskStatus: " + idCard.getWatermaskStatus());
 			}
 
 			@Override
 			public void onFail(Exception e) {
-				logger.error(e.getMessage());
+				LogUtil.error(e.getMessage());
 				e.printStackTrace();
 			}
     		
@@ -240,12 +236,12 @@ public class App {
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result,
 					Class<? extends BaseResult> responseClass) {
 				TextToAudioResult voice = (TextToAudioResult) result;
-				logger.info("voice: " + voice.getVoice());
+				LogUtil.info("voice: " + voice.getVoice());
 			}
 
 			@Override
 			public void onFail(Exception e) {
-				logger.error(e.getMessage());
+				LogUtil.error(e.getMessage());
 				e.printStackTrace();
 			}
     		
@@ -263,13 +259,13 @@ public class App {
 				InvoiceDetectResult resultEntity = (InvoiceDetectResult) result;
 				List<InvoiceItem>  itemList = resultEntity.getItems();
 				itemList.forEach(item -> {
-					logger.info("item:" + item);
+					LogUtil.info("item:" + item);
 				});
 			}
 
 			@Override
 			public void onFail(Exception e) {
-				logger.error(e.getMessage());
+				LogUtil.error(e.getMessage());
 				e.printStackTrace();
 			}
     		

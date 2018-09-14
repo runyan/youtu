@@ -7,7 +7,7 @@ import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.entity.result.impl.InvoiceDetectResult;
 import com.maoxiong.youtu.util.network.HttpUtil;
 
-public class InvoiceDetectClient extends AbstractClient {
+public final class InvoiceDetectClient extends AbstractClient {
 
 	@Override
 	public void execute(CallBack callback) throws Exception {

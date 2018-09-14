@@ -7,7 +7,7 @@ import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.entity.result.impl.IDDetectResult;
 import com.maoxiong.youtu.util.network.HttpUtil;
 
-public class IDDetectClient extends AbstractClient {
+public final class IDDetectClient extends AbstractClient {
 
 	@Override
 	public void execute(CallBack callback)

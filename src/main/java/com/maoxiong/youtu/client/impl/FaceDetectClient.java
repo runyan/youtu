@@ -12,7 +12,7 @@ import com.maoxiong.youtu.util.network.HttpUtil;
  * @author yanrun
  *
  */
-public class FaceDetectClient extends AbstractClient {
+public final class FaceDetectClient extends AbstractClient {
 	
 	@Override
 	public void execute(CallBack callback) throws Exception {

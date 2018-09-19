@@ -10,6 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.maoxiong.youtu.pool.impl.DefaultRequestPool;
+
 /**
  * 
  * @author yanrun
@@ -30,12 +32,16 @@ public class Context {
 			public void run() {
 				Object pathObj = PARAM_MAP.get("tempFilePath");
 				String tempFilePath = null == pathObj ? "" : String.valueOf(pathObj);
-				if(!StringUtils.isBlank(tempFilePath)) {
+				if(!StringUtils.isBlank(tempFilePath) || !StringUtils.equalsIgnoreCase(tempFilePath, "null")) {
 					try {
 						Files.deleteIfExists(Paths.get(tempFilePath));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+				}
+				DefaultRequestPool pool = DefaultRequestPool.getInstace();
+				if(!pool.isClosed()) {
+					pool.close();
 				}
 				PARAM_MAP.clear();
 			}

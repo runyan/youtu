@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
 import com.maoxiong.youtu.initializer.Initializer;
-import com.maoxiong.youtu.pool.AbstractRequestPool;
+import com.maoxiong.youtu.pool.RequestPool;
 import com.maoxiong.youtu.request.Request;
 import com.maoxiong.youtu.util.LogUtil;
 
@@ -33,21 +33,21 @@ import com.maoxiong.youtu.util.LogUtil;
  * @author yanrun
  *
  */
-public class DefaultRequestPool extends AbstractRequestPool {
+public class DefaultRequestPool implements RequestPool {
 	
 	private final AtomicInteger threadSequance = new AtomicInteger();
 	private static final int MAX_THREAD_NUM = 50;
 	private static final Set<String> THREAD_SET = new HashSet<>(MAX_THREAD_NUM);
 	
 	private ExecutorService threadPool;
-	private Set<RequestWrapper> requestSet;
 	private ThreadLocal<ExecutorService> poolLocal = new ThreadLocal<>();
 	private ThreadLocal<Boolean> executeLocal = new ThreadLocal<>();
 	private ThreadLocal<Set<RequestWrapper>> requestLocal = new ThreadLocal<>();
+	private Set<RequestWrapper> requestSet;
 	private static volatile boolean isClosed;
 	private static volatile Map<String, ExecutorService> exsitPools;
 	
-	private final String currentThreadName = Thread.currentThread().getName();
+	private int size;
 	
 	private DefaultRequestPool() {
 		Initializer.initCheck();
@@ -81,26 +81,27 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		Objects.requireNonNull(requestClient, "null requestClient");
 		Objects.requireNonNull(callback, "null callback");
 		RequestWrapper wrapper = wrapRequest(requestClient.getRequest(), requestClient, callback);
-		requestSet.add(wrapper);
-		size = requestSet.size();
-		LogUtil.info("added request: {} for {} total {}, for {}", 
-				wrapper, currentThreadName, size + (size == 1 ? " request" : " requests"), currentThreadName);
+		boolean added = requestSet.add(wrapper);
+		String currentThreadName = Thread.currentThread().getName();
+		if(added) {
+			size = requestSet.size();
+			LogUtil.info("added request: {} for {} total {}, for {}", 
+					wrapper, currentThreadName, size + (size == 1 ? " request" : " requests"), currentThreadName);
+		}
 	}
 	
 	@Override
 	public void addRequestsByMap(Map<Client, CallBack> requestMap) {
 		checkBeforeAdd();
 		Objects.requireNonNull(requestMap, "requestMap is null");
-		int mapSize = requestMap.size();
-		if(mapSize == 0) {
+		if(requestMap.isEmpty()) {
 			LogUtil.info("nothing to add");
 			return ;
 		}
+		int mapSize = requestMap.size();
 		if(mapSize == 1) {
 			Entry<Client, CallBack> mapEntry = requestMap.entrySet().iterator().next();
-			Client client = mapEntry.getKey();
-			CallBack callback = mapEntry.getValue();
-			addRequest(client, callback);
+			addRequest(mapEntry.getKey(), mapEntry.getValue());
 		} else {
 			List<RequestWrapper> wrapperList = new ArrayList<>(mapSize);
 			requestMap.forEach((client, callback) -> {
@@ -108,11 +109,14 @@ public class DefaultRequestPool extends AbstractRequestPool {
 				wrapperList.add(wrapper);
 				wrapper = null;
 			});
-			requestSet.addAll(wrapperList);
-			size = requestSet.size();
-			LogUtil.info("added {} {} for {}, total {} for {}", 
-					mapSize, (mapSize == 1 ? " request" : " requests") + ": ", 
-					wrapperList.toString(), currentThreadName, size + (size == 1 ? " request" : " requests"), currentThreadName);
+			boolean added = requestSet.addAll(wrapperList);
+			if(added) {
+				String currentThreadName = Thread.currentThread().getName();
+				size = requestSet.size();
+				LogUtil.info("added {} for {}, total {} for {}", 
+						mapSize + (mapSize == 1 ? " request" : " requests") + ": " + 
+						wrapperList.toString(), currentThreadName, size + (size == 1 ? " request" : " requests"), currentThreadName);
+			}
 		}
 	}
 	
@@ -120,6 +124,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		if(isClosed) {
 			throw new IllegalStateException("cannot add request to a closed pool");
 		}
+		String currentThreadName = Thread.currentThread().getName();
 		THREAD_SET.add(currentThreadName);
 		int activeThreadNum = THREAD_SET.size();
 		int maxThreadNum = MAX_THREAD_NUM;
@@ -132,13 +137,15 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	
 	@Override
 	public void execute() {
+		String currentThreadName = Thread.currentThread().getName();
+		requestSet = getRequestSet();
+		size = requestSet.size();
 		threadPool = Optional.ofNullable(poolLocal.get()).orElseGet(() -> {
 			ExecutorService initPool = new ThreadPoolExecutor(size, 50, 500, TimeUnit.MILLISECONDS, 
 					new ArrayBlockingQueue<Runnable>(100), (r) -> new Thread(r, "ThreadPool thread: "  + threadSequance.incrementAndGet()));
 			poolLocal.set(initPool);
 			return initPool;
 		});
-		requestSet = getRequestSet();
 		boolean isExecuting = Optional.ofNullable(executeLocal.get()).orElseGet(() -> {
 			Boolean initExecuting = false;
 			executeLocal.set(initExecuting);
@@ -177,17 +184,18 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		}
 		CompletableFuture<Void> completedFutures = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[size]));
 		try {
-			completedFutures.get(10, TimeUnit.SECONDS);
+			completedFutures.get(10, TimeUnit.MINUTES);
 		} catch(TimeoutException e) {
 			e.printStackTrace();
 			LogUtil.error("execute timeout");
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 			LogUtil.error("execute exception");
+		} finally {
+			executeLocal.set(false);
+			requestSet.clear();
+			THREAD_SET.remove(currentThreadName);
 		}
-		executeLocal.set(false);
-		requestSet.clear();
-		THREAD_SET.remove(currentThreadName);
 	}
 	
 	@Override
@@ -205,6 +213,21 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		executeLocal.remove();
 	}
 	
+	@Override
+	public int size() {
+		return THREAD_SET.size();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return THREAD_SET.size() == 0;
+	}
+	
+	@Override
+	public boolean isClosed() {
+		return isClosed;
+	}
+	
 	private void cleanUp() {
 		exsitPools.forEach((threadName, pool) -> {
 			if(null != pool) {
@@ -218,7 +241,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 	
 	private Set<RequestWrapper> getRequestSet() {
 		return Optional.ofNullable(requestLocal.get()).orElseGet(() -> {
-			Set<RequestWrapper> initSet = Collections.synchronizedSet(new HashSet<>(8));
+			Set<RequestWrapper> initSet = Collections.synchronizedSet(new HashSet<>());
 			requestLocal.set(initSet);
 			return initSet;
 		});
@@ -235,7 +258,7 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		}
 	}
 	
-	private class RequestWrapper {
+	private class RequestWrapper implements Comparable<RequestWrapper> {
 		private Request request;
 		private Client requestClient;
 		private CallBack callback;
@@ -285,6 +308,14 @@ public class DefaultRequestPool extends AbstractRequestPool {
 		public String toString() {
 			return "request url: " + requestUrl + " param: " + requestParam;
 		}
+
+		@Override
+		public int compareTo(RequestWrapper another) {
+			if(this.equals(another)) {
+				return 0;
+			}
+			return Integer.compare(this.hashCode(), another.hashCode());
+		}
 	}
-	
+
 }

@@ -85,6 +85,7 @@ public class DefaultRequestPool implements RequestPool {
 		String currentThreadName = Thread.currentThread().getName();
 		if(added) {
 			size = requestSet.size();
+			requestLocal.set(requestSet);
 			LogUtil.info("added request: {} for {} total {}, for {}", 
 					wrapper, currentThreadName, size + (size == 1 ? " request" : " requests"), currentThreadName);
 		}
@@ -94,6 +95,7 @@ public class DefaultRequestPool implements RequestPool {
 	public void addRequestsByMap(Map<Client, CallBack> requestMap) {
 		checkBeforeAdd();
 		Objects.requireNonNull(requestMap, "requestMap is null");
+		String currentThreadName = Thread.currentThread().getName();
 		if(requestMap.isEmpty()) {
 			LogUtil.info("nothing to add");
 			return ;
@@ -111,8 +113,8 @@ public class DefaultRequestPool implements RequestPool {
 			});
 			boolean added = requestSet.addAll(wrapperList);
 			if(added) {
-				String currentThreadName = Thread.currentThread().getName();
 				size = requestSet.size();
+				requestLocal.set(requestSet);
 				LogUtil.info("added {} for {}, total {} for {}", 
 						mapSize + (mapSize == 1 ? " request" : " requests") + ": " + 
 						wrapperList.toString(), currentThreadName, size + (size == 1 ? " request" : " requests"), currentThreadName);

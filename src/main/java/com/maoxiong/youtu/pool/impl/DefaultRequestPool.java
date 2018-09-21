@@ -85,7 +85,6 @@ public class DefaultRequestPool implements RequestPool {
 		String currentThreadName = Thread.currentThread().getName();
 		if(added) {
 			size = requestSet.size();
-			requestLocal.set(requestSet);
 			LogUtil.info("added request: {} for {} total {}, for {}", 
 					wrapper, currentThreadName, size + (size == 1 ? " request" : " requests"), currentThreadName);
 		}
@@ -114,7 +113,6 @@ public class DefaultRequestPool implements RequestPool {
 			boolean added = requestSet.addAll(wrapperList);
 			if(added) {
 				size = requestSet.size();
-				requestLocal.set(requestSet);
 				LogUtil.info("added {} for {}, total {} for {}", 
 						mapSize + (mapSize == 1 ? " request" : " requests") + ": " + 
 						wrapperList.toString(), currentThreadName, size + (size == 1 ? " request" : " requests"), currentThreadName);

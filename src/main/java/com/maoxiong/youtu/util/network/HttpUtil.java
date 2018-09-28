@@ -65,7 +65,7 @@ public class HttpUtil {
 		try(Response response = CLIENT.newCall(request).execute()) {
 			boolean isSuccessful = response.isSuccessful();
 			if(!isSuccessful) {
-				com.maoxiong.youtu.util.LogUtil.warn("request to: {} failed", url);
+				LogUtil.warn("request to: {} failed", url);
 				return ;
 			}
 			String responseBodyStr = response.body().string();

@@ -64,10 +64,10 @@ import com.maoxiong.youtu.util.LogUtil;
 *************************************************************/
 public class App {
 	
-	private static final String QQ = "";
-	private static final String APP_ID = "";
-	private static final String SECRET_ID = "";
-	private static final String SECRET_KEY = "";
+	private static final String QQ = "530913397";
+	private static final String APP_ID = "10125863";
+	private static final String SECRET_ID = "AKIDnV8bFlTMRnPxMbhtoZEhzCIGyZ2K5aTB";
+	private static final String SECRET_KEY = "lLl613yk3kKxTp6LRXVJwPhonjopjT6b";
 	
     public static void main( String[] args ) {
     	Initializer initializer = new Initializer.Builder()
@@ -80,8 +80,8 @@ public class App {
     	DefaultRequestPool pool = DefaultRequestPool.getInstace();
     	Request faceDetectRequest = new FaceDetectRequest();
     	FaceDectectRequestEntity faceRequestEntity = new FaceDectectRequestEntity();
-    	faceRequestEntity.setFilePath("D://b.png");
-//    	faceRequestEntity.setFileUrl("https://pic4.zhimg.com/v2-334f7a126585e75a87c7a982cae77532_im.jpg");
+//    	faceRequestEntity.setFilePath("D://b.png");
+    	faceRequestEntity.setFileUrl("https://pic4.zhimg.com/v2-334f7a126585e75a87c7a982cae77532_im.jpg");
     	faceDetectRequest.setParams(faceRequestEntity);
     	Client faceDetectClient = ClientFactory.constructClient(faceDetectRequest);
     	CallBack faceDetectCallBack = new CallBack() {

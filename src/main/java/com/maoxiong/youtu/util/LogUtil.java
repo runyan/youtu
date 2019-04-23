@@ -47,7 +47,8 @@ public class LogUtil {
      * @return    
      */
     private static Logger logger() {
-        StackTraceElement caller = findCaller();//最原始被调用的堆栈对象
+    	//最原始被调用的堆栈对象
+        StackTraceElement caller = findCaller();
         return caller == null ? LoggerFactory.getLogger(LogUtil.class) : 
         	LoggerFactory.getLogger(caller.getClassName() + " " + caller.getLineNumber());
     }

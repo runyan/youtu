@@ -2,7 +2,6 @@ package com.maoxiong.youtu.pool.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,11 +9,11 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -38,20 +37,20 @@ import com.maoxiong.youtu.util.LogUtil;
 public class DefaultRequestPool implements RequestPool {
 	
 	private final AtomicInteger threadSequance = new AtomicInteger();
-	private static final int MAX_THREAD_NUM = 500;
-	private static final Set<String> THREAD_SET = new HashSet<>(MAX_THREAD_NUM);
+	private static final int MAX_THREAD_NUM = 50;
 	
 	private final ExecutorService threadPool;
 	private Set<RequestWrapper> requestSet;
 	private static volatile boolean isClosed;
 	private volatile AtomicBoolean isExecuting = new AtomicBoolean(false);
+	private volatile AtomicInteger activeThreadNum = new AtomicInteger(0);
 	
 	private int size;
 	
 	private DefaultRequestPool() {
 		Initializer.initCheck();
-		threadPool = new ThreadPoolExecutor(size, 50, MAX_THREAD_NUM, TimeUnit.MILLISECONDS, 
-				new ArrayBlockingQueue<Runnable>(100), (r) -> new Thread(r, "ThreadPool thread: "  + threadSequance.incrementAndGet()));
+		threadPool = new ThreadPoolExecutor(10, MAX_THREAD_NUM, 1, TimeUnit.MINUTES, 
+				new LinkedBlockingQueue<>(), (r) -> new Thread(r, "ThreadPool thread: "  + threadSequance.incrementAndGet()));
 	}
 	
 	enum SingletonHolder {
@@ -124,15 +123,13 @@ public class DefaultRequestPool implements RequestPool {
 		if(isClosed) {
 			throw new IllegalStateException("cannot add request to a closed pool");
 		}
-		String currentThreadName = Thread.currentThread().getName();
-		THREAD_SET.add(currentThreadName);
-		int activeThreadNum = THREAD_SET.size();
-		int maxThreadNum = MAX_THREAD_NUM;
-		if(activeThreadNum > maxThreadNum) {
-			throw new RuntimeException("cannot add more requests, max active thread number allowed: " + maxThreadNum
-					+ ", current thread number: " + activeThreadNum);
+		int curThreadNum = activeThreadNum.get();
+		if(curThreadNum > MAX_THREAD_NUM) {
+			throw new RuntimeException("cannot add more requests, max active thread number allowed: " + MAX_THREAD_NUM
+					+ ", current thread number: " + curThreadNum);
 		}
 		requestSet = getRequestSet();
+		activeThreadNum.addAndGet(1);
 	}
 	
 	@Override
@@ -154,24 +151,19 @@ public class DefaultRequestPool implements RequestPool {
 		List<CompletableFuture<Void>> futureList = new ArrayList<>(size);
 		CompletableFuture<Void> future;
 		for(RequestWrapper wrapper : requestSet) {
-			future = CompletableFuture.runAsync(new Runnable() {
-
-				@Override
-				public void run() {
-					try {
-						wrapper.getRequestClient().execute(wrapper.getCallback());
-					} catch (Exception e) {
-						e.printStackTrace();
-						LogUtil.error("error while executing: {}", wrapper.getRequest());
-					}
+			future = CompletableFuture.runAsync(() -> {
+				try {
+					wrapper.getRequestClient().execute(wrapper.getCallback());
+				} catch (Exception e) {
+					e.printStackTrace();
+					LogUtil.error("error while executing: {}", wrapper.getRequest());
 				}
-				
 			}, threadPool);
 			futureList.add(future);
 		}
 		CompletableFuture<Void> completedFutures = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[size]));
 		try {
-			completedFutures.get(10, TimeUnit.MINUTES);
+			completedFutures.get(1, TimeUnit.MINUTES);
 		} catch(TimeoutException e) {
 			e.printStackTrace();
 			LogUtil.error("execute timeout");
@@ -181,7 +173,7 @@ public class DefaultRequestPool implements RequestPool {
 		} finally {
 			isExecuting.set(false);
 			requestSet.clear();
-			THREAD_SET.remove(currentThreadName);
+			activeThreadNum.decrementAndGet();
 		}
 	}
 	
@@ -192,19 +184,18 @@ public class DefaultRequestPool implements RequestPool {
 	
 	@Override
 	public void close() {
-		THREAD_SET.clear();
 		isClosed = true;
 		threadPool.shutdown();
 	}
 	
 	@Override
 	public int size() {
-		return THREAD_SET.size();
+		return requestSet.size();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return THREAD_SET.size() == 0;
+		return requestSet.isEmpty();
 	}
 	
 	@Override

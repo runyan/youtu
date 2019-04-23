@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
+import com.maoxiong.youtu.context.Context;
 import com.maoxiong.youtu.initializer.Initializer;
 import com.maoxiong.youtu.pool.RequestPool;
 import com.maoxiong.youtu.request.Request;
@@ -44,34 +46,17 @@ public class DefaultRequestPool implements RequestPool {
 	private static volatile boolean isClosed;
 	private volatile AtomicBoolean isExecuting = new AtomicBoolean(false);
 	private volatile AtomicInteger activeThreadNum = new AtomicInteger(0);
+	private Queue<RequestPool> queue = Context.REQUEAT_POOL_QUEUE;
 	
-	private int size;
+	private volatile int size;
 	
-	private DefaultRequestPool() {
+	@SuppressWarnings("unchecked")
+	public DefaultRequestPool() {
 		Initializer.initCheck();
 		threadPool = new ThreadPoolExecutor(10, MAX_THREAD_NUM, 1, TimeUnit.MINUTES, 
 				new LinkedBlockingQueue<>(), (r) -> new Thread(r, "ThreadPool thread: "  + threadSequance.incrementAndGet()));
-	}
-	
-	enum SingletonHolder {
-		/**
-		 * instance
-		 */
-		INSTANCE; 
-		
-		private DefaultRequestPool pool;
-		
-		SingletonHolder() {
-			pool = new DefaultRequestPool();
-		}
-		
-		public DefaultRequestPool getRequestPool() {
-			return pool;
-		}
-	}
-	
-	public static DefaultRequestPool getInstace() {
-		return SingletonHolder.INSTANCE.getRequestPool();
+		requestSet = ConcurrentHashSet.SingletonHolder.INSTANCE.getSet();
+		queue.offer(this);
 	}
 	
 	@Override
@@ -84,8 +69,8 @@ public class DefaultRequestPool implements RequestPool {
 		String currentThreadName = Thread.currentThread().getName();
 		if(added) {
 			size = requestSet.size();
-			LogUtil.info("added request: {} for {} total {}, for {}", 
-					wrapper, currentThreadName, size + (size == 1 ? " request" : " requests"), currentThreadName);
+			LogUtil.info("added request: {} by {} total {}", 
+					wrapper, currentThreadName, size + (size == 1 ? " request" : " requests"));
 		}
 	}
 	
@@ -93,11 +78,11 @@ public class DefaultRequestPool implements RequestPool {
 	public void addRequestsByMap(Map<Client, CallBack> requestMap) {
 		checkBeforeAdd();
 		Objects.requireNonNull(requestMap, "requestMap is null");
-		String currentThreadName = Thread.currentThread().getName();
 		if(requestMap.isEmpty()) {
 			LogUtil.info("nothing to add");
 			return ;
 		}
+		String currentThreadName = Thread.currentThread().getName();
 		int mapSize = requestMap.size();
 		if(mapSize == 1) {
 			Entry<Client, CallBack> mapEntry = requestMap.entrySet().iterator().next();
@@ -112,9 +97,9 @@ public class DefaultRequestPool implements RequestPool {
 			boolean added = requestSet.addAll(wrapperList);
 			if(added) {
 				size = requestSet.size();
-				LogUtil.info("added {} for {}, total {} for {}", 
+				LogUtil.info("added {} by {}, total {} ", 
 						mapSize + (mapSize == 1 ? " request" : " requests") + ": " + 
-						wrapperList.toString(), currentThreadName, size + (size == 1 ? " request" : " requests"), currentThreadName);
+						wrapperList.toString(), currentThreadName, size + (size == 1 ? " request" : " requests"));
 			}
 		}
 	}
@@ -128,24 +113,22 @@ public class DefaultRequestPool implements RequestPool {
 			throw new RuntimeException("cannot add more requests, max active thread number allowed: " + MAX_THREAD_NUM
 					+ ", current thread number: " + curThreadNum);
 		}
-		requestSet = getRequestSet();
 		activeThreadNum.addAndGet(1);
 	}
 	
 	@Override
 	public void execute() {
-		String currentThreadName = Thread.currentThread().getName();
-		requestSet = getRequestSet();
-		size = requestSet.size();
-		if(isExecuting.get()) {
-			LogUtil.warn("abort execute for {}, request pool is executing, should not call execute more than once", currentThreadName);
-			return ;
-		}
 		if(threadPool.isShutdown() || threadPool.isTerminated() || isClosed) {
 			throw new IllegalStateException("pool is already shut down");
 		}
 		if(requestSet.isEmpty()) {
 			LogUtil.warn("nothing to execute");
+			return ;
+		}
+		size = requestSet.size();
+		String currentThreadName = Thread.currentThread().getName();
+		if(isExecuting.get()) {
+			LogUtil.warn("abort execute for {}, request pool is executing, should not call execute more than once", currentThreadName);
 			return ;
 		}
 		List<CompletableFuture<Void>> futureList = new ArrayList<>(size);
@@ -179,13 +162,14 @@ public class DefaultRequestPool implements RequestPool {
 	
 	@Override
 	public void cancel() {
-		threadPool.shutdown();
+		close();
 	}
 	
 	@Override
 	public void close() {
 		isClosed = true;
 		threadPool.shutdown();
+		queue.poll();
 	}
 	
 	@Override
@@ -201,11 +185,6 @@ public class DefaultRequestPool implements RequestPool {
 	@Override
 	public boolean isClosed() {
 		return isClosed;
-	}
-	
-	@SuppressWarnings("unchecked")
-	private Set<RequestWrapper> getRequestSet() {
-		return requestSet = ConcurrentHashSet.SingletonHolder.INSTANCE.getSet();
 	}
 	
 	private RequestWrapper wrapRequest(Request request, Client requestClient, CallBack callback) {

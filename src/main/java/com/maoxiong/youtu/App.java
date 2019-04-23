@@ -77,7 +77,7 @@ public class App {
     			.secretKey(SECRET_KEY)
     			.bulid();
     	initializer.init();
-    	DefaultRequestPool pool = DefaultRequestPool.getInstace();
+    	DefaultRequestPool pool = new DefaultRequestPool();
     	Request faceDetectRequest = new FaceDetectRequest();
     	FaceDectectRequestEntity faceRequestEntity = new FaceDectectRequestEntity();
 //    	faceRequestEntity.setFilePath("D://b.png");
@@ -270,10 +270,18 @@ public class App {
 			}
     		
     	};
-    	java.util.Map<Client, CallBack> map = new java.util.HashMap<>();
-    	map.put(invoiceDetectClient, invoiceDetectCallback);
-    	map.put(textToAudioClient, textToAudioCallback);
-    	pool.addRequestsByMap(map);
+    	Thread t1 = new Thread(() -> {
+    		java.util.Map<Client, CallBack> map = new java.util.HashMap<>();
+        	map.put(invoiceDetectClient, invoiceDetectCallback);
+        	map.put(textToAudioClient, textToAudioCallback);
+        	pool.addRequestsByMap(map);
+    	});
+    	t1.start();
+    	try {
+			t1.join();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
     	pool.execute();
     	pool.close();
     }

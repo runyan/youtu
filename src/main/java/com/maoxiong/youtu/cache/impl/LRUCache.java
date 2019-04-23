@@ -18,8 +18,8 @@ public class LRUCache<K, V> implements Cache<K, V> {
         MAX_CACHE_SIZE = cacheSize;
         int capacity = (int) Math.ceil(MAX_CACHE_SIZE / DEFAULT_LOAD_FACTOR) + 1;
         /*
-         * 第三个参数设置为true，代表linkedlist按访问顺序排序，可作为LRU缓存
-         * 第三个参数设置为false，代表按插入顺序排序，可作为FIFO缓存
+                          第三个参数设置为true，代表linkedlist按访问顺序排序，可作为LRU缓存
+                          第三个参数设置为false，代表按插入顺序排序，可作为FIFO缓存
          */
         map = Collections.synchronizedMap(new LinkedHashMap<K, V>(capacity, DEFAULT_LOAD_FACTOR, true) {
 			private static final long serialVersionUID = 8385908577610959752L;

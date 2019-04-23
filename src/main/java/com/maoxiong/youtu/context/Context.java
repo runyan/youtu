@@ -6,11 +6,14 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.maoxiong.youtu.pool.impl.DefaultRequestPool;
+import com.maoxiong.youtu.pool.RequestPool;
 
 /**
  * 
@@ -23,6 +26,8 @@ public class Context {
 	
 	private static final List<String> LEAGAL_KEYS = Arrays.asList(new String[] {"sign", "app_id", "savePath", "tempFilePath"});
 	
+	public static final Queue<RequestPool> REQUEAT_POOL_QUEUE = new ConcurrentLinkedQueue<>();
+	
 	public static void init(String sign, String appId) {
 		PARAM_MAP.put("sign", sign);
 		PARAM_MAP.put("app_id", appId);
@@ -31,7 +36,7 @@ public class Context {
 			@Override
 			public void run() {
 				Object pathObj = PARAM_MAP.get("tempFilePath");
-				String tempFilePath = null == pathObj ? "" : String.valueOf(pathObj);
+				String tempFilePath = Objects.isNull(pathObj) ? "" : String.valueOf(pathObj);
 				if(!StringUtils.isBlank(tempFilePath) && !StringUtils.equalsIgnoreCase(tempFilePath, "null")) {
 					try {
 						Files.deleteIfExists(Paths.get(tempFilePath));
@@ -39,9 +44,12 @@ public class Context {
 						e.printStackTrace();
 					}
 				}
-				DefaultRequestPool pool = DefaultRequestPool.getInstace();
-				if(!pool.isClosed()) {
-					pool.close();
+				if(!REQUEAT_POOL_QUEUE.isEmpty()) {
+					REQUEAT_POOL_QUEUE.forEach(pool -> {
+						if(!pool.isClosed()) {
+							pool.close();
+						}
+					});
 				}
 				PARAM_MAP.clear();
 			}

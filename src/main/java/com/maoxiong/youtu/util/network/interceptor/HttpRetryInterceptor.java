@@ -2,6 +2,7 @@ package com.maoxiong.youtu.util.network.interceptor;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.util.Objects;
 
 import com.maoxiong.youtu.util.LogUtil;
 
@@ -24,7 +25,6 @@ public class HttpRetryInterceptor implements Interceptor {
 		this.retryInterval = builder.retryInterval;
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	public Response intercept(Chain chain) {
 		Request request = chain.request();  
@@ -33,7 +33,7 @@ public class HttpRetryInterceptor implements Interceptor {
 		try {
         	response = chain.proceed(request); 
             synchronized (response) {
-            	while ((response == null || !response.isSuccessful()) && retryNum < executionCount) {  
+            	while (( Objects.isNull(response) || !response.isSuccessful()) && retryNum < executionCount) {  
             		LogUtil.warn("intercept Request is not successful - {}", (retryNum + 1));  
                     final long nextInterval = getRetryInterval();  
                     try {  

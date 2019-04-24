@@ -44,7 +44,7 @@ public class ClientFactory {
 		String clientPackage = requestPackage.replace("request", "client");
 		String clientClassName = clientPackage.concat(".").concat(simpleRequestClassName.replace("Request", "Client"));
 		try {
-			return (Client) Reflect.on(clientClassName).create()
+			return (Client) Reflect.onClass(clientClassName).create()
 					.call("setRequest", internalRequest).get();
 		} catch(Exception e) {
 			e.printStackTrace();

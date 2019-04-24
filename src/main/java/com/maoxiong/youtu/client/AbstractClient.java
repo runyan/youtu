@@ -28,7 +28,7 @@ public abstract class AbstractClient implements Client {
 	
 	@Override
 	public boolean equals(Object anotherClient) {
-		if(null == anotherClient) {
+		if(Objects.isNull(anotherClient)) {
 			return false;
 		}
 		if(!(anotherClient instanceof Client && anotherClient instanceof AbstractClient )) {
@@ -38,7 +38,7 @@ public abstract class AbstractClient implements Client {
 		String param = request.getParamsJsonString();
 		Client another = (Client) anotherClient;
 		Request anotherRequest = another.getRequest();
-		if(null == anotherRequest) {
+		if(Objects.isNull(anotherRequest)) {
 			return false;
 		}
 		String anotherUrl = anotherRequest.getRequestUrl();

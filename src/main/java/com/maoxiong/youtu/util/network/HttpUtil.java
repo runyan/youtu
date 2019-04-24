@@ -3,6 +3,7 @@ package com.maoxiong.youtu.util.network;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.UnknownHostException;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
@@ -50,7 +51,7 @@ public class HttpUtil {
 	public static void post(String url, String paramJson, RequestCallback callback, Class<? extends BaseResult> responseClass) {
 		String cacheKey = CacheKeyUtil.generateCacheKey(url, paramJson);
 		BaseResult resultEntity = RESULT_CACHE.getIfPresent(cacheKey);
-		if(null != resultEntity) {
+		if(!Objects.isNull(resultEntity)) {
 			LogUtil.info("get response from cache");
 			callback.onSuccess(true, "0", new Gson().toJson(resultEntity), resultEntity);
 		} else {

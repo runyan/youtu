@@ -1,8 +1,9 @@
 package com.maoxiong.youtu.pool.impl;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,15 +11,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentHashMap.KeySetView;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,9 +25,12 @@ import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
 import com.maoxiong.youtu.context.Context;
 import com.maoxiong.youtu.initializer.Initializer;
+import com.maoxiong.youtu.internal.datastructure.ConcurrentHashSet;
 import com.maoxiong.youtu.pool.RequestPool;
 import com.maoxiong.youtu.request.Request;
+import com.maoxiong.youtu.util.CommonUtil;
 import com.maoxiong.youtu.util.LogUtil;
+import com.maoxiong.youtu.util.UniqueIDUtil;
 
 /**
  * 
@@ -68,7 +68,8 @@ public class DefaultRequestPool implements RequestPool {
 		if(added) {
 			size = requestSet.size();
 			LogUtil.info("added request: {} by {} total {}", 
-					wrapper, currentThreadName, size + shouldRequestPlural(size));
+					requestClient.getClass().getSimpleName().replace("Client", "request").concat(String.valueOf(wrapper.getId())), 
+					currentThreadName, size + CommonUtil.singularOrPlural(size, " request", " requests"));
 		}
 	}
 	
@@ -102,14 +103,9 @@ public class DefaultRequestPool implements RequestPool {
 				size = requestSet.size();
 				String currentThreadName = Thread.currentThread().getName();
 				LogUtil.info("added {} by {}, total {} ", 
-						mapSize + (mapSize == 1 ? " request" : " requests") + ": " + 
-						wrapperList.toString(), currentThreadName, size + shouldRequestPlural(size));
+						mapSize + " requests", currentThreadName, size + CommonUtil.singularOrPlural(size, " request", " requests"));
 			}
 		}
-	}
-	
-	private String shouldRequestPlural(int num) {
-		return num == 1 ? " request" : " requests";
 	}
 	
 	private void checkBeforeAdd() {
@@ -136,28 +132,23 @@ public class DefaultRequestPool implements RequestPool {
 			return ;
 		}
 		size = requestSet.size();
-		Future<?> future;
-		for(RequestWrapper wrapper : requestSet) {
-			future = threadPool.submit(() -> {
-				try {
-					wrapper.getRequestClient().execute(wrapper.getCallback());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
-			try {
-				future.get(5, TimeUnit.SECONDS);
-			} catch (InterruptedException e) {
-				future.cancel(true);
-				LogUtil.error("execution interrupted: {}", wrapper.getRequest());
-			} catch (ExecutionException e) {
-				future.cancel(true);
-				LogUtil.error("execution exception: {}", wrapper.getRequest());
-			} catch (TimeoutException e) {
-				future.cancel(true);
-				LogUtil.error("execution timeout: {}", wrapper.getRequest());
-			}
+		CompletableFuture<Void> completableFuture;
+		List<CompletableFuture<Void>> futureList = new LinkedList<>();
+		Instant begin = Instant.now();
+		for (RequestWrapper request : requestSet) {
+			completableFuture = CompletableFuture.runAsync(new PooledTask(request.getRequestClient(), 
+					request.getCallback()), threadPool);
+			futureList.add(completableFuture);
 		}
+		completableFuture = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[requestSet.size()]));
+		completableFuture.whenComplete((v, u) -> {
+			if (Objects.isNull(u)) {
+				long timeUsed = ChronoUnit.MILLIS.between(begin, Instant.now());
+				LogUtil.info("total execute time {} s", timeUsed * 1.0 / 1000);
+			} else {
+				u.printStackTrace();
+			}
+		});
 		isExecuting.set(false);
 		requestSet.clear();
 	}
@@ -190,6 +181,7 @@ public class DefaultRequestPool implements RequestPool {
 	}
 	
 	private class RequestWrapper implements Comparable<RequestWrapper> {
+		private long id;
 		private Request request;
 		private Client requestClient;
 		private CallBack callback;
@@ -200,12 +192,17 @@ public class DefaultRequestPool implements RequestPool {
 		public RequestWrapper(Client requestClient, CallBack callback) {
 			Objects.requireNonNull(requestClient, "null requestClient");
 			Objects.requireNonNull(callback, "null callback");
+			this.id = new UniqueIDUtil(0, 0).nextId();
 			this.request = Optional.ofNullable(requestClient.getRequest())
 					.orElseThrow(() -> new RuntimeException("have not set request for client:" + requestClient.getClass().getName()));
 			this.requestClient = requestClient;
 			this.callback = callback;
 			this.requestUrl = request.getRequestUrl();
 			this.requestParam = request.getParamsJsonString();
+		}
+		
+		public long getId() {
+			return id;
 		}
 		
 		public Request getRequest() {
@@ -252,118 +249,4 @@ public class DefaultRequestPool implements RequestPool {
 		}
 	}
 	
-	@SuppressWarnings("hiding")
-	private static final class ConcurrentHashSet<RequestWrapper> implements Set<RequestWrapper> {
-
-		private final static Object PRESENT = new Object();
-		private final ConcurrentHashMap<RequestWrapper, Object> MAP;
-		
-		private ConcurrentHashSet() {
-			MAP = new ConcurrentHashMap<>(16);
-		}
-		
-		public enum SingletonHolder {
-			/**
-			 * instance
-			 */
-			INSTANCE; 
-			
-			@SuppressWarnings("rawtypes")
-			private ConcurrentHashSet set;
-			
-			SingletonHolder() {
-				set = new ConcurrentHashSet<>();
-			}
-			
-			@SuppressWarnings("rawtypes")
-			public ConcurrentHashSet getSet() {
-				return set;
-			}
-		}
-		
-		@Override
-		public int size() {
-			return MAP.size();
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return MAP.isEmpty();
-		}
-
-		@Override
-		public boolean contains(Object o) {
-			return MAP.containsKey(o);
-		}
-
-		@Override
-		public Iterator<RequestWrapper> iterator() {
-			return keySet().iterator();
-		}
-
-		@Override
-		public Object[] toArray() {
-			return keySet().toArray();
-		}
-
-		@Override
-		public <T> T[] toArray(T[] a) {
-			return keySet().toArray(a);
-		}
-
-		@Override
-		public boolean add(RequestWrapper e) {
-			return Objects.isNull(MAP.put(e, PRESENT));
-		}
-
-		@Override
-		public boolean remove(Object o) {
-			return MAP.remove(o, PRESENT);
-		}
-
-		@Override
-		public boolean containsAll(Collection<?> c) {
-			return keySet().containsAll(c);
-		}
-
-		@Override
-		public boolean addAll(Collection<? extends RequestWrapper> c) {
-			boolean modified = false;
-			Iterator<RequestWrapper> it = iterator();
-			while(it.hasNext()) {
-				modified = add(it.next());
-			}
-			return modified;
-		}
-
-		@Override
-		public boolean retainAll(Collection<?> c) {
-			return keySet().retainAll(c);
-		}
-
-		@Override
-		public boolean removeAll(Collection<?> c) {
-			Objects.requireNonNull(c);
-			boolean modified = false;
-			Iterator<?> itor = iterator();
-			while(itor.hasNext()) {
-				if(c.contains(itor.next())) {
-					itor.remove();
-					modified = true;
-				}
-			}
-			return modified;
-		}
-
-		@Override
-		public void clear() {
-			MAP.clear();
-		}
-		
-		private KeySetView<RequestWrapper, Object> keySet() {
-			return MAP.keySet();
-		}
-
-	}
-
 }

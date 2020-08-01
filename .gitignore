@@ -3,9 +3,10 @@ logs/
 target/
 *.config
 *.mp3
-.settings
+.settings/
 .project
 .classpath
 *.log
 *.zip
-
+.DS_Store
+Thumbs.db

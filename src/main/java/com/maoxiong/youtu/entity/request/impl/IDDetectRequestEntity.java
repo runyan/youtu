@@ -3,6 +3,11 @@ package com.maoxiong.youtu.entity.request.impl;
 import com.maoxiong.youtu.enums.CardType;
 import com.maoxiong.youtu.entity.request.AbstractRequestEntity;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class IDDetectRequestEntity extends AbstractRequestEntity {
 	
 	private CardType cardType;

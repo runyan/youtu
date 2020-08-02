@@ -1,5 +1,10 @@
 package com.maoxiong.youtu.enums;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public enum VoiceSpeed {
 
 	/**

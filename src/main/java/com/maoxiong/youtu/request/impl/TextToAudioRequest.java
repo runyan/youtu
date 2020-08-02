@@ -7,6 +7,11 @@ import com.maoxiong.youtu.constants.Constants;
 import com.maoxiong.youtu.entity.request.impl.TextToAudioRequestEntity;
 import com.maoxiong.youtu.request.Request;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class TextToAudioRequest implements Request {
 	
 	private String url;
@@ -46,5 +51,5 @@ public class TextToAudioRequest implements Request {
 	public boolean shouldSaveToFile() {
 		return shouldSaveToFile;
 	}
-
+	
 }

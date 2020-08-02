@@ -3,6 +3,11 @@ package com.maoxiong.youtu.entity.result.impl;
 import com.google.gson.annotations.SerializedName;
 import com.maoxiong.youtu.entity.result.BaseResult;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class IDDetectResult extends BaseResult {
 	
 	private String name;

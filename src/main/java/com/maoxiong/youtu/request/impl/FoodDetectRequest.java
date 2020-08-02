@@ -9,6 +9,11 @@ import com.maoxiong.youtu.entity.request.impl.FoodDetectRequestEntity;
 import com.maoxiong.youtu.request.Request;
 import com.maoxiong.youtu.util.CacheKeyUtil;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class FoodDetectRequest implements Request {
 	
 	private String url;

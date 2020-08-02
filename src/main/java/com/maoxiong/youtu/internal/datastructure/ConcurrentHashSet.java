@@ -7,7 +7,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentHashMap.KeySetView;
 
-
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class ConcurrentHashSet<T> implements Set<T> {
 
 	private final static Object PRESENT = new Object();

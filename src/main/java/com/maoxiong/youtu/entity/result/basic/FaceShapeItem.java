@@ -1,9 +1,14 @@
-package com.maoxiong.youtu.entity;
+package com.maoxiong.youtu.entity.result.basic;
 
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class FaceShapeItem {
 
 	@SerializedName(value = "face_profile")

@@ -1,5 +1,10 @@
 package com.maoxiong.youtu.util;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class RandomUtil {
 
 	public RandomUtil() {

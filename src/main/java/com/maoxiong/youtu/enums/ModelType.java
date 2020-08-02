@@ -1,5 +1,10 @@
 package com.maoxiong.youtu.enums;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public enum ModelType {
 
 	FEMALE(0), FEMALE_ENGLISH(1), MALE(2), XIDAO(6);
@@ -14,6 +19,7 @@ public enum ModelType {
 		return modeType;
 	}
 	
+	@Override
 	public String toString() {
 		return String.valueOf(modeType);
 	}

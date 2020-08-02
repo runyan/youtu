@@ -3,6 +3,11 @@ package com.maoxiong.youtu.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class LogUtil {
 
     /**

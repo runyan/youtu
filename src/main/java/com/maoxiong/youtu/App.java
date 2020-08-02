@@ -4,10 +4,10 @@ import java.util.List;
 
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
-import com.maoxiong.youtu.entity.FaceItem;
-import com.maoxiong.youtu.entity.InvoiceItem;
-import com.maoxiong.youtu.entity.Item;
-import com.maoxiong.youtu.entity.ItemCor;
+import com.maoxiong.youtu.entity.result.basic.FaceItem;
+import com.maoxiong.youtu.entity.result.basic.InvoiceItem;
+import com.maoxiong.youtu.entity.result.basic.Item;
+import com.maoxiong.youtu.entity.result.basic.ItemCor;
 import com.maoxiong.youtu.entity.request.impl.CreditCradDetectRequestEntity;
 import com.maoxiong.youtu.entity.request.impl.FaceDectectRequestEntity;
 import com.maoxiong.youtu.entity.request.impl.FoodDetectRequestEntity;

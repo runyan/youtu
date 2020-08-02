@@ -1,5 +1,12 @@
 package com.maoxiong.youtu.util;
 
+import java.time.Instant;
+
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class UniqueIDUtil {
 
 	// ==============================Fields===========================================
@@ -121,7 +128,8 @@ public class UniqueIDUtil {
      * @return 当前时间(毫秒)
      */
     protected long timeGen() {
-        return System.currentTimeMillis();
+    	Instant now = Instant.now();
+        return now.toEpochMilli();
     }
 
 }

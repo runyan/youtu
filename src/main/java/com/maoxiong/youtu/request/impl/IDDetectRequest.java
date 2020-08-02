@@ -7,6 +7,11 @@ import com.maoxiong.youtu.constants.Constants;
 import com.maoxiong.youtu.entity.request.impl.IDDetectRequestEntity;
 import com.maoxiong.youtu.request.Request;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class IDDetectRequest implements Request {
 
 	private String url;
@@ -24,7 +29,7 @@ public class IDDetectRequest implements Request {
 		synchronized (paramMap) {
 			paramMap.put("url", entity.getFileUrl());
 			paramMap.put("image", entity.getFilePath());
-			paramMap.put("card_type", Integer.parseInt(entity.getCardType().toString()));
+			paramMap.put("card_type", entity.getCardType().getCardTypeValue());
 			paramMap.put("border_check_flag", entity.getBorderCheckFlag());
 		}
 		return PARAM_UTIL.buildParamJson(paramMap);
@@ -34,5 +39,5 @@ public class IDDetectRequest implements Request {
 	public String getRequestUrl() {
 		return this.url;
 	}
-
+	
 }

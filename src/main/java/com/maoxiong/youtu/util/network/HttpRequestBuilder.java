@@ -13,6 +13,11 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class HttpRequestBuilder {
 	
 	private HttpRequestBuilder() {
@@ -41,14 +46,14 @@ public class HttpRequestBuilder {
 			URL targetUrl = new URL(url);
 			String host = targetUrl.getHost();
 			String protocol = targetUrl.getProtocol();
-			if(!StringUtils.equalsIgnoreCase(protocol, Constants.HTTPS)) {
-				throw new IllegalArgumentException("wrong protocol, must be: " + Constants.HTTPS);
+			if(!StringUtils.equalsIgnoreCase(protocol, Constants.PROTOCOL)) {
+				throw new IllegalArgumentException("wrong protocol, must be: " + Constants.PROTOCOL);
 			}
 			if(!StringUtils.equalsIgnoreCase(host, Constants.HOST)) {
 				throw new IllegalArgumentException("wrong host, must be: " + Constants.HOST);
 			}
 			MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-			RequestBody body = RequestBody.create(JSON, paramJson);
+			RequestBody body = RequestBody.create(paramJson, JSON);
 			Headers.Builder headersBuilder = new Headers.Builder();
 			Headers headers = headersBuilder
 					.add("Host", Constants.HOST)
@@ -60,7 +65,6 @@ public class HttpRequestBuilder {
 					.build();
 			Request request = new Request.Builder()
 		            .url(targetUrl)
-		            .removeHeader("User-Agent")
 		            .headers(headers)
 		            .post(body)
 		            .build();

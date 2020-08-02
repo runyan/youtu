@@ -16,16 +16,16 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
 		
-		<joor.version>0.9.11</joor.version>
-		<caffeine.version>2.7.0</caffeine.version>
-		<okhttp.version>3.14.1</okhttp.version>
-		<gson.version>2.8.5</gson.version>
-		<commons.lang.version>3.9</commons.lang.version>
-		<log4j.version>2.11.2</log4j.version>
-		<thumbnailator.verision>0.4.8</thumbnailator.verision>
+		<joor.version>0.9.13</joor.version>
+		<caffeine.version>2.8.5</caffeine.version>
+		<okhttp.version>4.8.0</okhttp.version>
+		<gson.version>2.8.6</gson.version>
+		<commons.lang.version>3.11</commons.lang.version>
+		<log4j.version>2.13.3</log4j.version>
+		<thumbnailator.verision>0.4.11</thumbnailator.verision>
 		<logback.version>1.2.3</logback.version>
 		<junit.version>4.12</junit.version>
-		<maven.compiler.version>3.8.0</maven.compiler.version>
+		<maven.compiler.version>3.8.1</maven.compiler.version>
 	</properties>
 
 	<dependencies>

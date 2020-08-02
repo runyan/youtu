@@ -7,6 +7,11 @@ import java.util.function.Function;
 
 import com.maoxiong.youtu.cache.Cache;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class LRUCache<K, V> implements Cache<K, V> {
 	
     private final int MAX_CACHE_SIZE;

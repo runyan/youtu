@@ -6,6 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.maoxiong.youtu.request.Request;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public abstract class AbstractClient implements Client {
 	
 	protected Request request;

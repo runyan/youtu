@@ -5,9 +5,14 @@ import org.apache.commons.lang3.StringUtils;
 import com.maoxiong.youtu.context.Context;
 import com.maoxiong.youtu.util.SignUtil;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class Initializer {
 	
-	private static volatile boolean isInited = false;
+	private static volatile boolean initailized;
 	
 	private String QQ;
 	private String appId;
@@ -24,7 +29,7 @@ public class Initializer {
 	}
 	
 	public void init() {
-		if(isInited) {
+		if(initailized) {
 			throw new IllegalStateException("should not init more than once");
 		}
 		if(StringUtils.isBlank(QQ)) {
@@ -40,7 +45,7 @@ public class Initializer {
 			throw new IllegalArgumentException("need secretKey");
 		}
 		Context.init(SignUtil.getSign(QQ, appId, secretId, secretKey), appId);
-		isInited = true;
+		initailized = true;
 	}
 	
 	public static void initCheck() {

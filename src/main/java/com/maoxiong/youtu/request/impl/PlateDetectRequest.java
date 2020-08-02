@@ -9,6 +9,11 @@ import com.maoxiong.youtu.entity.request.impl.PlateDetectRequestEntity;
 import com.maoxiong.youtu.request.Request;
 import com.maoxiong.youtu.util.CacheKeyUtil;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class PlateDetectRequest implements Request {
 
 	private String url;

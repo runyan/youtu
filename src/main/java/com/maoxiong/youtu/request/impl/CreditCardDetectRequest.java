@@ -9,6 +9,11 @@ import com.maoxiong.youtu.entity.request.impl.CreditCradDetectRequestEntity;
 import com.maoxiong.youtu.request.Request;
 import com.maoxiong.youtu.util.CacheKeyUtil;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class CreditCardDetectRequest implements Request {
 	
 	private String url;

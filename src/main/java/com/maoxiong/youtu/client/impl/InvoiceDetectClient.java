@@ -7,6 +7,11 @@ import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.entity.result.impl.InvoiceDetectResult;
 import com.maoxiong.youtu.util.network.HttpUtil;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public final class InvoiceDetectClient extends AbstractClient {
 
 	@Override

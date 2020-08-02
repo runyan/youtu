@@ -12,7 +12,7 @@ import com.maoxiong.youtu.request.Request;
 public interface Client {
 
 	/**
-	 * 执行请求
+	   * 执行请求
 	 * @param callback 回调
 	 * @throws Exception 异常
 	 */

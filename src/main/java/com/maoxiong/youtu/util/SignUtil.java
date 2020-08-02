@@ -1,5 +1,6 @@
 package com.maoxiong.youtu.util;
 
+import java.time.Instant;
 import java.util.Base64;
 
 /**
@@ -14,7 +15,7 @@ public class SignUtil {
 	}
 	
 	public static String getSign(String userQQ, String appID, String secretID, String secretKey) {  
-		long tnowTimes = System.currentTimeMillis() / 1000;  
+		long tnowTimes = Instant.now().toEpochMilli() / 1000;  
         long enowTimes = tnowTimes + 2592000;  
         String rRandomNum = RandomUtil.genRandomNum(10);  
         String param = "u=" + userQQ + "&a=" + appID + "&k=" + secretID + "&e="  

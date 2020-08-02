@@ -15,6 +15,11 @@ import com.maoxiong.youtu.util.CacheKeyUtil;
 import com.maoxiong.youtu.util.FileUtil;
 import com.maoxiong.youtu.util.ParamUtil;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class InvoiceDetectRequest implements Request {
 	
 	private InvoiceDetectRequestEntity params;

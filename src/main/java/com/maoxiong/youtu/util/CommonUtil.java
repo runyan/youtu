@@ -1,5 +1,10 @@
 package com.maoxiong.youtu.util;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class CommonUtil {
 
 	public static String singularOrPlural(int num, String singular, String plural) {

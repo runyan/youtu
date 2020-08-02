@@ -5,6 +5,11 @@ import java.io.UnsupportedEncodingException;
 import com.maoxiong.youtu.enums.ModelType;
 import com.maoxiong.youtu.enums.VoiceSpeed;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class TextToAudioRequestEntity {
 
 	private String text;

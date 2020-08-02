@@ -2,6 +2,11 @@ package com.maoxiong.youtu.entity.request.impl;
 
 import com.maoxiong.youtu.entity.request.AbstractRequestEntity;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class CreditCradDetectRequestEntity extends AbstractRequestEntity {
 
 	@Override

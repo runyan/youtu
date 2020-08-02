@@ -1,5 +1,10 @@
-package com.maoxiong.youtu.entity;
+package com.maoxiong.youtu.entity.result.basic;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class Word {
 
 	private String character;

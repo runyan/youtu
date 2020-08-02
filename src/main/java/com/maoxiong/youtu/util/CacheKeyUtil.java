@@ -2,6 +2,11 @@ package com.maoxiong.youtu.util;
 
 import java.util.Objects;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class CacheKeyUtil {
 	
 	private CacheKeyUtil() {

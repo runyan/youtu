@@ -10,7 +10,12 @@ import com.maoxiong.youtu.client.Client;
 import com.maoxiong.youtu.request.Request;
 import com.maoxiong.youtu.util.UniqueIDUtil;
 
-public class RequestWrapper implements Comparable<RequestWrapper> {
+/**
+ * 
+ * @author yanrun
+ *
+ */
+class RequestWrapper implements Comparable<RequestWrapper> {
 
 	private long id;
 	private Request request;

@@ -5,6 +5,11 @@ import java.util.Objects;
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 class PooledTask implements Runnable {
 
 	private Client client;

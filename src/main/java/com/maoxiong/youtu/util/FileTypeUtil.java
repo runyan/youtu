@@ -8,6 +8,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class FileTypeUtil {
 
 	// 缓存文件头信息-文件头信息

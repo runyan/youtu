@@ -1,7 +1,12 @@
-package com.maoxiong.youtu.entity;
+package com.maoxiong.youtu.entity.result.basic;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public class FaceItem {
 
 	@SerializedName(value = "face_id")

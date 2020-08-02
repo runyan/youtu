@@ -19,7 +19,7 @@ public class ClientFactory {
 	
 	private static final Cache<String, Client> REQUEST_CACHE = new CaffeineCache<>();
 	
-	private static Request internalRequest;
+	private static Request requestDelegate;
 
 	private ClientFactory() {
 		throw new RuntimeException("no constructor for you");
@@ -27,14 +27,14 @@ public class ClientFactory {
 	
 	public static Client constructClient(Request request) {
 		Objects.requireNonNull(request, "cannot create client for null request");
-		internalRequest = request;
+		requestDelegate = request;
 		return createClientByRequest();
 	}
 	
 	private static Client createClientByRequest() {
-		Class<?> requestClass = internalRequest.getClass();
+		Class<?> requestClass = requestDelegate.getClass();
 		String requestClassName = requestClass.getName();
-		String cacheKey = CacheKeyUtil.generateCacheKey(requestClassName, internalRequest.getRequestUrl(), internalRequest.getParamsJsonString());
+		String cacheKey = CacheKeyUtil.generateCacheKey(requestClassName, requestDelegate.getRequestUrl(), requestDelegate.getParamsJsonString());
 		return REQUEST_CACHE.get(cacheKey, k -> createClientByReflect(requestClass, requestClassName));
 	}
 	
@@ -45,7 +45,7 @@ public class ClientFactory {
 		String clientClassName = clientPackage.concat(".").concat(simpleRequestClassName.replace("Request", "Client"));
 		try {
 			return (Client) Reflect.onClass(clientClassName).create()
-					.call("setRequest", internalRequest).get();
+					.call("setRequest", requestDelegate).get();
 		} catch(Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("cannot create client due to: " + e.getMessage());

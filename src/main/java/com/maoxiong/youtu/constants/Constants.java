@@ -1,8 +1,14 @@
 package com.maoxiong.youtu.constants;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 public interface Constants {
 
-	String HTTPS = "https";
+	String PROTOCOL = "https";
 	String HOST = "api.youtu.qq.com";
-	String BASE_URL = HTTPS + "://" + HOST + "/youtu/";
+	String PATH = "/youtu/";
+	String BASE_URL = PROTOCOL + "://" + HOST + PATH;
 }

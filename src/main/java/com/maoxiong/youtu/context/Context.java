@@ -24,7 +24,7 @@ public class Context {
 
 	private static final Map<String, Object> PARAM_MAP = new ConcurrentHashMap<>(8);
 	
-	private static final List<String> LEAGAL_KEYS = Arrays.asList(new String[] {"sign", "app_id", "savePath", "tempFilePath"});
+	private static final List<String> LEAGAL_KEYS = Arrays.asList(new String[] {"sign", "app_id", "savePath", "tempFilePath", "properties"});
 	
 	public static final Queue<RequestPool> REQUEAT_POOL_QUEUE = new ConcurrentLinkedQueue<>();
 	

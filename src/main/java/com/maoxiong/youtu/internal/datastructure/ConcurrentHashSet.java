@@ -13,27 +13,12 @@ public class ConcurrentHashSet<T> implements Set<T> {
 	private final static Object PRESENT = new Object();
 	private final ConcurrentHashMap<T, Object> MAP;
 	
-	private ConcurrentHashSet() {
-		MAP = new ConcurrentHashMap<>(16);
+	public ConcurrentHashSet() {
+		this(16);
 	}
 	
-	public enum SingletonHolder {
-		/**
-		 * instance
-		 */
-		INSTANCE; 
-		
-		@SuppressWarnings("rawtypes")
-		private ConcurrentHashSet set;
-		
-		SingletonHolder() {
-			set = new ConcurrentHashSet<>();
-		}
-		
-		@SuppressWarnings("rawtypes")
-		public ConcurrentHashSet getSet() {
-			return set;
-		}
+	public ConcurrentHashSet(int capacity) {
+		MAP = new ConcurrentHashMap<>(capacity);
 	}
 	
 	@Override

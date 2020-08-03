@@ -15,7 +15,6 @@ import com.maoxiong.youtu.entity.request.impl.IDDetectRequestEntity;
 import com.maoxiong.youtu.entity.request.impl.InvoiceDetectRequestEntity;
 import com.maoxiong.youtu.entity.request.impl.PlateDetectRequestEntity;
 import com.maoxiong.youtu.entity.request.impl.TextToAudioRequestEntity;
-import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.entity.result.impl.CorDetectResult;
 import com.maoxiong.youtu.entity.result.impl.FaceDetectResult;
 import com.maoxiong.youtu.entity.result.impl.FoodDetectResult;
@@ -84,7 +83,7 @@ public class App {
     	faceRequestEntity.setFileUrl("https://pic4.zhimg.com/v2-334f7a126585e75a87c7a982cae77532_im.jpg");
     	faceDetectRequest.setParams(faceRequestEntity);
     	Client faceDetectClient = ClientFactory.constructClient(faceDetectRequest);
-    	CallBack faceDetectCallBack = new CallBack() {
+    	CallBack<FaceDetectResult> faceDetectCallBack = new CallBack<FaceDetectResult>() {
 
 			@Override
 			public void onFail(Exception e) {
@@ -93,11 +92,9 @@ public class App {
 			}
 
 			@Override
-			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result,
-					Class<? extends BaseResult> responseClass) {
+			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, FaceDetectResult result) {
 				LogUtil.info(isSuccess + " " + errorCode + " " + errorMsg);
-				FaceDetectResult detectResult = (FaceDetectResult) result;
-				List<FaceItem> faceList = detectResult.getFaceItemList();
+				List<FaceItem> faceList = result.getFaceItemList();
 				faceList.forEach(face -> {
 					LogUtil.info("Gender: " + face.getGender());
 					LogUtil.info("Beauty: " + face.getBeauty());
@@ -112,12 +109,10 @@ public class App {
     	requestEntity.setFileUrl("https://pic3.zhimg.com/80/v2-8352df032c855c3967467d4101c2fe6b_hd.jpg");
     	foodDetectRequest.setParams(requestEntity);
     	Client client = ClientFactory.constructClient(foodDetectRequest);
-    	CallBack foodDetectCallBack = new CallBack() {
+    	CallBack<FoodDetectResult> foodDetectCallBack = new CallBack<FoodDetectResult>() {
 
 			@Override
-			public void onSuccess(boolean isSuccess, String errorCode, String responseString, BaseResult responseEntity,
-					Class<? extends BaseResult> responseClass) {
-				FoodDetectResult result = (FoodDetectResult) responseEntity;
+			public void onSuccess(boolean isSuccess, String errorCode, String responseString, FoodDetectResult result) {
 				LogUtil.info(result.isFood() + " " + result.getFoodConfidence() * 100);
 			}
 
@@ -135,14 +130,12 @@ public class App {
 //    	entity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528098767113&di=296907c60c43165203dc18db7c7c26b8&imgtype=0&src=http%3A%2F%2Fkameng.com%2Fuploadfile%2Fcard%2F64636055b42d4d73660faba5fb018c40.jpg");
     	creditCardDetectRequest.setParams(entity);
     	Client creditCardDetectClient = ClientFactory.constructClient(creditCardDetectRequest);
-    	CallBack creditCardDetectCallback = new CallBack() {
+    	CallBack<CorDetectResult> creditCardDetectCallback = new CallBack<CorDetectResult>() {
 
 			@Override
-			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result,
-					Class<? extends BaseResult> responseClass) {
+			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, CorDetectResult result) {
 				LogUtil.info(isSuccess + " " + errorCode + " " + errorMsg);
-				CorDetectResult creditCardDetectResult = (CorDetectResult) result;
-				List<Item> itemList = creditCardDetectResult.getItems();
+				List<Item> itemList = result.getItems();
 				itemList.forEach(item -> {
 					LogUtil.info("item: " + item.getItem());
 					LogUtil.info("itemString: " + item.getItemString());
@@ -166,14 +159,12 @@ public class App {
     	plateDetectRequestEntity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528277425993&di=c08a42bd6f25f31c49c1cb34d247f1b3&imgtype=jpg&src=http%3A%2F%2Fimg3.imgtn.bdimg.com%2Fit%2Fu%3D1593700053%2C2642362344%26fm%3D214%26gp%3D0.jpg");
     	plateDetectRequest.setParams(plateDetectRequestEntity);
     	Client plateDetectClient = ClientFactory.constructClient(plateDetectRequest);
-    	CallBack plateDetectCallback = new CallBack() {
+    	CallBack<CorDetectResult> plateDetectCallback = new CallBack<CorDetectResult>() {
 
 			@Override
-			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result,
-					Class<? extends BaseResult> responseClass) {
+			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, CorDetectResult result) {
 				LogUtil.info(isSuccess + " " + errorCode + " " + errorMsg);
-				CorDetectResult creditCardDetectResult = (CorDetectResult) result;
-				List<Item> itemList = creditCardDetectResult.getItems();
+				List<Item> itemList = result.getItems();
 				itemList.forEach(item -> {
 					LogUtil.info("item: " + item.getItem());
 					LogUtil.info("itemString: " + item.getItemString());
@@ -198,21 +189,19 @@ public class App {
 //    	iDDetectEntity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528361604248&di=7b0023003f834c7a75b2ece009d680ea&imgtype=jpg&src=http%3A%2F%2Fimg2.imgtn.bdimg.com%2Fit%2Fu%3D30879982%2C1711011546%26fm%3D214%26gp%3D0.jpg");
     	iDDetectRequest.setParams(iDDetectEntity);
     	Client iDDetectClient = ClientFactory.constructClient(iDDetectRequest);
-    	CallBack iDDetectCallback = new CallBack() {
+    	CallBack<IDDetectResult> iDDetectCallback = new CallBack<IDDetectResult>() {
 
 			@Override
-			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result,
-					Class<? extends BaseResult> responseClass) {
-				IDDetectResult idCard = (IDDetectResult) result;
-				LogUtil.info("authority: " + idCard.getAuthority());
-				LogUtil.info("validDate: " + idCard.getValidDate());
-				LogUtil.info("id: " + idCard.getId());
-				LogUtil.info("name: " + idCard.getName());
-				LogUtil.info("address: " + idCard.getAddress());
-				LogUtil.info("sex: " + idCard.getSex());
-				LogUtil.info("nation: " + idCard.getNation());
-				LogUtil.info("birth: " + idCard.getBirth());
-				LogUtil.info("watermaskStatus: " + idCard.getWatermaskStatus());
+			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, IDDetectResult result) {
+				LogUtil.info("authority: " + result.getAuthority());
+				LogUtil.info("validDate: " + result.getValidDate());
+				LogUtil.info("id: " + result.getId());
+				LogUtil.info("name: " + result.getName());
+				LogUtil.info("address: " + result.getAddress());
+				LogUtil.info("sex: " + result.getSex());
+				LogUtil.info("nation: " + result.getNation());
+				LogUtil.info("birth: " + result.getBirth());
+				LogUtil.info("watermaskStatus: " + result.getWatermaskStatus());
 			}
 
 			@Override
@@ -230,11 +219,10 @@ public class App {
     	text2AudioRequestEntity.setText("腾讯优图，让未来在你身边");
     	text2AudioRequest.setParams(text2AudioRequestEntity);
     	Client textToAudioClient = ClientFactory.constructClient(text2AudioRequest);
-    	CallBack textToAudioCallback = new CallBack() {
+    	CallBack<TextToAudioResult> textToAudioCallback = new CallBack<TextToAudioResult>() {
 
 			@Override
-			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result,
-					Class<? extends BaseResult> responseClass) {
+			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, TextToAudioResult result) {
 				TextToAudioResult voice = (TextToAudioResult) result;
 				LogUtil.info("voice: " + voice.getVoice());
 			}
@@ -246,17 +234,16 @@ public class App {
 			}
     		
     	};
+    	pool.addRequest(textToAudioClient, textToAudioCallback);
     	Request invoiceDetectRequest = new InvoiceDetectRequest();
     	InvoiceDetectRequestEntity invoiceDetectRequestEntity = new InvoiceDetectRequestEntity();
     	invoiceDetectRequestEntity.setFileUrl("D://invoice.jpg");
     	invoiceDetectRequest.setParams(invoiceDetectRequestEntity);
     	Client invoiceDetectClient = ClientFactory.constructClient(invoiceDetectRequest);
-    	CallBack invoiceDetectCallback = new CallBack() {
+    	CallBack<InvoiceDetectResult> invoiceDetectCallback = new CallBack<InvoiceDetectResult>() {
 
 			@Override
-			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result,
-					Class<? extends BaseResult> responseClass) {
-				InvoiceDetectResult resultEntity = (InvoiceDetectResult) result;
+			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, InvoiceDetectResult resultEntity) {
 				List<InvoiceItem>  itemList = resultEntity.getItems();
 				itemList.forEach(item -> {
 					LogUtil.info("item:" + item);
@@ -268,20 +255,9 @@ public class App {
 				LogUtil.error(e.getMessage());
 				e.printStackTrace();
 			}
-    		
+
     	};
-    	Thread t1 = new Thread(() -> {
-    		java.util.Map<Client, CallBack> map = new java.util.HashMap<>();
-        	map.put(invoiceDetectClient, invoiceDetectCallback);
-        	map.put(textToAudioClient, textToAudioCallback);
-        	pool.addRequestsByMap(map);
-    	});
-    	t1.start();
-    	try {
-			t1.join();
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
+    	pool.addRequest(invoiceDetectClient, invoiceDetectCallback);
     	pool.execute();
 //    	pool.close();
     }

@@ -12,6 +12,7 @@ import com.maoxiong.youtu.util.network.HttpUtil;
  * @author yanrun
  *
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public final class FaceDetectClient extends AbstractClient {
 	
 	@Override
@@ -21,7 +22,7 @@ public final class FaceDetectClient extends AbstractClient {
 
 			@Override
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult responseEntity) {
-				callback.onSuccess(isSuccess, responseEntity.getErrorCode(), responseEntity.getErrorMsg(), responseEntity, responseEntity.getClass());
+				callback.onSuccess(isSuccess, responseEntity.getErrorCode(), responseEntity.getErrorMsg(), responseEntity);
 			}
 
 			@Override

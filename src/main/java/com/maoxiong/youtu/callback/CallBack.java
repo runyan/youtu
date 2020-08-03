@@ -7,7 +7,7 @@ import com.maoxiong.youtu.entity.result.BaseResult;
  * @author yanrun
  *
  */
-public interface CallBack {
+public interface CallBack<T extends BaseResult> {
 
 	/**
 	 * 成功回调
@@ -15,9 +15,9 @@ public interface CallBack {
 	 * @param errorCode 返回码
 	 * @param errorMsg 返回信息
 	 * @param result 返回实体
-	 * @param responseClass 返回实体类
+
 	 */
-	void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result, Class<? extends BaseResult> responseClass);
+	void onSuccess(boolean isSuccess, String errorCode, String errorMsg, T result);
 	/**
 	 * 失败回调
 	 * @param e 异常

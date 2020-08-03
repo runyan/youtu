@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
+import com.maoxiong.youtu.entity.result.BaseResult;
 
 /**
  * 
@@ -13,9 +14,9 @@ import com.maoxiong.youtu.client.Client;
 class PooledTask implements Runnable {
 
 	private Client client;
-	private CallBack callback;
+	private CallBack<? extends BaseResult> callback;
 	
-	public PooledTask(Client client, CallBack callback) {
+	public PooledTask(Client client, CallBack<? extends BaseResult> callback) {
 		Objects.requireNonNull(client);
 		Objects.requireNonNull(callback);
 		this.client = client;

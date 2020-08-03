@@ -1,5 +1,7 @@
 package com.maoxiong.youtu.client.impl;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.callback.RequestCallback;
 import com.maoxiong.youtu.client.AbstractClient;
@@ -12,6 +14,7 @@ import com.maoxiong.youtu.util.network.HttpUtil;
  * @author yanrun
  *
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public final class IDDetectClient extends AbstractClient {
 
 	@Override
@@ -25,7 +28,7 @@ public final class IDDetectClient extends AbstractClient {
 				if(!isSuccess) {
 					callback.onFail(new RuntimeException("server error"));
 				}
-				callback.onSuccess("0".equals(errorCode), errorCode, result.getErrorMsg(), result, result.getClass());
+				callback.onSuccess(StringUtils.equals("0", errorCode), errorCode, result.getErrorMsg(), result);
 			}
 
 			@Override

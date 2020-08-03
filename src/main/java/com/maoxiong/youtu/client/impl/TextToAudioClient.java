@@ -2,6 +2,8 @@ package com.maoxiong.youtu.client.impl;
 
 import java.util.Base64;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.callback.RequestCallback;
 import com.maoxiong.youtu.client.AbstractClient;
@@ -16,6 +18,7 @@ import com.maoxiong.youtu.util.network.HttpUtil;
  * @author yanrun
  *
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public final class TextToAudioClient extends AbstractClient {
 	
 	private boolean shouldSaveToFile;
@@ -36,7 +39,7 @@ public final class TextToAudioClient extends AbstractClient {
 				if(shouldSaveToFile) {
 					textToAudioResult.setVoice(FileUtil.genFileFromBytes(Base64.getDecoder().decode(textToAudioResult.getVoice()), ".mp3"));
 				}
-				callback.onSuccess("0".equals(errorCode), errorCode, result.getErrorMsg(), textToAudioResult, textToAudioResult.getClass());
+				callback.onSuccess(StringUtils.equals("0", errorCode), errorCode, result.getErrorMsg(), textToAudioResult);
 			}
 
 			@Override

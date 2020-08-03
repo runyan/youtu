@@ -75,7 +75,7 @@ public class HttpUtil {
 			String msg = resultEntity.getErrorMsg();
 			if(isSuccessful) {
 				RESULT_CACHE.set(cacheKey, resultEntity);
-				callback.onSuccess(isSuccessful, msgCode, responseBodyStr, gson.fromJson(responseBodyStr, responseClass));
+				callback.onSuccess(isSuccessful, msgCode, responseBodyStr, resultEntity);
 			} else {
 				callback.onFail(new RuntimeException(msg));
 			}

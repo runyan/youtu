@@ -9,7 +9,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.maoxiong.youtu.context.Context;
+import com.maoxiong.youtu.cache.impl.LRUCache;
 
 /**
  * 
@@ -18,20 +18,21 @@ import com.maoxiong.youtu.context.Context;
  */
 public class PropertyUtil {
 	
+	private static final LRUCache<String, Properties> PROPERTY_CACHE = new LRUCache<>(64);
 	private static final String DEFAULT_PROPERTIES_FILE_PATH = "/youtu.properties";
 	
 	public static Properties loadProperties(String propertiesFilePath) {
 		String path = StringUtils.isEmpty(propertiesFilePath) ? DEFAULT_PROPERTIES_FILE_PATH : propertiesFilePath;
-		Properties props = (Properties) Context.get("properties");
+		Properties props = PROPERTY_CACHE.getIfPresent(propertiesFilePath);
 		if (Objects.isNull(props)) {
 			props = new Properties();
 			try (InputStream inputStream = PropertyUtil.class.getResourceAsStream(path)) {
 				BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
 	            props.load(bf);
-	            Context.set("properties", props);
+	            PROPERTY_CACHE.set(propertiesFilePath, props);
 	            return props;
 			} catch(NullPointerException e) {
-				LogUtil.error("Properties file: {} does not exists", "classpath://youtu.propreties");
+				LogUtil.error("Properties file: {} does not exists", propertiesFilePath);
 	        } catch (IOException e){
 	            LogUtil.error(e.getMessage());
 	        }
@@ -42,9 +43,7 @@ public class PropertyUtil {
 	}
 	
 	public static String getPropertyValue(Properties props, String propertyKey) {
-		if (Objects.isNull(props)) {
-			return null;
-		}
+		Objects.requireNonNull(props);
 		return props.getProperty(propertyKey, null);
 	}
 	

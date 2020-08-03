@@ -8,12 +8,16 @@ import com.maoxiong.youtu.cache.Cache;
 
 public class CaffeineCache<K, V> implements Cache<K, V> {
 	
-	private com.github.benmanes.caffeine.cache.Cache<K, V> cache;
+	private final com.github.benmanes.caffeine.cache.Cache<K, V> cache;
 	
 	public CaffeineCache() {
+		this(600, 16);
+	}
+	
+	public CaffeineCache(long durationInSeconds, int maximumSize) {
 		cache = Caffeine.newBuilder()
-				.expireAfterWrite(10, TimeUnit.MINUTES)
-			    .maximumSize(16)
+				.expireAfterWrite(durationInSeconds, TimeUnit.SECONDS)
+			    .maximumSize(maximumSize)
 			    .build();
 	}
 

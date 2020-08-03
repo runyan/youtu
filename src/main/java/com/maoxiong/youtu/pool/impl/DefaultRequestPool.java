@@ -2,11 +2,8 @@ package com.maoxiong.youtu.pool.impl;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -20,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
 import com.maoxiong.youtu.context.Context;
+import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.initializer.Initializer;
 import com.maoxiong.youtu.internal.datastructure.ConcurrentHashSet;
 import com.maoxiong.youtu.pool.RequestPool;
@@ -55,54 +53,6 @@ public class DefaultRequestPool implements RequestPool {
 		Context.REQUEAT_POOL_QUEUE.offer(this);
 	}
 	
-	@Override
-	public void addRequest(Client requestClient, CallBack callback) {
-		checkBeforeAdd();
-		RequestWrapper wrapper = new RequestWrapper(requestClient, callback);
-		boolean added = requestSet.add(wrapper);
-		String currentThreadName = Thread.currentThread().getName();
-		if(added) {
-			int size = requestSet.size();
-			LogUtil.info("added request: {} by {} total {}", 
-					requestClient.getClass().getSimpleName().replace("Client", "request").concat(String.valueOf(wrapper.getId())), 
-					currentThreadName, size + CommonUtil.singularOrPlural(size, " request", " requests"));
-		}
-	}
-	
-	@Override
-	public void addRequestsByMap(Map<Client, CallBack> requestMap) {
-		Objects.requireNonNull(requestMap, "requestMap is null");
-		if(requestMap.isEmpty()) {
-			LogUtil.info("nothing to add");
-			return ;
-		}
-		int mapSize = requestMap.size();
-		if(mapSize == 1) {
-			Entry<Client, CallBack> mapEntry = requestMap.entrySet().iterator().next();
-			addRequest(mapEntry.getKey(), mapEntry.getValue());
-		} else {
-			checkBeforeAdd();
-			boolean added = false;
-			List<RequestWrapper> wrapperList = new ArrayList<>(mapSize);
-			Set<Entry<Client, CallBack>> entrySet = requestMap.entrySet();
-			Client client;
-			CallBack callback;
-			RequestWrapper wrapper;
-			for(Entry<Client, CallBack> entry : entrySet) {
-				client = entry.getKey();
-				callback = entry.getValue();
-				wrapper = new RequestWrapper(client, callback);
-				wrapperList.add(wrapper);
-				added = requestSet.add(wrapper);
-			}
-			if(added) {
-				int size = requestSet.size();
-				String currentThreadName = Thread.currentThread().getName();
-				LogUtil.info("added {} by {}, total {} ", 
-						mapSize + " requests", currentThreadName, size + CommonUtil.singularOrPlural(size, " request", " requests"));
-			}
-		}
-	}
 	
 	private void checkBeforeAdd() {
 		if(isClosed) {
@@ -179,6 +129,20 @@ public class DefaultRequestPool implements RequestPool {
 	@Override
 	public boolean isClosed() {
 		return isClosed;
+	}
+
+	@Override
+	public void addRequest(Client requestClient, CallBack<? extends BaseResult> callback) {
+		checkBeforeAdd();
+		RequestWrapper wrapper = new RequestWrapper(requestClient, callback);
+		boolean added = requestSet.add(wrapper);
+		String currentThreadName = Thread.currentThread().getName();
+		if(added) {
+			int size = requestSet.size();
+			LogUtil.info("added request: {} by {} total {}", 
+					requestClient.getClass().getSimpleName().replace("Client", "request").concat(String.valueOf(wrapper.getId())), 
+					currentThreadName, size + CommonUtil.singularOrPlural(size, " request", " requests"));
+		}
 	}
 	
 }

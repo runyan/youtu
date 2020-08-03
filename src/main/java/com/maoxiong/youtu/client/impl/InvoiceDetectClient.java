@@ -12,6 +12,7 @@ import com.maoxiong.youtu.util.network.HttpUtil;
  * @author yanrun
  *
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public final class InvoiceDetectClient extends AbstractClient {
 
 	@Override
@@ -21,7 +22,7 @@ public final class InvoiceDetectClient extends AbstractClient {
 
 			@Override
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result) {
-				callback.onSuccess(isSuccess, errorCode, errorMsg, result, result.getClass());
+				callback.onSuccess(isSuccess, errorCode, errorMsg, result);
 			}
 
 			@Override

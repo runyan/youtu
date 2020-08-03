@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
+import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.request.Request;
 import com.maoxiong.youtu.util.UniqueIDUtil;
 
@@ -20,12 +21,12 @@ class RequestWrapper implements Comparable<RequestWrapper> {
 	private long id;
 	private Request request;
 	private Client requestClient;
-	private CallBack callback;
+	private CallBack<? extends BaseResult> callback;
 	
 	private String requestUrl;
 	private String requestParam;
 	
-	public RequestWrapper(Client requestClient, CallBack callback) {
+	public RequestWrapper(Client requestClient, CallBack<? extends BaseResult> callback) {
 		Objects.requireNonNull(requestClient, "null requestClient");
 		Objects.requireNonNull(callback, "null callback");
 		this.id = new UniqueIDUtil(0, 0).nextId();
@@ -47,7 +48,7 @@ class RequestWrapper implements Comparable<RequestWrapper> {
 	public Client getRequestClient() {
 		return requestClient;
 	}
-	public CallBack getCallback() {
+	public CallBack<? extends BaseResult> getCallback() {
 		return callback;
 	}
 	

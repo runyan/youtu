@@ -39,5 +39,5 @@ public class IDDetectRequest implements Request {
 	public String getRequestUrl() {
 		return this.url;
 	}
-	
+
 }

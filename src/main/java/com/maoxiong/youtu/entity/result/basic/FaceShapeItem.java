@@ -18,13 +18,13 @@ public class FaceShapeItem {
 	@SerializedName(value = "right_eye")
 	private List<Point> rightEye;
 	@SerializedName(value = "left_eyebrow")
-	private List<Point > leftEyebrow;
+	private List<Point> leftEyebrow;
 	@SerializedName(value = "right_eyebrow")
 	private List<Point> rightEyebrow;
 	private List<Point> nose;
 	private List<Point> mouth;
 	private List<Point> pupil;
-	
+
 	public List<Point> getLeftEye() {
 		return leftEye;
 	}
@@ -88,6 +88,5 @@ public class FaceShapeItem {
 	public void setFaceProfile(List<Point> faceProfile) {
 		this.faceProfile = faceProfile;
 	}
-	
-	
+
 }

@@ -1,4 +1,4 @@
-package com.maoxiong.youtu.util;
+package com.maoxiong.youtu.util.configfile;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.maoxiong.youtu.cache.impl.LRUCache;
+import com.maoxiong.youtu.util.LogUtil;
 
 /**
  * 
@@ -18,21 +18,23 @@ import com.maoxiong.youtu.cache.impl.LRUCache;
  */
 public class PropertyUtil {
 	
-	private static final LRUCache<String, Properties> PROPERTY_CACHE = new LRUCache<>(64);
-	private static final String DEFAULT_PROPERTIES_FILE_PATH = "/youtu.properties";
+	private PropertyUtil() {
+		throw new RuntimeException("no constructor for you");
+	}
 	
 	public static Properties loadProperties(String propertiesFilePath) {
-		String path = StringUtils.isEmpty(propertiesFilePath) ? DEFAULT_PROPERTIES_FILE_PATH : propertiesFilePath;
-		Properties props = PROPERTY_CACHE.getIfPresent(propertiesFilePath);
+		String path = StringUtils.isEmpty(propertiesFilePath) ? ConfigFileUtil.DEFAULT_PROPERTIES_CONFIG_FILE_PATH : propertiesFilePath;
+		Properties props = ConfigFileUtil.PROPERTY_CACHE.getIfPresent(propertiesFilePath);
 		if (Objects.isNull(props)) {
 			props = new Properties();
 			try (InputStream inputStream = PropertyUtil.class.getResourceAsStream(path)) {
 				BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
 	            props.load(bf);
-	            PROPERTY_CACHE.set(propertiesFilePath, props);
+	            ConfigFileUtil.PROPERTY_CACHE.set(propertiesFilePath, props);
 	            return props;
 			} catch(NullPointerException e) {
 				LogUtil.error("Properties file: {} does not exists", propertiesFilePath);
+//				throw new RuntimeException("Properties file: " + propertiesFilePath + " does not exists");
 	        } catch (IOException e){
 	            LogUtil.error(e.getMessage());
 	        }

@@ -18,9 +18,9 @@ import com.maoxiong.youtu.util.network.HttpUtil;
  * @author yanrun
  *
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public final class TextToAudioClient extends AbstractClient {
-	
+
 	private boolean shouldSaveToFile;
 
 	@Override
@@ -28,26 +28,29 @@ public final class TextToAudioClient extends AbstractClient {
 		super.execute(callback);
 		TextToAudioRequest textToAudioRequest = (TextToAudioRequest) request;
 		shouldSaveToFile = textToAudioRequest.shouldSaveToFile();
-		HttpUtil.post(textToAudioRequest.getRequestUrl(), textToAudioRequest.getParamsJsonString(), new RequestCallback() {
+		HttpUtil.post(textToAudioRequest.getRequestUrl(), textToAudioRequest.getParamsJsonString(),
+				new RequestCallback() {
 
-			@Override
-			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result) {
-				if(!isSuccess) {
-					callback.onFail(new RuntimeException("server error"));
-				}
-				TextToAudioResult textToAudioResult = (TextToAudioResult) result;
-				if(shouldSaveToFile) {
-					textToAudioResult.setVoice(FileUtil.genFileFromBytes(Base64.getDecoder().decode(textToAudioResult.getVoice()), ".mp3"));
-				}
-				callback.onSuccess(StringUtils.equals("0", errorCode), errorCode, result.getErrorMsg(), textToAudioResult);
-			}
+					@Override
+					public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result) {
+						if (!isSuccess) {
+							callback.onFail(new RuntimeException("server error"));
+						}
+						TextToAudioResult textToAudioResult = (TextToAudioResult) result;
+						if (shouldSaveToFile) {
+							textToAudioResult.setVoice(FileUtil.genFileFromBytes(
+									Base64.getDecoder().decode(textToAudioResult.getVoice()), ".mp3"));
+						}
+						callback.onSuccess(StringUtils.equals("0", errorCode), errorCode, result.getErrorMsg(),
+								textToAudioResult);
+					}
 
-			@Override
-			public void onFail(Exception e) {
-				callback.onFail(e);
-			}
-			
-		}, TextToAudioResult.class);
+					@Override
+					public void onFail(Exception e) {
+						callback.onFail(e);
+					}
+
+				}, TextToAudioResult.class);
 	}
 
 }

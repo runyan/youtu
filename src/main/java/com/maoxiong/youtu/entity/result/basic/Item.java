@@ -16,30 +16,37 @@ public class Item {
 	private double itemConf;
 	@SerializedName(value = "itemcoord")
 	private ItemCor cor;
-	
+
 	public String getItem() {
 		return item;
 	}
+
 	public void setItem(String item) {
 		this.item = item;
 	}
+
 	public String getItemString() {
 		return itemString;
 	}
+
 	public void setItemString(String itemString) {
 		this.itemString = itemString;
 	}
+
 	public double getItemConf() {
 		return itemConf;
 	}
+
 	public void setItemConf(double itemConf) {
 		this.itemConf = itemConf;
 	}
+
 	public ItemCor getCor() {
 		return cor;
 	}
+
 	public void setCor(ItemCor cor) {
 		this.cor = cor;
 	}
-	
+
 }

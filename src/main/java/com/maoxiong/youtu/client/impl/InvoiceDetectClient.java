@@ -12,7 +12,7 @@ import com.maoxiong.youtu.util.network.HttpUtil;
  * @author yanrun
  *
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public final class InvoiceDetectClient extends AbstractClient {
 
 	@Override
@@ -29,7 +29,7 @@ public final class InvoiceDetectClient extends AbstractClient {
 			public void onFail(Exception e) {
 				callback.onFail(e);
 			}
-			
+
 		}, InvoiceDetectResult.class);
 	}
 

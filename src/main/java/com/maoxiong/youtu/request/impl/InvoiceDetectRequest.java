@@ -21,16 +21,16 @@ import com.maoxiong.youtu.util.ParamUtil;
  *
  */
 public class InvoiceDetectRequest implements Request {
-	
+
 	private InvoiceDetectRequestEntity params;
 	private String url;
-	
+
 	private static Cache<String, String> cache = new LRUCache<>(16);
 
 	@Override
 	public void setParams(Object requestEntity) {
 		this.params = (InvoiceDetectRequestEntity) requestEntity;
-		this.url = Constants.BASE_URL + "ocrapi/invoiceocr"; 
+		this.url = Constants.BASE_URL + "ocrapi/invoiceocr";
 	}
 
 	@Override
@@ -39,14 +39,14 @@ public class InvoiceDetectRequest implements Request {
 		String url = params.getFileUrl();
 		String cacheKey = CacheKeyUtil.generateCacheKey(className, url);
 		String jsonStr = cache.getIfPresent(cacheKey);
-		if(StringUtils.isBlank(jsonStr)) {
+		if (StringUtils.isBlank(jsonStr)) {
 			byte[] imgData = FileUtil.readFileByBytes(this.params.getFileUrl());
-	    	String image = Base64.getEncoder().encodeToString(imgData);
+			String image = Base64.getEncoder().encodeToString(imgData);
 			Map<String, Object> paramMap = new HashMap<>(4);
 			paramMap.put("image", image);
 			jsonStr = ParamUtil.getInstance().buildParamJson(paramMap);
 			cache.set(cacheKey, jsonStr);
-		} 
+		}
 		return jsonStr;
 	}
 

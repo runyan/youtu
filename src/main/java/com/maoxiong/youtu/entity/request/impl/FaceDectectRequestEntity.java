@@ -29,5 +29,4 @@ public class FaceDectectRequestEntity extends AbstractRequestEntity {
 		this.fileUrl = url;
 	}
 
-	
 }

@@ -15,10 +15,10 @@ import com.maoxiong.youtu.util.CacheKeyUtil;
  *
  */
 public class FoodDetectRequest implements Request {
-	
+
 	private String url;
 	private FoodDetectRequestEntity entity;
-	
+
 	private Cache<String, String> cache = new LRUCache<>(16);
 
 	@Override
@@ -33,10 +33,10 @@ public class FoodDetectRequest implements Request {
 		String url = entity.getFileUrl();
 		String cacheKey = CacheKeyUtil.generateCacheKey(filePath, url);
 		String jsonStr = cache.getIfPresent(cacheKey);
-		if(StringUtils.isBlank(jsonStr)) {
+		if (StringUtils.isBlank(jsonStr)) {
 			jsonStr = PARAM_UTIL.buildParamJson(filePath, url);
 			cache.set(cacheKey, jsonStr);
-		} 
+		}
 		return jsonStr;
 	}
 

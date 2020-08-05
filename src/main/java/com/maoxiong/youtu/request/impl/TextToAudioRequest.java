@@ -13,16 +13,16 @@ import com.maoxiong.youtu.request.Request;
  *
  */
 public class TextToAudioRequest implements Request {
-	
+
 	private String url;
 	private TextToAudioRequestEntity entity;
 	private Map<String, Object> paramMap = new HashMap<>(8);
 	private boolean shouldSaveToFile;
-	
+
 	public TextToAudioRequest() {
 		this(false);
 	}
-	
+
 	public TextToAudioRequest(boolean shouldSaveToFile) {
 		this.shouldSaveToFile = shouldSaveToFile;
 	}
@@ -47,9 +47,9 @@ public class TextToAudioRequest implements Request {
 	public String getRequestUrl() {
 		return url;
 	}
-	
+
 	public boolean shouldSaveToFile() {
 		return shouldSaveToFile;
 	}
-	
+
 }

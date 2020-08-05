@@ -17,7 +17,7 @@ import okio.Buffer;
  *
  */
 public class LogInterceptor implements Interceptor {
-	
+
 	@Override
 	public Response intercept(Chain chain) throws IOException {
 		Request request = chain.request();
@@ -25,7 +25,7 @@ public class LogInterceptor implements Interceptor {
 		long responseTime = response.receivedResponseAtMillis() - response.sentRequestAtMillis();
 		String requestString = "";
 		RequestBody requestBody = request.body();
-		if(null != requestBody) {
+		if (null != requestBody) {
 			Buffer buffer = new Buffer();
 			requestBody.writeTo(buffer);
 			requestString = buffer.readUtf8();
@@ -35,16 +35,16 @@ public class LogInterceptor implements Interceptor {
 		int responseCode = response.code();
 		String requestUrl = request.url().toString();
 		String responseBodyStr = responseBody.string();
-		if(response.isSuccessful()) {
+		if (response.isSuccessful()) {
 			if (LogUtil.isDebugEnabled()) {
 				LogUtil.debug("[--> {} {} {} ({}ms)]", requestMethod, responseCode, requestUrl, responseTime);
 				LogUtil.debug("[--> body: {}]", requestString);
 				LogUtil.debug("[<-- resp: {}]\n", responseBodyStr);
-            }
+			}
 		} else {
-			LogUtil.warn("[--> {} {} {} ({}ms)]", requestMethod, responseCode, requestUrl, responseTime);
-			LogUtil.warn("[--> body: {}]", requestString);
-			LogUtil.warn("[<-- resp: {}]\n", responseBodyStr);
+			LogUtil.info("[--> {} {} {} ({}ms)]", requestMethod, responseCode, requestUrl, responseTime);
+			LogUtil.info("[--> body: {}]", requestString);
+			LogUtil.info("[<-- resp: {}]\n", responseBodyStr);
 		}
 		return response;
 	}

@@ -18,5 +18,5 @@ public class TextToAudioResult extends BaseResult {
 	public void setVoice(String voice) {
 		this.voice = voice;
 	}
-	
+
 }

@@ -23,6 +23,7 @@
 		<commons.lang.version>3.11</commons.lang.version>
 		<log4j.version>2.13.3</log4j.version>
 		<thumbnailator.verision>0.4.11</thumbnailator.verision>
+		<snakeyaml.version>1.26</snakeyaml.version>
 		<logback.version>1.2.3</logback.version>
 		<junit.version>4.12</junit.version>
 		<maven.compiler.version>3.8.1</maven.compiler.version>
@@ -58,6 +59,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${commons.lang.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.yaml</groupId>
+		    <artifactId>snakeyaml</artifactId>
+		    <version>${snakeyaml.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>ch.qos.logback</groupId>

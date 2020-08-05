@@ -28,6 +28,5 @@ public class PlateDetectRequestEntity extends AbstractRequestEntity {
 	public void setFileUrl(String url) {
 		this.fileUrl = url;
 	}
-	
 
 }

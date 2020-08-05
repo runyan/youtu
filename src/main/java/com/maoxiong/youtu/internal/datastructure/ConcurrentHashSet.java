@@ -16,15 +16,15 @@ public class ConcurrentHashSet<T> implements Set<T> {
 
 	private final static Object PRESENT = new Object();
 	private final ConcurrentHashMap<T, Object> MAP;
-	
+
 	public ConcurrentHashSet() {
 		this(16);
 	}
-	
+
 	public ConcurrentHashSet(int capacity) {
 		MAP = new ConcurrentHashMap<>(capacity);
 	}
-	
+
 	@Override
 	public int size() {
 		return MAP.size();
@@ -75,7 +75,7 @@ public class ConcurrentHashSet<T> implements Set<T> {
 	public boolean addAll(Collection<? extends T> c) {
 		boolean modified = false;
 		Iterator<T> it = iterator();
-		while(it.hasNext()) {
+		while (it.hasNext()) {
 			modified = add(it.next());
 		}
 		return modified;
@@ -91,8 +91,8 @@ public class ConcurrentHashSet<T> implements Set<T> {
 		Objects.requireNonNull(c);
 		boolean modified = false;
 		Iterator<?> itor = iterator();
-		while(itor.hasNext()) {
-			if(c.contains(itor.next())) {
+		while (itor.hasNext()) {
+			if (c.contains(itor.next())) {
 				itor.remove();
 				modified = true;
 			}
@@ -104,7 +104,7 @@ public class ConcurrentHashSet<T> implements Set<T> {
 	public void clear() {
 		MAP.clear();
 	}
-	
+
 	private KeySetView<T, Object> keySet() {
 		return MAP.keySet();
 	}

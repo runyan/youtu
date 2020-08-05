@@ -18,9 +18,9 @@ public class PlateDetectRequest implements Request {
 
 	private String url;
 	private PlateDetectRequestEntity entity;
-	
+
 	private Cache<String, String> cache = new LRUCache<>(16);
-	
+
 	@Override
 	public void setParams(Object requestEntity) {
 		this.entity = (PlateDetectRequestEntity) requestEntity;
@@ -33,10 +33,10 @@ public class PlateDetectRequest implements Request {
 		String url = entity.getFileUrl();
 		String cacheKey = CacheKeyUtil.generateCacheKey(filePath, url);
 		String jsonStr = cache.getIfPresent(cacheKey);
-		if(StringUtils.isBlank(jsonStr)) {
+		if (StringUtils.isBlank(jsonStr)) {
 			jsonStr = PARAM_UTIL.buildParamJson(filePath, url);
 			cache.set(cacheKey, jsonStr);
-		} 
+		}
 		return jsonStr;
 	}
 

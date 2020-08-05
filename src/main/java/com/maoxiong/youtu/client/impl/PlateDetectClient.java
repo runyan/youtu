@@ -14,7 +14,7 @@ import com.maoxiong.youtu.util.network.HttpUtil;
  * @author yanrun
  *
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public final class PlateDetectClient extends AbstractClient {
 
 	@Override
@@ -24,7 +24,7 @@ public final class PlateDetectClient extends AbstractClient {
 
 			@Override
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult result) {
-				if(!isSuccess) {
+				if (!isSuccess) {
 					callback.onFail(new RuntimeException("server error"));
 				}
 				callback.onSuccess(StringUtils.equals("0", errorCode), errorCode, result.getErrorMsg(), result);
@@ -34,7 +34,7 @@ public final class PlateDetectClient extends AbstractClient {
 			public void onFail(Exception e) {
 				callback.onFail(e);
 			}
-			
+
 		}, CorDetectResult.class);
 	}
 

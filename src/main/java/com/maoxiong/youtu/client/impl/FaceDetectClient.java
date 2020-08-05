@@ -12,9 +12,9 @@ import com.maoxiong.youtu.util.network.HttpUtil;
  * @author yanrun
  *
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public final class FaceDetectClient extends AbstractClient {
-	
+
 	@Override
 	public void execute(CallBack callback) throws Exception {
 		super.execute(callback);
@@ -22,14 +22,15 @@ public final class FaceDetectClient extends AbstractClient {
 
 			@Override
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, BaseResult responseEntity) {
-				callback.onSuccess(isSuccess, responseEntity.getErrorCode(), responseEntity.getErrorMsg(), responseEntity);
+				callback.onSuccess(isSuccess, responseEntity.getErrorCode(), responseEntity.getErrorMsg(),
+						responseEntity);
 			}
 
 			@Override
 			public void onFail(Exception e) {
 				callback.onFail(e);
 			}
-			
+
 		}, FaceDetectResult.class);
 	}
 

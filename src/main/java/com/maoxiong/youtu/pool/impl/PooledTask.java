@@ -15,7 +15,7 @@ class PooledTask implements Runnable {
 
 	private Client client;
 	private CallBack<? extends BaseResult> callback;
-	
+
 	public PooledTask(Client client, CallBack<? extends BaseResult> callback) {
 		Objects.requireNonNull(client);
 		Objects.requireNonNull(callback);

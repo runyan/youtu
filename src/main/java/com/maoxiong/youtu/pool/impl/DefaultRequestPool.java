@@ -30,59 +30,58 @@ import com.maoxiong.youtu.util.LogUtil;
  *
  */
 public class DefaultRequestPool implements RequestPool {
-	
+
 	private final AtomicInteger threadSequance = new AtomicInteger();
 	private final ExecutorService threadPool;
 	private final Set<RequestWrapper> requestSet;
 	private final boolean shouldShutdownAfterExecution;
-	
+
 	private volatile boolean isClosed;
 	private volatile AtomicBoolean isExecuting = new AtomicBoolean(false);
-	
+
 	public DefaultRequestPool() {
 		this(true);
 	}
-	
+
 	public DefaultRequestPool(boolean shouldShutdownAfterExecution) {
 		Initializer.initCheck();
-		this.threadPool = new ThreadPoolExecutor(10, 50, 1, TimeUnit.MINUTES, 
-				new LinkedBlockingQueue<>(50), 
-				(r) -> new Thread(r, "ThreadPool thread: "  + threadSequance.incrementAndGet()));
+		this.threadPool = new ThreadPoolExecutor(10, 50, 1, TimeUnit.MINUTES, new LinkedBlockingQueue<>(50),
+				(r) -> new Thread(r, "ThreadPool thread: " + threadSequance.incrementAndGet()));
 		this.requestSet = new ConcurrentHashSet<>();
 		this.shouldShutdownAfterExecution = shouldShutdownAfterExecution;
 		Context.REQUEAT_POOL_QUEUE.offer(this);
 	}
-	
-	
+
 	private void checkBeforeAdd() {
-		if(isClosed) {
+		if (isClosed) {
 			throw new IllegalStateException("cannot add request to a closed pool");
 		}
-		if(isExecuting.get()) {
+		if (isExecuting.get()) {
 			throw new RuntimeException("cannot add request to an executing pool");
 		}
 	}
-	
+
 	@Override
 	public void execute() {
-		if(threadPool.isShutdown() || threadPool.isTerminated() || isClosed) {
+		if (threadPool.isShutdown() || threadPool.isTerminated() || isClosed) {
 			throw new IllegalStateException("pool is already shut down");
 		}
-		if(requestSet.isEmpty()) {
+		if (requestSet.isEmpty()) {
 			LogUtil.warn("nothing to execute");
-			return ;
+			return;
 		}
 		String currentThreadName = Thread.currentThread().getName();
-		if(isExecuting.get()) {
-			LogUtil.warn("abort execute for {}, request pool is executing, should not call execute more than once", currentThreadName);
-			return ;
+		if (isExecuting.get()) {
+			LogUtil.warn("abort execute for {}, request pool is executing, should not call execute more than once",
+					currentThreadName);
+			return;
 		}
 		CompletableFuture<Void> completableFuture;
 		List<CompletableFuture<Void>> futureList = new LinkedList<>();
 		Instant begin = Instant.now();
 		for (RequestWrapper request : requestSet) {
-			completableFuture = CompletableFuture.runAsync(new PooledTask(request.getRequestClient(), 
-					request.getCallback()), threadPool);
+			completableFuture = CompletableFuture
+					.runAsync(new PooledTask(request.getRequestClient(), request.getCallback()), threadPool);
 			futureList.add(completableFuture);
 		}
 		completableFuture = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[requestSet.size()]));
@@ -100,12 +99,12 @@ public class DefaultRequestPool implements RequestPool {
 			close();
 		}
 	}
-	
+
 	@Override
 	public void cancel() {
 		threadPool.shutdown();
 	}
-	
+
 	@Override
 	public void close() {
 		if (!threadPool.isShutdown() || !threadPool.isTerminated()) {
@@ -115,7 +114,7 @@ public class DefaultRequestPool implements RequestPool {
 		Context.REQUEAT_POOL_QUEUE.poll();
 		isExecuting.set(false);
 	}
-	
+
 	@Override
 	public int size() {
 		return requestSet.size();
@@ -125,7 +124,7 @@ public class DefaultRequestPool implements RequestPool {
 	public boolean isEmpty() {
 		return requestSet.isEmpty();
 	}
-	
+
 	@Override
 	public boolean isClosed() {
 		return isClosed;
@@ -137,12 +136,13 @@ public class DefaultRequestPool implements RequestPool {
 		RequestWrapper wrapper = new RequestWrapper(requestClient, callback);
 		boolean added = requestSet.add(wrapper);
 		String currentThreadName = Thread.currentThread().getName();
-		if(added) {
+		if (added) {
 			int size = requestSet.size();
-			LogUtil.info("added request: {} by {} total {}", 
-					requestClient.getClass().getSimpleName().replace("Client", "request").concat(String.valueOf(wrapper.getId())), 
+			LogUtil.info("added request: {} by {} total {}",
+					requestClient.getClass().getSimpleName().replace("Client", "request")
+							.concat(String.valueOf(wrapper.getId())),
 					currentThreadName, size + CommonUtil.singularOrPlural(size, " request", " requests"));
 		}
 	}
-	
+
 }

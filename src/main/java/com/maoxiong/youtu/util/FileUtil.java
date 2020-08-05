@@ -26,14 +26,12 @@ import net.coobird.thumbnailator.Thumbnails;
  *
  */
 public class FileUtil {
-	
-	private static final Cache<String, byte[]> BYTE_CACHE = Caffeine.newBuilder()
-			.expireAfterWrite(10, TimeUnit.MINUTES)
-		    .maximumSize(16)
-		    .build();
-	
+
+	private static final Cache<String, byte[]> BYTE_CACHE = Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES)
+			.maximumSize(16).build();
+
 	private static final int MB = 1024 * 1024;
-	
+
 	private FileUtil() {
 		throw new RuntimeException("no constructor for you");
 	}
@@ -44,20 +42,20 @@ public class FileUtil {
 	public static byte[] readFileByBytes(String filePath) {
 		return BYTE_CACHE.get(filePath, k -> readFile(filePath));
 	}
-	
+
 	private static byte[] readFile(String filePath) {
 		try {
 			Path path = Paths.get(filePath);
 			if (Files.notExists(path)) {
 				throw new FileNotFoundException(filePath);
 			}
-			if(Files.isDirectory(path) || !Files.isReadable(path)) {
+			if (Files.isDirectory(path) || !Files.isReadable(path)) {
 				throw new IllegalArgumentException("file " + filePath + " is either a directory or is not readdable");
 			}
 			long fileSize = Files.size(path);
 			long fileSizeInMB = fileSize / MB;
 			String tempFilePath = "";
-			if(fileSizeInMB >= 1) {
+			if (fileSizeInMB >= 1) {
 				LogUtil.warn("{}'s size exceeds 1MB, compress file", filePath);
 				String fileType = FileTypeUtil.getFileType(filePath);
 				String fileName = System.getProperty("user.dir").concat(File.separator).concat("temp")
@@ -81,7 +79,7 @@ public class FileUtil {
 				e.printStackTrace();
 				throw new RuntimeException("cannot convert file: " + filePath + " to bytes");
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -89,10 +87,8 @@ public class FileUtil {
 	/**
 	 * 将二进制数组转换成文件
 	 * 
-	 * @param src
-	 *            源二进制数组
-	 * @param suffix
-	 *            文件后缀
+	 * @param src    源二进制数组
+	 * @param suffix 文件后缀
 	 * @return 文件路径
 	 */
 	public static String genFileFromBytes(byte[] src, String suffix) {

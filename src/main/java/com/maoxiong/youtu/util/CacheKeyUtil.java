@@ -8,7 +8,7 @@ import java.util.Objects;
  *
  */
 public class CacheKeyUtil {
-	
+
 	private CacheKeyUtil() {
 		throw new RuntimeException("no constructor for you");
 	}

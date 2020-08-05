@@ -13,20 +13,20 @@ public class FoodDetectRequestEntity extends AbstractRequestEntity {
 	public String getFileUrl() {
 		return fileUrl;
 	}
-	
+
 	@Override
 	public void setFileUrl(String url) {
 		this.fileUrl = url;
 	}
-	
+
 	@Override
 	public String getFilePath() {
 		return filePath;
 	}
-	
+
 	@Override
 	public void setFilePath(String path) {
 		this.filePath = path;
 	}
-	
+
 }

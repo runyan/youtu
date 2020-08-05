@@ -15,10 +15,10 @@ import com.maoxiong.youtu.util.CacheKeyUtil;
  *
  */
 public class FaceDetectRequest implements Request {
-	
+
 	private FaceDectectRequestEntity params;
 	private String url;
-	
+
 	private static Cache<String, String> cache = new LRUCache<>(16);
 
 	@Override
@@ -33,13 +33,13 @@ public class FaceDetectRequest implements Request {
 		String url = params.getFileUrl();
 		String cacheKey = CacheKeyUtil.generateCacheKey(filePath, url);
 		String jsonStr = cache.getIfPresent(cacheKey);
-		if(StringUtils.isBlank(jsonStr)) {
+		if (StringUtils.isBlank(jsonStr)) {
 			jsonStr = PARAM_UTIL.buildParamJson(filePath, url);
 			cache.set(cacheKey, jsonStr);
-		} 
+		}
 		return jsonStr;
 	}
-	
+
 	@Override
 	public String getRequestUrl() {
 		return this.url;

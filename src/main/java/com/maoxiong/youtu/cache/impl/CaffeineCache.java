@@ -7,18 +7,16 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.maoxiong.youtu.cache.Cache;
 
 public class CaffeineCache<K, V> implements Cache<K, V> {
-	
+
 	private final com.github.benmanes.caffeine.cache.Cache<K, V> cache;
-	
+
 	public CaffeineCache() {
 		this(600, 16);
 	}
-	
+
 	public CaffeineCache(long durationInSeconds, int maximumSize) {
-		cache = Caffeine.newBuilder()
-				.expireAfterWrite(durationInSeconds, TimeUnit.SECONDS)
-			    .maximumSize(maximumSize)
-			    .build();
+		cache = Caffeine.newBuilder().expireAfterWrite(durationInSeconds, TimeUnit.SECONDS).maximumSize(maximumSize)
+				.build();
 	}
 
 	@Override

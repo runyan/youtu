@@ -11,7 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class HmacSha1 {
 
 	private static final String HMAC_SHA1 = "HmacSHA1";
-	
+
 	private HmacSha1() {
 		throw new RuntimeException("no constructor for you");
 	}
@@ -19,8 +19,7 @@ public class HmacSha1 {
 	public static byte[] getSignature(String data, String key) {
 		try {
 			Mac mac = Mac.getInstance(HMAC_SHA1);
-			SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(),
-					mac.getAlgorithm());
+			SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), mac.getAlgorithm());
 			mac.init(signingKey);
 			return mac.doFinal(data.getBytes());
 		} catch (Exception e) {
@@ -28,5 +27,5 @@ public class HmacSha1 {
 			throw new RuntimeException("Sign error");
 		}
 	}
-	
+
 }

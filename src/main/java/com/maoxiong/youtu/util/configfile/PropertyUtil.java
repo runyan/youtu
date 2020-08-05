@@ -32,13 +32,10 @@ public class PropertyUtil {
 	            props.load(bf);
 	            ConfigFileUtil.PROPERTY_CACHE.set(propertiesFilePath, props);
 	            return props;
-			} catch(NullPointerException e) {
-				LogUtil.error("Properties file: {} does not exists", propertiesFilePath);
-//				throw new RuntimeException("Properties file: " + propertiesFilePath + " does not exists");
-	        } catch (IOException e){
+			} catch(NullPointerException | IOException e) {
 	            LogUtil.error(e.getMessage());
+	            return null;
 	        }
-			return null;
 		} else {
 			return props;
 		}

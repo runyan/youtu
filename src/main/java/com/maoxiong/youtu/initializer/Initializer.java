@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.maoxiong.youtu.annotation.ConfigAnnotationParser;
 import com.maoxiong.youtu.context.Context;
 import com.maoxiong.youtu.util.SignUtil;
 import com.maoxiong.youtu.util.configfile.ConfigFileUtil;
@@ -28,33 +29,33 @@ public class Initializer {
 	}
 
 	public Initializer(String propertiesFilePath) {
-		this(constructBuilder(ConfigFileUtil.loadProperties(propertiesFilePath)));
+		this(ConfigFileUtil.loadProperties(propertiesFilePath));
+	}
+	
+	public Initializer(Class<?> configClass) {
+		this(ConfigAnnotationParser.parseConfigProperties(configClass));
 	}
 
 	public Initializer(Properties properties) {
-		this(constructBuilder(properties));
+		this(PropertyUtil.getPropertyValue(properties, "youtu.qq"),
+				PropertyUtil.getPropertyValue(properties, "youtu.appId"),
+				PropertyUtil.getPropertyValue(properties, "youtu.secretId"),
+				PropertyUtil.getPropertyValue(properties, "youtu.secretKey"),
+				PropertyUtil.getPropertyValue(properties, "youtu.fileSavePath"));
 	}
 
 	public Initializer(Builder builder) {
-		this.QQ = builder.QQ;
-		this.appId = builder.appId;
-		this.secretId = builder.secretId;
-		this.secretKey = builder.secretKey;
-		String builderFilePath = builder.fileSavePath;
-		Context.set("savePath",
-				StringUtils.isBlank(builderFilePath) ? System.getProperty("user.dir") : builderFilePath);
+		this(builder.QQ, builder.appId, builder.secretId, builder.secretKey, builder.fileSavePath);
 	}
 
-	private static Initializer.Builder constructBuilder(Properties properties) {
-		String qq = PropertyUtil.getPropertyValue(properties, "youtu.qq");
-		String appId = PropertyUtil.getPropertyValue(properties, "youtu.appId");
-		String secretId = PropertyUtil.getPropertyValue(properties, "youtu.secretId");
-		String secretKey = PropertyUtil.getPropertyValue(properties, "youtu.secretKey");
-		String fileSavePath = com.maoxiong.youtu.util.configfile.PropertyUtil.getPropertyValue(properties,
-				"youtu.fileSavePath");
-		Initializer.Builder builder = new Initializer.Builder().QQ(qq).appId(appId).secretId(secretId)
-				.secretKey(secretKey).fileSavePath(fileSavePath);
-		return builder;
+	private Initializer(String qq, String appId, String secretId, String secretKey, String fileSavePath) {
+		this.QQ = qq;
+		this.appId = appId;
+		this.secretId = secretId;
+		this.secretKey = secretKey;
+		String builderFilePath = fileSavePath;
+		Context.set("savePath",
+				StringUtils.isBlank(builderFilePath) ? System.getProperty("user.dir") : builderFilePath);
 	}
 
 	public void init() {

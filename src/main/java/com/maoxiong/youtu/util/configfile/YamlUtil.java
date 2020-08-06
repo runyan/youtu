@@ -60,7 +60,8 @@ public class YamlUtil {
 			if (value instanceof Map) {
 				parseMap((Map<String, Object>) value, key, props);
 			} else {
-				props.setProperty(key, value.toString());
+				props.setProperty(key, Objects.isNull(value) ? StringUtils.EMPTY 
+						: value.toString());
 			}
 		}
 	}

@@ -5,37 +5,55 @@
 <!-- scan="true" ： 自动扫描该配置文件，若有修改则重新加载该配置文件 -->
 <!-- scanPeriod="30 seconds" : 配置自动扫面时间间隔（单位可以是：milliseconds, seconds, minutes 
     or hours，默认为：milliseconds）， 默认为1分钟，scan="true"时该配置才会生效 -->
-<configuration debug="false" scan="true" scanPeriod="30 seconds" packagingData="true">
+<configuration xmlns="http://ch.qos.logback/xml/ns/logback"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://ch.qos.logback/xml/ns/logback
+               https://raw.githubusercontent.com/enricopulatzo/logback- 
+                XSD/master/src/main/xsd/logback.xsd" debug="false" scan="true" scanPeriod="30 seconds" packagingData="true">
     <!-- 设置 logger context 名称,一旦设置不可改变，默认为default -->
     <contextName>youtu</contextName>
     
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoders are by default assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %c - %msg%n</pattern>
+            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %c - %msg%n</pattern>
         </encoder>
     </appender>
     
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">  
-        <!-- 当前活动日志文件名 -->
-        <file>./log.log</file>
-        <!-- 文件滚动策略根据%d{patter}中的“patter”而定，此处为每天产生一个文件 -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- 归档文件名“.zip或.gz结尾”,表示归档文件自动压缩 -->
-            <FileNamePattern>./log%d{yyyyMMdd}.log.zip</FileNamePattern>
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
-       
-        <encoder>
-          <pattern>%d{HH:mm:ss.SSS}[%-5level][%thread]%c %L- %msg%n</pattern>
-        </encoder>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
+        <file>./youtu.log</file> <!-- 日志名称 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy"> 
+            <fileNamePattern>./logs/youtu.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern> 
+            <maxFileSize>50MB</maxFileSize>  <!-- 日志文件过大会使的编辑器打开非常慢，因此设置日志最大50MB -->
+            <maxHistory>30</maxHistory>  <!-- 保存30天 -->
+            <totalSizeCap>10GB</totalSizeCap>  <!-- 总日志大小 -->
+        </rollingPolicy> 
+        <!-- encoder负责两件事，一是把日志信息转换成字节数组，二是把字节数组写入到输出流。 -->
+        <encoder> 
+        	<pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %c - %msg%n</pattern>
+        </encoder> 
+        <!-- 过滤器，可以过滤掉不符合条件的日志，INFO及以上的日志被处理，其它的拒绝 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter"> 
+            <level>INFO</level> 
+            <onMatch>ACCEPT</onMatch> 
+            <onMismatch>DENY</onMismatch> 
+        </filter> 
     </appender>
     
     <!-- 日志级别若没显示定义，则继承最近的父logger（该logger需显示定义level,直到rootLogger）的日志级别-->
-    <!-- logger的appender默认具有累加性（默认日志输出到当前logger的appender和所有祖先logger的appender中），可通过配置 “additivity”属性修改默认行为-->
-    <logger name="com.maoxiong"  level="debug" additivity="false" >
+    <!-- logger的appender默认具有累加性（默认日志输出到当前logger的appender和所有祖先logger的appender中），可通过配置 “additivity”属性修改默认行为
+    <logger name="com.yinz"  level="debug" additivity="false" >
         <appender-ref ref="FILE"/>
-    </logger>
+    </logger>-->
+    
+    <appender name ="ASYNC" class= "ch.qos.logback.classic.AsyncAppender">
+        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <queueSize>256</queueSize>
+        <!-- 添加附加的appender,最多只能添加一个 -->
+        <appender-ref ref ="FILE"/>
+    </appender>
 
     <!-- 至多只能配置一个root -->
     <root level="debug">

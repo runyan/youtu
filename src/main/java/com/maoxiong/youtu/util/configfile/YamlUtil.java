@@ -25,27 +25,20 @@ public class YamlUtil {
 
 	public static Properties loadProperties(String yamlFilePath) {
 		Yaml yml = new Yaml();
-		String path = StringUtils.isBlank(yamlFilePath) ? 
-				ConfigFileUtil.DEFAULT_YAML_CONFIG_FILE_PATH : yamlFilePath;
-		Properties props = ConfigFileUtil.PROPERTY_CACHE.getIfPresent(yamlFilePath);
-		if (Objects.isNull(props)) {
-			props = new Properties();
-			try (InputStream inputStream = YamlUtil.class
-					  .getClassLoader()
-					  .getResourceAsStream(path)) {
-				Map<String, Object> propertyMap = yml.load(inputStream);
-				if (Objects.isNull(propertyMap)) {
-					return null;
-				}
-				parseMap(propertyMap, "", props);
-				ConfigFileUtil.PROPERTY_CACHE.set(yamlFilePath, props);
-				return props;
-			} catch (YAMLException | IOException e) {
-				LogUtil.error(e.getMessage());
+		Properties props = new Properties();
+		try (InputStream inputStream = YamlUtil.class
+				  .getClassLoader()
+				  .getResourceAsStream(yamlFilePath)) {
+			Map<String, Object> propertyMap = yml.load(inputStream);
+			if (Objects.isNull(propertyMap)) {
 				return null;
 			}
-		} else {
+			parseMap(propertyMap, "", props);
+			ConfigFileUtil.PROPERTY_CACHE.set(yamlFilePath, props);
 			return props;
+		} catch (YAMLException | IOException e) {
+			LogUtil.error(e.getMessage());
+			return null;
 		}
 	}
 	

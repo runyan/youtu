@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.util.Objects;
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.maoxiong.youtu.util.LogUtil;
 
 /**
@@ -23,22 +21,16 @@ public class PropertyUtil {
 	}
 	
 	public static Properties loadProperties(String propertiesFilePath) {
-		String path = StringUtils.isEmpty(propertiesFilePath) ? ConfigFileUtil.DEFAULT_PROPERTIES_CONFIG_FILE_PATH : propertiesFilePath;
-		Properties props = ConfigFileUtil.PROPERTY_CACHE.getIfPresent(propertiesFilePath);
-		if (Objects.isNull(props)) {
-			props = new Properties();
-			try (InputStream inputStream = PropertyUtil.class.getResourceAsStream(path)) {
-				BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
-	            props.load(bf);
-	            ConfigFileUtil.PROPERTY_CACHE.set(propertiesFilePath, props);
-	            return props;
-			} catch(NullPointerException | IOException e) {
-	            LogUtil.error(e.getMessage());
-	            return null;
-	        }
-		} else {
-			return props;
-		}
+		Properties props = new Properties();
+		try (InputStream inputStream = PropertyUtil.class.getResourceAsStream(propertiesFilePath)) {
+			BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+            props.load(bf);
+            ConfigFileUtil.PROPERTY_CACHE.set(propertiesFilePath, props);
+            return props;
+		} catch(NullPointerException | IOException e) {
+            LogUtil.error(e.getMessage());
+            return null;
+        }
 	}
 	
 	public static String getPropertyValue(Properties props, String propertyKey) {

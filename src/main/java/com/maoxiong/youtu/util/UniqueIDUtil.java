@@ -105,9 +105,9 @@ public class UniqueIDUtil {
 		lastTimestamp = timestamp;
 
 		// 移位并通过或运算拼到一起组成64位的ID
-		return ((timestamp - twepoch) << timestampLeftShift) //
-				| (datacenterId << datacenterIdShift) //
-				| (workerId << workerIdShift) //
+		return ((timestamp - twepoch) << timestampLeftShift) 
+				| (datacenterId << datacenterIdShift)
+				| (workerId << workerIdShift) 
 				| sequence;
 	}
 

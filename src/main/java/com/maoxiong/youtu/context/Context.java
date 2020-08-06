@@ -26,6 +26,8 @@ public class Context {
 
 	private static final List<String> LEAGAL_KEYS = Arrays
 			.asList(new String[] { "sign", "app_id", "savePath", "tempFilePath" });
+	
+	private static final String NULL = "null";
 
 	public static final Queue<RequestPool> REQUEAT_POOL_QUEUE = new ConcurrentLinkedQueue<>();
 
@@ -38,7 +40,7 @@ public class Context {
 			public void run() {
 				Object pathObj = PARAM_MAP.get("tempFilePath");
 				String tempFilePath = Objects.isNull(pathObj) ? "" : String.valueOf(pathObj);
-				if (!StringUtils.isBlank(tempFilePath) && !StringUtils.equalsIgnoreCase(tempFilePath, "null")) {
+				if (!StringUtils.isBlank(tempFilePath) && !StringUtils.equalsIgnoreCase(tempFilePath, NULL)) {
 					try {
 						Files.deleteIfExists(Paths.get(tempFilePath));
 					} catch (IOException e) {

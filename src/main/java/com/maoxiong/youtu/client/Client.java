@@ -21,7 +21,17 @@ public interface Client {
 		Initializer.initCheck();
 	}
 	
+	/**
+	 * 设置请求
+	 * 
+	 * @param request 请求
+	 */
 	void setRequest(Request request);
 	
+	/**
+	 * 获取请求
+	 * 
+	 * @return 请求
+	 */
 	Request getRequest();
 }

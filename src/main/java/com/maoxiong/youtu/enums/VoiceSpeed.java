@@ -22,6 +22,7 @@ public enum VoiceSpeed {
 		return speed;
 	}
 
+	@Override
 	public String toString() {
 		return String.valueOf(speed);
 	}

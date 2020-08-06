@@ -12,14 +12,14 @@ import com.maoxiong.youtu.cache.Cache;
  * @author yanrun
  *
  */
-public class LRUCache<K, V> implements Cache<K, V> {
+public class LruCache<K, V> implements Cache<K, V> {
 
 	private final int MAX_CACHE_SIZE;
 	private final float DEFAULT_LOAD_FACTOR = 0.75f;
 
 	private Map<K, V> map;
 
-	public LRUCache(int cacheSize) {
+	public LruCache(int cacheSize) {
 		MAX_CACHE_SIZE = cacheSize;
 		int capacity = (int) Math.ceil(MAX_CACHE_SIZE / DEFAULT_LOAD_FACTOR) + 1;
 		/*

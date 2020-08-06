@@ -22,6 +22,7 @@ public final class FoodDetectClient extends AbstractClient {
 		super.execute(callback);
 		HttpUtil.post(request.getRequestUrl(), request.getParamsJsonString(), new RequestCallback() {
 
+			@Override
 			public void onFail(Exception e) {
 				callback.onFail(e);
 			}

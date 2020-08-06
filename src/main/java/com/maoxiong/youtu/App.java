@@ -68,9 +68,9 @@ public class App {
 	private static final String SECRET_ID = "";
 	private static final String SECRET_KEY = "";
 	
-    public static void main( String[] args ) {
+    public static void main( String... args ) {
     	Initializer initializer = new Initializer.Builder()
-    			.QQ(QQ)
+    			.qq(QQ)
     			.appId(APP_ID)
     			.secretId(SECRET_ID)
     			.secretKey(SECRET_KEY)
@@ -183,13 +183,13 @@ public class App {
     		
     	};
     	pool.addRequest(plateDetectClient, plateDetectCallback);
-    	Request iDDetectRequest = new IDDetectRequest();
-    	IDDetectRequestEntity iDDetectEntity = new IDDetectRequestEntity(CardType.BACK, true);
-    	iDDetectEntity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528361074011&di=3f24d7f66344f3b09b65dfbba112873e&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dpixel_huitu%252C0%252C0%252C294%252C40%2Fsign%3Db05d0b3c38fa828bc52e95a394672458%2Fd788d43f8794a4c2717d681205f41bd5ad6e39a8.jpg");
+    	Request idDetectRequest = new IDDetectRequest();
+    	IDDetectRequestEntity idDetectEntity = new IDDetectRequestEntity(CardType.BACK, true);
+    	idDetectEntity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528361074011&di=3f24d7f66344f3b09b65dfbba112873e&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dpixel_huitu%252C0%252C0%252C294%252C40%2Fsign%3Db05d0b3c38fa828bc52e95a394672458%2Fd788d43f8794a4c2717d681205f41bd5ad6e39a8.jpg");
 //    	iDDetectEntity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528361604248&di=7b0023003f834c7a75b2ece009d680ea&imgtype=jpg&src=http%3A%2F%2Fimg2.imgtn.bdimg.com%2Fit%2Fu%3D30879982%2C1711011546%26fm%3D214%26gp%3D0.jpg");
-    	iDDetectRequest.setParams(iDDetectEntity);
-    	Client iDDetectClient = ClientFactory.constructClient(iDDetectRequest);
-    	CallBack<IDDetectResult> iDDetectCallback = new CallBack<IDDetectResult>() {
+    	idDetectRequest.setParams(idDetectEntity);
+    	Client idDetectClient = ClientFactory.constructClient(idDetectRequest);
+    	CallBack<IDDetectResult> idDetectCallback = new CallBack<IDDetectResult>() {
 
 			@Override
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, IDDetectResult result) {
@@ -211,7 +211,7 @@ public class App {
 			}
     		
     	};
-    	pool.addRequest(iDDetectClient, iDDetectCallback);
+    	pool.addRequest(idDetectClient, idDetectCallback);
     	Request text2AudioRequest = new TextToAudioRequest(true);
     	TextToAudioRequestEntity text2AudioRequestEntity = new TextToAudioRequestEntity();
     	text2AudioRequestEntity.setModelType(ModelType.FEMALE);

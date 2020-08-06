@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.maoxiong.youtu.cache.impl.LRUCache;
+import com.maoxiong.youtu.cache.impl.LruCache;
 
 /**
  * 
@@ -14,10 +14,14 @@ import com.maoxiong.youtu.cache.impl.LRUCache;
  */
 public class ConfigFileUtil {
 
-	static final LRUCache<String, Properties> PROPERTY_CACHE = new LRUCache<>(64);
+	static final LruCache<String, Properties> PROPERTY_CACHE = new LruCache<>(64);
 	
 	static final String DEFAULT_PROPERTIES_CONFIG_FILE_PATH = "/youtu.properties";
 	static final String DEFAULT_YAML_CONFIG_FILE_PATH = "youtu.yml";
+	
+	private static final String PROPERTIES = "properties";
+	private static final String YML = "yml";
+	private static final String YAML = "yaml";
 	
 	private ConfigFileUtil() {
 		throw new RuntimeException("no constructor for you");
@@ -27,9 +31,9 @@ public class ConfigFileUtil {
 		if (StringUtils.isEmpty(filePath)) {
 			return loadFromDefaultFilePath();
 		}
-		if (filePath.endsWith("properties")) {
+		if (filePath.endsWith(PROPERTIES)) {
 			return PropertyUtil.loadProperties(filePath);
-		} else if(filePath.endsWith("yml") || filePath.endsWith("yaml")) {
+		} else if(filePath.endsWith(YML) || filePath.endsWith(YAML)) {
 			return YamlUtil.loadProperties(filePath);
 		}
 		throw new IllegalArgumentException("unsupportted file type");

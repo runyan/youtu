@@ -6,6 +6,13 @@ import java.util.function.Function;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.maoxiong.youtu.cache.Cache;
 
+/**
+ * 
+ * @author yanrun
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class CaffeineCache<K, V> implements Cache<K, V> {
 
 	private final com.github.benmanes.caffeine.cache.Cache<K, V> cache;

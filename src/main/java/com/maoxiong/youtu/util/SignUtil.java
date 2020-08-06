@@ -14,11 +14,11 @@ public class SignUtil {
 		throw new RuntimeException("no constructor for you");
 	}
 
-	public static String getSign(String userQQ, String appID, String secretID, String secretKey) {
+	public static String getSign(String userQq, String appId, String secretId, String secretKey) {
 		long tnowTimes = Instant.now().toEpochMilli() / 1000;
 		long enowTimes = tnowTimes + 2592000;
 		String rRandomNum = RandomUtil.genRandomNum(10);
-		String param = "u=" + userQQ + "&a=" + appID + "&k=" + secretID + "&e=" + enowTimes + "&t=" + tnowTimes + "&r="
+		String param = "u=" + userQq + "&a=" + appId + "&k=" + secretId + "&e=" + enowTimes + "&t=" + tnowTimes + "&r="
 				+ rRandomNum + "&f=";
 		byte[] paramBytes = param.getBytes();
 		int paramBytesLength = paramBytes.length;

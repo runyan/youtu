@@ -7,7 +7,22 @@ package com.maoxiong.youtu.enums;
  */
 public enum ModelType {
 
-	FEMALE(0), FEMALE_ENGLISH(1), MALE(2), XIDAO(6);
+	/**
+	 * 女声
+	 */
+	FEMALE(0), 
+	/**
+	 * 女声-英语
+	 */
+	FEMALE_ENGLISH(1),
+	/**
+	 * 男声
+	 */
+	MALE(2), 
+	/**
+	 * 喜道
+	 */
+	XIDAO(6);
 
 	private int modeType;
 

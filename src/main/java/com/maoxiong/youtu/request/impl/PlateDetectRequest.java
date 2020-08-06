@@ -3,8 +3,8 @@ package com.maoxiong.youtu.request.impl;
 import org.apache.commons.lang3.StringUtils;
 
 import com.maoxiong.youtu.cache.Cache;
-import com.maoxiong.youtu.cache.impl.LRUCache;
-import com.maoxiong.youtu.constants.Constants;
+import com.maoxiong.youtu.cache.impl.LruCache;
+import com.maoxiong.youtu.constants.HttpConstants;
 import com.maoxiong.youtu.entity.request.impl.PlateDetectRequestEntity;
 import com.maoxiong.youtu.request.Request;
 import com.maoxiong.youtu.util.CacheKeyUtil;
@@ -19,12 +19,12 @@ public class PlateDetectRequest implements Request {
 	private String url;
 	private PlateDetectRequestEntity entity;
 
-	private Cache<String, String> cache = new LRUCache<>(16);
+	private Cache<String, String> cache = new LruCache<>(16);
 
 	@Override
 	public void setParams(Object requestEntity) {
 		this.entity = (PlateDetectRequestEntity) requestEntity;
-		this.url = Constants.BASE_URL + "ocrapi/plateocr";
+		this.url = HttpConstants.BASE_URL + "ocrapi/plateocr";
 	}
 
 	@Override

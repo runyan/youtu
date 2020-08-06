@@ -5,6 +5,8 @@ import java.io.UnsupportedEncodingException;
 import com.maoxiong.youtu.enums.ModelType;
 import com.maoxiong.youtu.enums.VoiceSpeed;
 
+import kotlin.text.Charsets;
+
 /**
  * 
  * @author yanrun
@@ -15,6 +17,8 @@ public class TextToAudioRequestEntity {
 	private String text;
 	private ModelType modelType;
 	private VoiceSpeed speed;
+	
+	private static final int MAX_TEXT_LENGTH = 216;
 
 	public String getText() {
 		return text;
@@ -22,9 +26,10 @@ public class TextToAudioRequestEntity {
 
 	public void setText(String text) {
 		try {
-			text = new String(text.getBytes(), "utf-8");
-			if (text.getBytes("utf-8").length >= 216) {
-				throw new IllegalArgumentException("text too long, max length: 216 bytes");
+			text = new String(text.getBytes(), Charsets.UTF_8.name());
+			if (text.getBytes(Charsets.UTF_8.name()).length >= MAX_TEXT_LENGTH) {
+				throw new IllegalArgumentException("text too long, max length: " + 
+						MAX_TEXT_LENGTH + " bytes");
 			}
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

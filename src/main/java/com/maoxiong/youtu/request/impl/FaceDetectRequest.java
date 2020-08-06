@@ -3,8 +3,8 @@ package com.maoxiong.youtu.request.impl;
 import org.apache.commons.lang3.StringUtils;
 
 import com.maoxiong.youtu.cache.Cache;
-import com.maoxiong.youtu.cache.impl.LRUCache;
-import com.maoxiong.youtu.constants.Constants;
+import com.maoxiong.youtu.cache.impl.LruCache;
+import com.maoxiong.youtu.constants.HttpConstants;
 import com.maoxiong.youtu.entity.request.impl.FaceDectectRequestEntity;
 import com.maoxiong.youtu.request.Request;
 import com.maoxiong.youtu.util.CacheKeyUtil;
@@ -19,12 +19,12 @@ public class FaceDetectRequest implements Request {
 	private FaceDectectRequestEntity params;
 	private String url;
 
-	private static Cache<String, String> cache = new LRUCache<>(16);
+	private static Cache<String, String> cache = new LruCache<>(16);
 
 	@Override
 	public void setParams(Object requestEntity) {
 		this.params = (FaceDectectRequestEntity) requestEntity;
-		this.url = Constants.BASE_URL + "api/detectface";
+		this.url = HttpConstants.BASE_URL + "api/detectface";
 	}
 
 	@Override

@@ -53,16 +53,16 @@ public class FileUtil {
 				throw new IllegalArgumentException("file " + filePath + " is either a directory or is not readdable");
 			}
 			long fileSize = Files.size(path);
-			long fileSizeInMB = fileSize / MB;
+			long fileSizeInMb = fileSize / MB;
 			String tempFilePath = "";
-			if (fileSizeInMB >= 1) {
+			if (fileSizeInMb >= 1) {
 				LogUtil.warn("{}'s size exceeds 1MB, compress file", filePath);
 				String fileType = FileTypeUtil.getFileType(filePath);
 				String fileName = System.getProperty("user.dir").concat(File.separator).concat("temp")
 						.concat(String.valueOf(System.currentTimeMillis()));
 				tempFilePath = StringUtils.isBlank(fileType) ? fileName : fileName.concat(".").concat(fileType);
 				Files.deleteIfExists(Paths.get(tempFilePath));
-				Thumbnails.of(filePath).scale(fileSizeInMB >= 2 ? 0.25 : 0.5).useOriginalFormat().toFile(tempFilePath);
+				Thumbnails.of(filePath).scale(fileSizeInMb >= 2 ? 0.25 : 0.5).useOriginalFormat().toFile(tempFilePath);
 				filePath = tempFilePath;
 				Context.set("tempFilePath", tempFilePath);
 			}

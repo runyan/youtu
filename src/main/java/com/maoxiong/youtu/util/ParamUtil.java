@@ -17,7 +17,7 @@ import com.maoxiong.youtu.context.Context;
  */
 public class ParamUtil {
 
-	private static final Map<String, Object> paramMap = new HashMap<>(8);
+	private static final Map<String, Object> PARAM_MAP = new HashMap<>(8);
 
 	private final String appId = String.valueOf(Context.get("app_id"));
 
@@ -46,18 +46,18 @@ public class ParamUtil {
 	}
 
 	public synchronized String buildParamJson(String filePath, String url) {
-		if (!paramMap.isEmpty()) {
-			paramMap.clear();
+		if (!PARAM_MAP.isEmpty()) {
+			PARAM_MAP.clear();
 		}
 		if (!StringUtils.isBlank(url)) {
-			paramMap.put("url", url);
-			return buildParamJson(paramMap);
+			PARAM_MAP.put("url", url);
+			return buildParamJson(PARAM_MAP);
 		}
 		if (!StringUtils.isBlank(filePath)) {
 			byte[] imgData = FileUtil.readFileByBytes(filePath);
 			String image = Base64.getEncoder().encodeToString(imgData);
-			paramMap.put("image", image);
-			return buildParamJson(paramMap);
+			PARAM_MAP.put("image", image);
+			return buildParamJson(PARAM_MAP);
 		}
 		throw new NullPointerException("need param url or path");
 	}

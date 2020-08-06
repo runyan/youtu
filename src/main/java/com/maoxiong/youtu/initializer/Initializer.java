@@ -19,7 +19,7 @@ public class Initializer {
 
 	private static volatile boolean initailized;
 
-	private String QQ;
+	private String qq;
 	private String appId;
 	private String secretId;
 	private String secretKey;
@@ -45,11 +45,11 @@ public class Initializer {
 	}
 
 	public Initializer(Builder builder) {
-		this(builder.QQ, builder.appId, builder.secretId, builder.secretKey, builder.fileSavePath);
+		this(builder.qq, builder.appId, builder.secretId, builder.secretKey, builder.fileSavePath);
 	}
 
 	private Initializer(String qq, String appId, String secretId, String secretKey, String fileSavePath) {
-		this.QQ = qq;
+		this.qq = qq;
 		this.appId = appId;
 		this.secretId = secretId;
 		this.secretKey = secretKey;
@@ -62,7 +62,7 @@ public class Initializer {
 		if (initailized) {
 			throw new IllegalStateException("should not init more than once");
 		}
-		if (StringUtils.isBlank(QQ)) {
+		if (StringUtils.isBlank(qq)) {
 			throw new IllegalArgumentException("need QQ");
 		}
 		if (StringUtils.isBlank(appId)) {
@@ -74,7 +74,7 @@ public class Initializer {
 		if (StringUtils.isBlank(secretKey)) {
 			throw new IllegalArgumentException("need secretKey");
 		}
-		Context.init(SignUtil.getSign(QQ, appId, secretId, secretKey), appId);
+		Context.init(SignUtil.getSign(qq, appId, secretId, secretKey), appId);
 		initailized = true;
 	}
 
@@ -88,7 +88,7 @@ public class Initializer {
 	}
 
 	public static final class Builder {
-		private String QQ;
+		private String qq;
 		private String appId;
 		private String secretId;
 		private String secretKey;
@@ -98,8 +98,8 @@ public class Initializer {
 			super();
 		}
 
-		public Builder QQ(String qq) {
-			this.QQ = qq;
+		public Builder qq(String qq) {
+			this.qq = qq;
 			return this;
 		}
 

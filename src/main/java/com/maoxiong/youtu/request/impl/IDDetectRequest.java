@@ -3,7 +3,7 @@ package com.maoxiong.youtu.request.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.maoxiong.youtu.constants.Constants;
+import com.maoxiong.youtu.constants.HttpConstants;
 import com.maoxiong.youtu.entity.request.impl.IDDetectRequestEntity;
 import com.maoxiong.youtu.request.Request;
 
@@ -20,7 +20,7 @@ public class IDDetectRequest implements Request {
 
 	@Override
 	public void setParams(Object requestEntity) {
-		this.url = Constants.BASE_URL + "ocrapi/idcardocr";
+		this.url = HttpConstants.BASE_URL + "ocrapi/idcardocr";
 		this.entity = (IDDetectRequestEntity) requestEntity;
 	}
 

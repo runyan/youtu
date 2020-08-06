@@ -15,39 +15,45 @@ import java.util.Set;
  */
 public class FileTypeUtil {
 
-	// 缓存文件头信息-文件头信息
-	public static final Map<String, String> mFileTypes = new HashMap<>(64);
+	/**
+	 * 缓存文件头信息-文件头信息
+	 */
+	public static final Map<String, String> FILE_TYPES = new HashMap<>(64);
 
 	static {
 		// images
-		mFileTypes.put("FFD8FF", "jpg");
-		mFileTypes.put("89504E47", "png");
-		mFileTypes.put("47494638", "gif");
-		mFileTypes.put("49492A00", "tif");
-		mFileTypes.put("424D", "bmp");
+		FILE_TYPES.put("FFD8FF", "jpg");
+		FILE_TYPES.put("89504E47", "png");
+		FILE_TYPES.put("47494638", "gif");
+		FILE_TYPES.put("49492A00", "tif");
+		FILE_TYPES.put("424D", "bmp");
 		// files
-		mFileTypes.put("41433130", "dwg"); // CAD
-		mFileTypes.put("38425053", "psd");
-		mFileTypes.put("7B5C727466", "rtf"); // 日记本
-		mFileTypes.put("3C3F786D6C", "xml");
-		mFileTypes.put("68746D6C3E", "html");
-		mFileTypes.put("44656C69766572792D646174653A", "eml"); // 邮件
-		mFileTypes.put("D0CF11E0", "doc");
-		mFileTypes.put("5374616E64617264204A", "mdb");
-		mFileTypes.put("252150532D41646F6265", "ps");
-		mFileTypes.put("255044462D312E", "pdf");
-		mFileTypes.put("504B03040A00000000008", "docx");
-		mFileTypes.put("504B0304", "zip");// zip 压缩文件
-		mFileTypes.put("52617221", "rar");
-		mFileTypes.put("57415645", "wav");
-		mFileTypes.put("41564920", "avi");
-		mFileTypes.put("2E524D46", "rm");
-		mFileTypes.put("000001BA", "mpg");
-		mFileTypes.put("000001B3", "mpg");
-		mFileTypes.put("6D6F6F76", "mov");
-		mFileTypes.put("3026B2758E66CF11", "asf");
-		mFileTypes.put("4D546864", "mid");
-		mFileTypes.put("1F8B08", "gz");
+		// CAD
+		FILE_TYPES.put("41433130", "dwg"); 
+		FILE_TYPES.put("38425053", "psd");
+		// 日记本
+		FILE_TYPES.put("7B5C727466", "rtf"); 
+		FILE_TYPES.put("3C3F786D6C", "xml");
+		FILE_TYPES.put("68746D6C3E", "html");
+		// 邮件
+		FILE_TYPES.put("44656C69766572792D646174653A", "eml");
+		FILE_TYPES.put("D0CF11E0", "doc");
+		FILE_TYPES.put("5374616E64617264204A", "mdb");
+		FILE_TYPES.put("252150532D41646F6265", "ps");
+		FILE_TYPES.put("255044462D312E", "pdf");
+		FILE_TYPES.put("504B03040A00000000008", "docx");
+		// zip 压缩文件
+		FILE_TYPES.put("504B0304", "zip");
+		FILE_TYPES.put("52617221", "rar");
+		FILE_TYPES.put("57415645", "wav");
+		FILE_TYPES.put("41564920", "avi");
+		FILE_TYPES.put("2E524D46", "rm");
+		FILE_TYPES.put("000001BA", "mpg");
+		FILE_TYPES.put("000001B3", "mpg");
+		FILE_TYPES.put("6D6F6F76", "mov");
+		FILE_TYPES.put("3026B2758E66CF11", "asf");
+		FILE_TYPES.put("4D546864", "mid");
+		FILE_TYPES.put("1F8B08", "gz");
 	}
 
 	public FileTypeUtil() {
@@ -63,7 +69,7 @@ public class FileTypeUtil {
 	public static String getFileType(String filePath) {
 		String value = getFileHeader(filePath);
 		String result = "";
-		Set<Entry<String, String>> entrySet = mFileTypes.entrySet();
+		Set<Entry<String, String>> entrySet = FILE_TYPES.entrySet();
 		for (Entry<String, String> entry : entrySet) {
 			if (value.startsWith(entry.getKey())) {
 				result = entry.getValue();

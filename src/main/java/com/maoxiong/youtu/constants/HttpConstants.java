@@ -5,7 +5,7 @@ package com.maoxiong.youtu.constants;
  * @author yanrun
  *
  */
-public interface Constants {
+public interface HttpConstants {
 
 	String PROTOCOL = "https";
 	String HOST = "api.youtu.qq.com";

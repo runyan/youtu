@@ -127,7 +127,6 @@ public class App {
     	Request creditCardDetectRequest = new CreditCardDetectRequest();
     	CreditCradDetectRequestEntity entity = new CreditCradDetectRequestEntity();
     	entity.setFilePath("D://timg.jpg");
-//    	entity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528098767113&di=296907c60c43165203dc18db7c7c26b8&imgtype=0&src=http%3A%2F%2Fkameng.com%2Fuploadfile%2Fcard%2F64636055b42d4d73660faba5fb018c40.jpg");
     	creditCardDetectRequest.setParams(entity);
     	Client creditCardDetectClient = ClientFactory.constructClient(creditCardDetectRequest);
     	CallBack<CorDetectResult> creditCardDetectCallback = new CallBack<CorDetectResult>() {
@@ -156,7 +155,8 @@ public class App {
     	pool.addRequest(creditCardDetectClient,  creditCardDetectCallback);
     	Request plateDetectRequest = new PlateDetectRequest();
     	PlateDetectRequestEntity plateDetectRequestEntity = new PlateDetectRequestEntity();
-    	plateDetectRequestEntity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528277425993&di=c08a42bd6f25f31c49c1cb34d247f1b3&imgtype=jpg&src=http%3A%2F%2Fimg3.imgtn.bdimg.com%2Fit%2Fu%3D1593700053%2C2642362344%26fm%3D214%26gp%3D0.jpg");
+//    	plateDetectRequestEntity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528277425993&di=c08a42bd6f25f31c49c1cb34d247f1b3&imgtype=jpg&src=http%3A%2F%2Fimg3.imgtn.bdimg.com%2Fit%2Fu%3D1593700053%2C2642362344%26fm%3D214%26gp%3D0.jpg");
+    	plateDetectRequestEntity.setFilePath("D:\\plate.jpg");
     	plateDetectRequest.setParams(plateDetectRequestEntity);
     	Client plateDetectClient = ClientFactory.constructClient(plateDetectRequest);
     	CallBack<CorDetectResult> plateDetectCallback = new CallBack<CorDetectResult>() {

@@ -4,10 +4,13 @@ import java.io.File;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 /**
  * 获取接口的所有实现类 理论上也可以用来获取类的所有子类
@@ -27,7 +30,6 @@ public class ClassUtil {
 	}
 
 	public static List<Class<?>> getAllClassByInterface(Class<?> clazz) {
-		List<Class<?>> list = new ArrayList<>();
 		// 判断是否是一个接口
 		if (clazz.isInterface()) {
 			try {
@@ -35,26 +37,17 @@ public class ClassUtil {
 				/**
 				 * 循环判断路径下的所有类是否实现了指定的接口 并且排除接口类自己
 				 */
-				for (int i = 0; i < allClass.size(); i++) {
-					/**
-					 * 判断是不是同一个接口
-					 */
-					// isAssignableFrom:判定此 Class 对象所表示的类或接口与指定的 Class
-					// 参数所表示的类或接口是否相同，或是否是其超类或超接口
-					if (clazz.isAssignableFrom(allClass.get(i))) {
-						if (!clazz.equals(allClass.get(i))) {
-							// 自身并不加进去
-							list.add(allClass.get(i));
-						}
-					}
-				}
+				List<Class<?>> list = allClass.stream().filter(clz -> {
+					return clazz.isAssignableFrom(clz) && !clazz.equals(clz);
+				}).collect(Collectors.toList());
+				LogUtil.info("class list size :" + list.size());
+				return list;
 			} catch (Exception e) {
 				LogUtil.error(e.getMessage());
 				throw new RuntimeException(e.getMessage());
 			}
 		}
-		LogUtil.info("class list size :" + list.size());
-		return list;
+		return Collections.unmodifiableList(Collections.emptyList());
 	}
 
 	/**
@@ -63,18 +56,16 @@ public class ClassUtil {
 	 * @param packagename
 	 */
 	private static List<Class<?>> getAllClass(String packagename) {
-		LogUtil.info("packageName to search：" + packagename);
+		LogUtil.info("packageName to search: " + packagename);
 		List<String> classNameList = getClassName(packagename);
-		List<Class<?>> list = new ArrayList<>();
-
-		for (String className : classNameList) {
+		List<Class<?>> list = classNameList.stream().map(className -> {
 			try {
-				list.add(Class.forName(className));
+				return Class.forName(className, false, Thread.currentThread().getContextClassLoader());
 			} catch (ClassNotFoundException e) {
 				LogUtil.error("load class from name failed:" + className + e.getMessage());
-				throw new RuntimeException("load class from name failed:" + className + e.getMessage());
+				return null;
 			}
-		}
+		}).filter(className -> Objects.nonNull(className)).collect(Collectors.toList());
 		LogUtil.info("find list size :" + list.size());
 		return list;
 	}
@@ -86,12 +77,11 @@ public class ClassUtil {
 	 * @return 类的完整名称
 	 */
 	public static List<String> getClassName(String packageName) {
-
 		List<String> fileNames = null;
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		String packagePath = packageName.replace(".", "/");
 		URL url = loader.getResource(packagePath);
-		if (url != null) {
+		if (Objects.nonNull(url)) {
 			String type = url.getProtocol();
 			LogUtil.debug("file type : " + type);
 			if (type.equals(TYPE_FILE)) {
@@ -123,7 +113,7 @@ public class ClassUtil {
 	 * @return 类的完整名称
 	 */
 	private static List<String> getClassNameByFile(String filePath) {
-		List<String> myClassName = new ArrayList<String>();
+		List<String> myClassName = new ArrayList<>();
 		File file = new File(filePath);
 		File[] childFiles = file.listFiles();
 		for (File childFile : childFiles) {
@@ -149,7 +139,7 @@ public class ClassUtil {
 	 * @return 类的完整名称
 	 */
 	private static List<String> getClassNameByJar(JarFile jarFile, String packagePath) {
-		List<String> myClassName = new ArrayList<String>();
+		List<String> myClassName = new ArrayList<>();
 		try {
 			Enumeration<JarEntry> entrys = jarFile.entries();
 			while (entrys.hasMoreElements()) {

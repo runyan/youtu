@@ -30,7 +30,7 @@ public class YamlUtil implements Configable {
 			if (Objects.isNull(propertyMap)) {
 				return null;
 			}
-			parseMap(propertyMap, "", props);
+			parseMap(propertyMap, StringUtils.EMPTY, props);
 			ConfigFileUtil.PROPERTY_CACHE.set(yamlFilePath, props);
 			return props;
 		} catch (YAMLException | IOException e) {
@@ -41,21 +41,17 @@ public class YamlUtil implements Configable {
 	
 	@SuppressWarnings("unchecked")
 	private void parseMap(Map<String, Object> map, String baseKey, Properties props) {
-		String key;
-		Object value;
-		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			key = entry.getKey();
+		map.forEach((key, value) -> {
 			key = StringUtils.isEmpty(baseKey) ? key : baseKey + "." + key;
-			value = entry.getValue();
 			if (value instanceof Map) {
 				parseMap((Map<String, Object>) value, key, props);
 			} else {
 				props.setProperty(key, Objects.isNull(value) ? StringUtils.EMPTY 
-						: value.toString());
+						: String.valueOf(value));
 			}
-		}
+		});
 	}
-
+	
 	@Override
 	public int getPriority() {
 		return 1;

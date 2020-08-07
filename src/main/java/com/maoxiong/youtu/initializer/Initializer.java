@@ -1,5 +1,6 @@
 package com.maoxiong.youtu.initializer;
 
+import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
@@ -80,7 +81,7 @@ public class Initializer {
 
 	public static void initCheck() {
 		Object signObj = Context.get("sign");
-		signObj = null == signObj ? "" : signObj;
+		signObj = Objects.isNull(signObj) ? StringUtils.EMPTY : signObj;
 		String sign = String.valueOf(signObj);
 		if (StringUtils.isBlank(sign)) {
 			throw new IllegalStateException("have not init properly");

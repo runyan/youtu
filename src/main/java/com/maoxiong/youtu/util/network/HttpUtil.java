@@ -46,7 +46,7 @@ public class HttpUtil {
 			Class<? extends BaseResult> responseClass) {
 		String cacheKey = CacheKeyUtil.generateCacheKey(url, paramJson);
 		BaseResult resultEntity = RESULT_CACHE.getIfPresent(cacheKey);
-		if (!Objects.isNull(resultEntity)) {
+		if (Objects.nonNull(resultEntity)) {
 			LogUtil.info("get response from cache");
 			callback.onSuccess(true, "0", new Gson().toJson(resultEntity), resultEntity);
 		} else {

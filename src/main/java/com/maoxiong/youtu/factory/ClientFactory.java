@@ -2,6 +2,7 @@ package com.maoxiong.youtu.factory;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joor.Reflect;
 
 import com.maoxiong.youtu.cache.Cache;
@@ -41,6 +42,7 @@ public class ClientFactory {
 
 	private static Client createClientByReflect(Class<?> requestClass, String requestClassName) {
 		String requestPackage = requestClassName.substring(0, requestClassName.lastIndexOf("."));
+		StringUtils.substring(requestClassName, 0, StringUtils.lastIndexOf(requestClassName, "."));
 		String simpleRequestClassName = requestClass.getSimpleName();
 		String clientPackage = requestPackage.replace("request", "client");
 		String clientClassName = clientPackage.concat(".").concat(simpleRequestClassName.replace("Request", "Client"));

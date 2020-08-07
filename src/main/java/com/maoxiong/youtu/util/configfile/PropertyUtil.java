@@ -14,13 +14,10 @@ import com.maoxiong.youtu.util.LogUtil;
  * @author yanrun
  *
  */
-public class PropertyUtil {
+public class PropertyUtil implements Configable {
 	
-	private PropertyUtil() {
-		throw new RuntimeException("no constructor for you");
-	}
-	
-	public static Properties loadProperties(String propertiesFilePath) {
+	@Override
+	public Properties loadProperties(String propertiesFilePath) {
 		Properties props = new Properties();
 		try (InputStream inputStream = PropertyUtil.class.getResourceAsStream(propertiesFilePath)) {
 			BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
@@ -36,6 +33,21 @@ public class PropertyUtil {
 	public static String getPropertyValue(Properties props, String propertyKey) {
 		Objects.requireNonNull(props);
 		return props.getProperty(propertyKey, null);
+	}
+
+	@Override
+	public int getPriority() {
+		return 2;
+	}
+
+	@Override
+	public String getDefaultFilePath() {
+		return "/youtu.properties";
+	}
+	
+	@Override 
+	public String getSupportFileSuffix() {
+		return "properties";
 	}
 	
 }

@@ -17,13 +17,10 @@ import com.maoxiong.youtu.util.LogUtil;
  * @author yanrun
  *
  */
-public class YamlUtil {
+public class YamlUtil implements Configable {
 	
-	private YamlUtil() {
-		throw new RuntimeException("no constructor for you");
-	}
-
-	public static Properties loadProperties(String yamlFilePath) {
+	@Override
+	public Properties loadProperties(String yamlFilePath) {
 		Yaml yml = new Yaml();
 		Properties props = new Properties();
 		try (InputStream inputStream = YamlUtil.class
@@ -43,7 +40,7 @@ public class YamlUtil {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static void parseMap(Map<String, Object> map, String baseKey, Properties props) {
+	private void parseMap(Map<String, Object> map, String baseKey, Properties props) {
 		String key;
 		Object value;
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -58,4 +55,20 @@ public class YamlUtil {
 			}
 		}
 	}
+
+	@Override
+	public int getPriority() {
+		return 1;
+	}
+	
+	@Override
+	public String getDefaultFilePath() {
+		return "youtu.yml";
+	}
+	
+	@Override 
+	public String getSupportFileSuffix() {
+		return "yml";
+	}
+
 }

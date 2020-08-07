@@ -41,10 +41,9 @@ public class ClientFactory {
 	}
 
 	private static Client createClientByReflect(Class<?> requestClass, String requestClassName) {
-		String requestPackage = requestClassName.substring(0, requestClassName.lastIndexOf("."));
-		StringUtils.substring(requestClassName, 0, StringUtils.lastIndexOf(requestClassName, "."));
+		String requestPackage = StringUtils.substring(requestClassName, 0, StringUtils.lastIndexOf(requestClassName, "."));
 		String simpleRequestClassName = requestClass.getSimpleName();
-		String clientPackage = requestPackage.replace("request", "client");
+		String clientPackage = StringUtils.replace(requestPackage, "request", "client");
 		String clientClassName = clientPackage.concat(".").concat(simpleRequestClassName.replace("Request", "Client"));
 		try {
 			return (Client) Reflect.onClass(clientClassName).create().call("setRequest", requestDelegate).get();

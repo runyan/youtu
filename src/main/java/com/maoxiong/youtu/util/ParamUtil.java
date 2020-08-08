@@ -21,8 +21,7 @@ public class ParamUtil {
 
 	private final String appId = String.valueOf(Context.get("app_id"));
 
-	private ParamUtil() {
-	}
+	private ParamUtil() {}
 
 	enum SingletonHolder {
 		/**
@@ -49,11 +48,11 @@ public class ParamUtil {
 		if (!PARAM_MAP.isEmpty()) {
 			PARAM_MAP.clear();
 		}
-		if (!StringUtils.isBlank(url)) {
+		if (StringUtils.isNotBlank(url)) {
 			PARAM_MAP.put("url", url);
 			return buildParamJson(PARAM_MAP);
 		}
-		if (!StringUtils.isBlank(filePath)) {
+		if (StringUtils.isNotBlank(filePath)) {
 			byte[] imgData = FileUtil.readFileByBytes(filePath);
 			String image = Base64.getEncoder().encodeToString(imgData);
 			PARAM_MAP.put("image", image);

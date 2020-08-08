@@ -40,7 +40,7 @@ public class Context {
 			public void run() {
 				Object pathObj = PARAM_MAP.get("tempFilePath");
 				String tempFilePath = Objects.isNull(pathObj) ? StringUtils.EMPTY : String.valueOf(pathObj);
-				if (!StringUtils.isBlank(tempFilePath) && !StringUtils.equalsIgnoreCase(tempFilePath, NULL)) {
+				if (StringUtils.isNotBlank(tempFilePath) && !StringUtils.equalsIgnoreCase(tempFilePath, NULL)) {
 					try {
 						Files.deleteIfExists(Paths.get(tempFilePath));
 					} catch (IOException e) {

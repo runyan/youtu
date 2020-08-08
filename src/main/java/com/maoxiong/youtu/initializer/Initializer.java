@@ -5,11 +5,11 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.maoxiong.youtu.annotation.ConfigAnnotationParser;
+import com.maoxiong.youtu.annotation.parser.ConfigAnnotationParser;
+import com.maoxiong.youtu.constants.ConfigConstans;
 import com.maoxiong.youtu.context.Context;
+import com.maoxiong.youtu.util.ConfigFileUtil;
 import com.maoxiong.youtu.util.SignUtil;
-import com.maoxiong.youtu.util.configfile.ConfigFileUtil;
-import com.maoxiong.youtu.util.configfile.PropertyUtil;
 
 /**
  * 
@@ -26,23 +26,23 @@ public class Initializer {
 	private String secretKey;
 
 	public Initializer() {
-		this("");
+		this(StringUtils.EMPTY);
 	}
 
 	public Initializer(String propertiesFilePath) {
 		this(ConfigFileUtil.loadProperties(propertiesFilePath));
 	}
-	
+
 	public Initializer(Class<?> configClass) {
 		this(ConfigAnnotationParser.parseConfigProperties(configClass));
 	}
 
 	public Initializer(Properties properties) {
-		this(PropertyUtil.getPropertyValue(properties, "youtu.qq"),
-				PropertyUtil.getPropertyValue(properties, "youtu.appId"),
-				PropertyUtil.getPropertyValue(properties, "youtu.secretId"),
-				PropertyUtil.getPropertyValue(properties, "youtu.secretKey"),
-				PropertyUtil.getPropertyValue(properties, "youtu.fileSavePath"));
+		this(String.valueOf(properties.getOrDefault(ConfigConstans.QQ, StringUtils.EMPTY)),
+				String.valueOf(properties.getOrDefault(ConfigConstans.APP_ID, StringUtils.EMPTY)),
+				String.valueOf(properties.getOrDefault(ConfigConstans.SECRET_ID, StringUtils.EMPTY)),
+				String.valueOf(properties.getOrDefault(ConfigConstans.SECRET_KEY, StringUtils.EMPTY)),
+				String.valueOf(properties.getOrDefault(ConfigConstans.FILE_SAVE_PATH, StringUtils.EMPTY)));
 	}
 
 	public Initializer(Builder builder) {

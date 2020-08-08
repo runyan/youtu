@@ -1,13 +1,17 @@
-package com.maoxiong.youtu.util.configfile;
+package com.maoxiong.youtu.util.configloader;
 
 import java.util.Properties;
+
+import com.maoxiong.youtu.cache.impl.LruCache;
 
 /**
  * 
  * @author yanrun
  *
  */
-public interface Configable {
+public interface ConfigFileLoader {
+	
+	static final LruCache<String, Properties> PROPERTY_CACHE = new LruCache<>(64);
 
 	/**
 	 * 根据配置文件路径读取配置信息
@@ -17,22 +21,10 @@ public interface Configable {
 	 */
 	Properties loadProperties(String filePath);
 	/**
-	 * 获取优先级
-	 * 
-	 * @return 优先级
-	 */
-	int getPriority();
-	/**
 	 * 获取默认配置文件路径
 	 * 
 	 * @return 默认配置文件路径
 	 */
 	String getDefaultFilePath();
 	
-	/**
-	 * 获取支持的文件类型
-	 * 
-	 * @return 支持的文件类型
-	 */
-	String getSupportFileSuffix();
 }

@@ -16,7 +16,7 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoders are by default assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <encoder>
-            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %c - %msg%n</pattern>
+            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} %-5level %c %msg%n</pattern>
         </encoder>
     </appender>
     
@@ -30,7 +30,7 @@
         </rollingPolicy> 
         <!-- encoder负责两件事，一是把日志信息转换成字节数组，二是把字节数组写入到输出流。 -->
         <encoder> 
-        	<pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %c - %msg%n</pattern>
+        	<pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} %-5level %c - %msg%n</pattern>
         </encoder> 
         <!-- 过滤器，可以过滤掉不符合条件的日志，INFO及以上的日志被处理，其它的拒绝 -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter"> 

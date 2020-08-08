@@ -1,4 +1,4 @@
-package com.maoxiong.youtu.util.configfile;
+package com.maoxiong.youtu.util.configloader.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,33 +10,41 @@ import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
+import com.maoxiong.youtu.annotation.ConfigLoaderConfiguration;
 import com.maoxiong.youtu.util.LogUtil;
+import com.maoxiong.youtu.util.configloader.ConfigFileLoader;
 
 /**
  * 
  * @author yanrun
  *
  */
-public class YamlUtil implements Configable {
+@ConfigLoaderConfiguration(priority = 1, suffix = "yml")
+public class YamlConfigLoader implements ConfigFileLoader {
 	
 	@Override
 	public Properties loadProperties(String yamlFilePath) {
 		Yaml yml = new Yaml();
 		Properties props = new Properties();
-		try (InputStream inputStream = YamlUtil.class
+		try (InputStream inputStream = YamlConfigLoader.class
 				  .getClassLoader()
 				  .getResourceAsStream(yamlFilePath)) {
 			Map<String, Object> propertyMap = yml.load(inputStream);
 			if (Objects.isNull(propertyMap)) {
-				return null;
+				throw new RuntimeException("no config in yaml file: " + yamlFilePath);
 			}
 			parseMap(propertyMap, StringUtils.EMPTY, props);
-			ConfigFileUtil.PROPERTY_CACHE.set(yamlFilePath, props);
+			PROPERTY_CACHE.set(yamlFilePath, props);
 			return props;
 		} catch (YAMLException | IOException e) {
-			LogUtil.error(e.getMessage());
-			return null;
+			String msg = e.getMessage();
+			if (StringUtils.contains(msg, "java.io.IOException: Stream closed")) {
+				LogUtil.warn("yaml file: {} does not exists", yamlFilePath);
+			} else {
+				throw new RuntimeException(e);
+			}
 		}
+		return null;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -53,18 +61,8 @@ public class YamlUtil implements Configable {
 	}
 	
 	@Override
-	public int getPriority() {
-		return 1;
-	}
-	
-	@Override
 	public String getDefaultFilePath() {
 		return "youtu.yml";
 	}
 	
-	@Override 
-	public String getSupportFileSuffix() {
-		return "yml";
-	}
-
 }

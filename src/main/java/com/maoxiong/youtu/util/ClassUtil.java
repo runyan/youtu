@@ -40,7 +40,7 @@ public class ClassUtil {
 				List<Class<?>> list = allClass.stream().filter(clz -> {
 					return clazz.isAssignableFrom(clz) && !clazz.equals(clz);
 				}).collect(Collectors.toList());
-				LogUtil.info("class list size :" + list.size());
+				LogUtil.debug("class list size: {}", list.size());
 				return list;
 			} catch (Exception e) {
 				LogUtil.error(e.getMessage());
@@ -56,17 +56,17 @@ public class ClassUtil {
 	 * @param packagename
 	 */
 	private static List<Class<?>> getAllClass(String packagename) {
-		LogUtil.info("packageName to search: " + packagename);
+		LogUtil.debug("packageName to search: {}", packagename);
 		List<String> classNameList = getClassName(packagename);
 		List<Class<?>> list = classNameList.stream().map(className -> {
 			try {
 				return Class.forName(className, false, Thread.currentThread().getContextClassLoader());
 			} catch (ClassNotFoundException e) {
-				LogUtil.error("load class from name failed:" + className + e.getMessage());
+				LogUtil.error("load class from {} failed: {}", className, e.getMessage());
 				return null;
 			}
 		}).filter(className -> Objects.nonNull(className)).collect(Collectors.toList());
-		LogUtil.info("find list size :" + list.size());
+		LogUtil.debug("find list size: {}", list.size());
 		return list;
 	}
 
@@ -83,12 +83,12 @@ public class ClassUtil {
 		URL url = loader.getResource(packagePath);
 		if (Objects.nonNull(url)) {
 			String type = url.getProtocol();
-			LogUtil.debug("file type : " + type);
+			LogUtil.debug("file type: {}", type);
 			if (type.equals(TYPE_FILE)) {
 				String fileSearchPath = url.getPath();
-				LogUtil.debug("fileSearchPath: " + fileSearchPath);
+				LogUtil.debug("fileSearchPath: {}", fileSearchPath);
 				fileSearchPath = fileSearchPath.substring(0, fileSearchPath.indexOf("/classes"));
-				LogUtil.debug("fileSearchPath: " + fileSearchPath);
+				LogUtil.debug("fileSearchPath: {}", fileSearchPath);
 				fileNames = getClassNameByFile(fileSearchPath);
 			} else if (type.equals(TYPE_JAR)) {
 				try {

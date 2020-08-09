@@ -15,7 +15,7 @@ import com.maoxiong.youtu.util.configloader.ConfigFileLoader;
  * @author yanrun
  *
  */
-@ConfigLoaderConfiguration(priority = 2, suffix = "properties")
+@ConfigLoaderConfiguration(priority = 2, suffix = "properties", defaultFilePath = "/youtu.properties")
 public class PropertyConfigLoader implements ConfigFileLoader {
 	
 	@Override
@@ -32,11 +32,6 @@ public class PropertyConfigLoader implements ConfigFileLoader {
         } catch(IOException e) {
         	throw new RuntimeException(e);
         }
-	}
-	
-	@Override
-	public String getDefaultFilePath() {
-		return "/youtu.properties";
 	}
 	
 }

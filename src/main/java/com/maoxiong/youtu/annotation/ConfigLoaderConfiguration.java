@@ -18,4 +18,5 @@ public @interface ConfigLoaderConfiguration {
 
 	int priority() default Integer.MIN_VALUE;
 	String suffix();
+	String defaultFilePath();
 }

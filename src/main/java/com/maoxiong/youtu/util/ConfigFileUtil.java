@@ -33,10 +33,6 @@ public class ConfigFileUtil {
 		throw new RuntimeException("no constructor for you");
 	}
 	
-	public static void main(String[] args) {
-		System.out.println(loadProperties(""));
-	}
-
 	public static Properties loadProperties(String filePath) {
 		synchronized (LOCK) {
 			if (!loaded) {
@@ -58,7 +54,7 @@ public class ConfigFileUtil {
 			if (Objects.isNull(loader)) {
 				loader = instantiateConfigLoader(clz);
 			}
-			props = loader.loadProperties(loader.getDefaultFilePath());
+			props = loader.loadProperties(ConfigableLoaderAnnotaionParser.getDefaultFilePath(clz));
 			if (Objects.nonNull(props)) {
 				return props;
 			}
@@ -102,7 +98,9 @@ public class ConfigFileUtil {
 					.compareTo(ConfigableLoaderAnnotaionParser.getConfigFilePriority(c2));
 		});
 		configFileClasses = configFileClasses.stream()
-				.filter(clz -> ConfigFileLoader.class.isAssignableFrom(clz))
+				.filter(clz -> Objects.nonNull(clz) && 
+						ConfigFileLoader.class.isAssignableFrom(clz))
+				.distinct()
 				.collect(Collectors.toList());
 		configFileClasses.forEach(clz -> {
 			String suffix = ConfigableLoaderAnnotaionParser.getConfigLoaderSuffix(clz);
@@ -110,7 +108,6 @@ public class ConfigFileUtil {
 				CONFIG_LOADER_CLASS_MAP.put(suffix, clz);
 				SORTED_CONFIG_LOADER_CLASS_QUEUE.offer(clz);
 			}
-			
 		});
 	}
 	

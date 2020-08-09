@@ -17,7 +17,7 @@ import com.maoxiong.youtu.util.LogUtil;
 import com.maoxiong.youtu.util.configloader.ConfigFileLoader;
 import com.maoxiong.youtu.util.configloader.entity.JsonConfigEntity;
 
-@ConfigLoaderConfiguration(priority = 3, suffix = "json")
+@ConfigLoaderConfiguration(priority = 3, suffix = "json", defaultFilePath = "youtu.json")
 public class JsonConfigLoader implements ConfigFileLoader {
 
 	@Override
@@ -46,11 +46,6 @@ public class JsonConfigLoader implements ConfigFileLoader {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	@Override
-	public String getDefaultFilePath() {
-		return "youtu.json";
 	}
 
 }

@@ -20,11 +20,5 @@ public interface ConfigFileLoader {
 	 * @return 配置信息
 	 */
 	Properties loadProperties(String filePath);
-	/**
-	 * 获取默认配置文件路径
-	 * 
-	 * @return 默认配置文件路径
-	 */
-	String getDefaultFilePath();
 	
 }

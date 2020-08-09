@@ -19,7 +19,7 @@ import com.maoxiong.youtu.util.configloader.ConfigFileLoader;
  * @author yanrun
  *
  */
-@ConfigLoaderConfiguration(priority = 1, suffix = "yml")
+@ConfigLoaderConfiguration(priority = 1, suffix = "yml", defaultFilePath = "youtu.yml")
 public class YamlConfigLoader implements ConfigFileLoader {
 	
 	@Override
@@ -58,11 +58,6 @@ public class YamlConfigLoader implements ConfigFileLoader {
 						: String.valueOf(value));
 			}
 		});
-	}
-	
-	@Override
-	public String getDefaultFilePath() {
-		return "youtu.yml";
 	}
 	
 }

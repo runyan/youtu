@@ -26,7 +26,21 @@ public class Initializer {
 	private String secretKey;
 
 	public Initializer() {
-		this(StringUtils.EMPTY);
+		String qq = System.getProperty(ConfigConstans.QQ);
+		if (StringUtils.isNotBlank(qq)) {
+			String appId = System.getProperty(ConfigConstans.APP_ID);
+			String secretId = System.getProperty(ConfigConstans.SECRET_ID);
+			String secretKey = System.getProperty(ConfigConstans.SECRET_KEY);
+			String fileSavePath = System.getProperty(ConfigConstans.FILE_SAVE_PATH);
+			setup(qq, appId, secretId, secretKey, fileSavePath);
+		} else {
+			Properties props = ConfigFileUtil.loadProperties(StringUtils.EMPTY);
+			setup(String.valueOf(props.getOrDefault(ConfigConstans.QQ, StringUtils.EMPTY)),
+					String.valueOf(props.getOrDefault(ConfigConstans.APP_ID, StringUtils.EMPTY)),
+					String.valueOf(props.getOrDefault(ConfigConstans.SECRET_ID, StringUtils.EMPTY)),
+					String.valueOf(props.getOrDefault(ConfigConstans.SECRET_KEY, StringUtils.EMPTY)),
+					String.valueOf(props.getOrDefault(ConfigConstans.FILE_SAVE_PATH, StringUtils.EMPTY)));
+		}
 	}
 
 	public Initializer(String propertiesFilePath) {
@@ -50,6 +64,10 @@ public class Initializer {
 	}
 
 	private Initializer(String qq, String appId, String secretId, String secretKey, String fileSavePath) {
+		setup(qq, appId, secretId, secretKey, fileSavePath);
+	}
+	
+	private void setup(String qq, String appId, String secretId, String secretKey, String fileSavePath) {
 		this.qq = qq;
 		this.appId = appId;
 		this.secretId = secretId;

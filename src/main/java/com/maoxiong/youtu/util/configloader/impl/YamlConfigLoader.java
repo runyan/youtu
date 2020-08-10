@@ -22,6 +22,8 @@ import com.maoxiong.youtu.util.configloader.ConfigFileLoader;
 @ConfigLoaderConfiguration(priority = 1, suffix = "yml", defaultFilePath = "youtu.yml")
 public class YamlConfigLoader implements ConfigFileLoader {
 	
+	private static final String YAML_NOT_EXISTS = "java.io.IOException: Stream closed";
+	
 	@Override
 	public Properties loadProperties(String yamlFilePath) {
 		Yaml yml = new Yaml();
@@ -38,7 +40,7 @@ public class YamlConfigLoader implements ConfigFileLoader {
 			return props;
 		} catch (YAMLException | IOException e) {
 			String msg = e.getMessage();
-			if (StringUtils.contains(msg, "java.io.IOException: Stream closed")) {
+			if (StringUtils.contains(msg, YAML_NOT_EXISTS)) {
 				LogUtil.warn("yaml file: {} does not exists", yamlFilePath);
 			} else {
 				throw new RuntimeException(e);

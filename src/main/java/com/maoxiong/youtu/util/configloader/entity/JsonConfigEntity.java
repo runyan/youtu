@@ -41,23 +41,30 @@ public class JsonConfigEntity implements Serializable {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		JsonConfigEntity other = (JsonConfigEntity) obj;
 		if (configName == null) {
-			if (other.configName != null)
+			if (other.configName != null) {
 				return false;
-		} else if (!configName.equals(other.configName))
+			}
+		} else if (!configName.equals(other.configName)) {
 			return false;
+		}
 		if (configValue == null) {
-			if (other.configValue != null)
+			if (other.configValue != null) {
 				return false;
-		} else if (!configValue.equals(other.configValue))
+			}
+		} else if (!configValue.equals(other.configValue)) {
 			return false;
+		}
 		return true;
 	}
 	

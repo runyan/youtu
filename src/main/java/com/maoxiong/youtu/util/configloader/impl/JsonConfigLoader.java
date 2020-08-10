@@ -17,6 +17,11 @@ import com.maoxiong.youtu.util.LogUtil;
 import com.maoxiong.youtu.util.configloader.ConfigFileLoader;
 import com.maoxiong.youtu.util.configloader.entity.JsonConfigEntity;
 
+/**
+ * 
+ * @author yanrun
+ *
+ */
 @ConfigLoaderConfiguration(priority = 3, suffix = "json", defaultFilePath = "youtu.json")
 public class JsonConfigLoader implements ConfigFileLoader {
 

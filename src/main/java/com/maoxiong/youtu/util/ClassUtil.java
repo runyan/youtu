@@ -84,13 +84,13 @@ public class ClassUtil {
 		if (Objects.nonNull(url)) {
 			String type = url.getProtocol();
 			LogUtil.debug("file type: {}", type);
-			if (type.equals(TYPE_FILE)) {
+			if (TYPE_FILE.equals(type)) {
 				String fileSearchPath = url.getPath();
 				LogUtil.debug("fileSearchPath: {}", fileSearchPath);
 				fileSearchPath = fileSearchPath.substring(0, fileSearchPath.indexOf("/classes"));
 				LogUtil.debug("fileSearchPath: {}", fileSearchPath);
 				fileNames = getClassNameByFile(fileSearchPath);
-			} else if (type.equals(TYPE_JAR)) {
+			} else if (TYPE_JAR.equals(type)) {
 				try {
 					JarURLConnection jarUrlConnection = (JarURLConnection) url.openConnection();
 					JarFile jarFile = jarUrlConnection.getJarFile();

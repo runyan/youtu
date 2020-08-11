@@ -8,7 +8,6 @@ import java.util.Properties;
 
 import com.maoxiong.youtu.annotation.ConfigLoaderConfiguration;
 import com.maoxiong.youtu.util.LogUtil;
-import com.maoxiong.youtu.util.configloader.ConfigFileLoader;
 
 /**
  * 
@@ -16,15 +15,14 @@ import com.maoxiong.youtu.util.configloader.ConfigFileLoader;
  *
  */
 @ConfigLoaderConfiguration(priority = 2, suffix = "properties", defaultFilePath = "/youtu.properties")
-public class PropertyConfigLoader implements ConfigFileLoader {
+public class PropertyConfigLoader extends AbstractConfigLoader {
 	
 	@Override
-	public Properties loadProperties(String propertiesFilePath) {
+	public Properties doLoadProperties(String propertiesFilePath) {
 		Properties props = new Properties();
 		try (InputStream inputStream = PropertyConfigLoader.class.getResourceAsStream(propertiesFilePath)) {
 			BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
             props.load(bf);
-            PROPERTY_CACHE.set(propertiesFilePath, props);
             return props;
 		} catch(NullPointerException e) {
 			LogUtil.warn("properties file: {} does not exists", propertiesFilePath);

@@ -14,7 +14,6 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.maoxiong.youtu.annotation.ConfigLoaderConfiguration;
 import com.maoxiong.youtu.util.LogUtil;
-import com.maoxiong.youtu.util.configloader.ConfigFileLoader;
 import com.maoxiong.youtu.util.configloader.entity.JsonConfigEntity;
 
 /**
@@ -23,10 +22,10 @@ import com.maoxiong.youtu.util.configloader.entity.JsonConfigEntity;
  *
  */
 @ConfigLoaderConfiguration(priority = 3, suffix = "json", defaultFilePath = "youtu.json")
-public class JsonConfigLoader implements ConfigFileLoader {
+public class JsonConfigLoader extends AbstractConfigLoader {
 
 	@Override
-	public Properties loadProperties(String filePath) {
+	protected Properties doLoadProperties(String filePath) {
 		Gson gson = new Gson();
 		try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
 				InputStreamReader in = new InputStreamReader(is);) {
@@ -37,13 +36,13 @@ public class JsonConfigLoader implements ConfigFileLoader {
 				throw new RuntimeException("no config found in " + filePath);
 			}
 			Properties props = new Properties();
-			configEntityList.forEach(configEntity -> {
+			for (JsonConfigEntity configEntity : configEntityList) {
 				String key = configEntity.getConfigName();
 				String value = configEntity.getConfigValue();
 				if (StringUtils.isNotEmpty(key)) {
 					props.setProperty(key, StringUtils.isEmpty(value) ? StringUtils.EMPTY : value);
 				}
-			});
+			}
 			return props;
 		} catch (NullPointerException e) {
 			LogUtil.warn("json file: {} does not exists", filePath);

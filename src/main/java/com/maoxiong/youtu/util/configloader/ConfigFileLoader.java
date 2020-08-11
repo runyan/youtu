@@ -2,8 +2,6 @@ package com.maoxiong.youtu.util.configloader;
 
 import java.util.Properties;
 
-import com.maoxiong.youtu.cache.impl.LruCache;
-
 /**
  * 
  * @author yanrun
@@ -11,8 +9,6 @@ import com.maoxiong.youtu.cache.impl.LruCache;
  */
 public interface ConfigFileLoader {
 	
-	static final LruCache<String, Properties> PROPERTY_CACHE = new LruCache<>(64);
-
 	/**
 	 * 根据配置文件路径读取配置信息
 	 * 

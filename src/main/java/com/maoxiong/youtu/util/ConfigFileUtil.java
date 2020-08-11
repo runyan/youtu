@@ -1,5 +1,6 @@
 package com.maoxiong.youtu.util;
 
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,10 +34,12 @@ public class ConfigFileUtil {
 	}
 	
 	public static Properties loadProperties(String filePath) {
-		synchronized (LOCK) {
-			if (!loaded) {
-				init();
-				loaded = true;
+		if (!loaded) {
+			synchronized (LOCK) {
+				if (!loaded) {
+					init();
+					loaded = true;
+				}
 			}
 		}
 		return StringUtils.isEmpty(filePath) ? loadPropertiesFromDefaultFilePath() : 
@@ -100,7 +103,7 @@ public class ConfigFileUtil {
 					.compareTo(ConfigableLoaderAnnotaionParser.getConfigFilePriority(c2));
 		});
 		configLoaderClasses = configLoaderClasses.stream()
-				.filter(clz -> Objects.nonNull(clz) && 
+				.filter(clz -> Objects.nonNull(clz) && !Modifier.isAbstract(clz.getModifiers()) &&
 						ConfigFileLoader.class.isAssignableFrom(clz))
 				.distinct()
 				.collect(Collectors.toList());

@@ -103,7 +103,8 @@ public class ConfigFileUtil {
 					.compareTo(ConfigableLoaderAnnotaionParser.getConfigFilePriority(c2));
 		});
 		configLoaderClasses = configLoaderClasses.stream()
-				.filter(clz -> Objects.nonNull(clz) && !Modifier.isAbstract(clz.getModifiers()) &&
+				.filter(Objects::nonNull)
+				.filter(clz -> !Modifier.isAbstract(clz.getModifiers()) &&
 						ConfigFileLoader.class.isAssignableFrom(clz))
 				.distinct()
 				.collect(Collectors.toList());

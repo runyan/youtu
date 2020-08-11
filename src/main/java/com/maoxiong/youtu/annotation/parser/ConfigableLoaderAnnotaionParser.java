@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import com.maoxiong.youtu.annotation.ConfigLoaderConfiguration;
 import com.maoxiong.youtu.cache.Cache;
-import com.maoxiong.youtu.cache.impl.LruCache;
+import com.maoxiong.youtu.cache.impl.CaffeineCache;
 
 /**
  * 
@@ -14,7 +14,7 @@ import com.maoxiong.youtu.cache.impl.LruCache;
 public class ConfigableLoaderAnnotaionParser {
 	
 	private static final Cache<Class<?>, ConfigLoaderConfiguration> CACHE = 
-			new LruCache<>(16);
+			new CaffeineCache<>();
 
 	public static Integer getConfigFilePriority(Class<?> clz) {
 		ConfigLoaderConfiguration config = getAnnotation(clz);

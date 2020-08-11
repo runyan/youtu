@@ -68,22 +68,32 @@ public class App {
 	private static final String SECRET_ID = "";
 	private static final String SECRET_KEY = "";
 	
-	static DefaultRequestPool pool = new DefaultRequestPool();
+	private static final DefaultRequestPool POOL = new DefaultRequestPool();
 	
     public static void main( String... args ) {
     	init();
-    	faceDetect();
-    	foodDetect();
-    	creditCardDetect();
-    	plateDetect();
-    	idDetect();
-    	text2Audio();
-    	invoiceDetect();
-    	pool.execute();
+    	initFaceDetect();
+    	initFoodDetect();
+    	initCreditCardDetect();
+    	initPlateDetect();
+    	initIdDetect();
+    	initText2Audio();
+    	initInvoiceDetect();
+    	POOL.execute();
 //    	pool.close();
     }
     
-    private static void invoiceDetect() {
+    private static void init() {
+    	Initializer initializer = new Initializer.Builder()
+    			.qq(QQ)
+    			.appId(APP_ID)
+    			.secretId(SECRET_ID)
+    			.secretKey(SECRET_KEY)
+    			.bulid();
+    	initializer.init();
+    }
+    
+    private static void initInvoiceDetect() {
     	Request invoiceDetectRequest = new InvoiceDetectRequest();
     	InvoiceDetectRequestEntity invoiceDetectRequestEntity = new InvoiceDetectRequestEntity();
     	invoiceDetectRequestEntity.setFileUrl("D://invoice.jpg");
@@ -106,10 +116,10 @@ public class App {
 			}
 
     	};
-    	pool.addRequest(invoiceDetectClient, invoiceDetectCallback);
-	}
-
-	private static void text2Audio() {
+    	POOL.addRequest(invoiceDetectClient, invoiceDetectCallback);
+    }
+    
+    private static void initText2Audio() {
     	Request text2AudioRequest = new TextToAudioRequest(true);
     	TextToAudioRequestEntity text2AudioRequestEntity = new TextToAudioRequestEntity();
     	text2AudioRequestEntity.setModelType(ModelType.FEMALE);
@@ -132,10 +142,10 @@ public class App {
 			}
     		
     	};
-    	pool.addRequest(textToAudioClient, textToAudioCallback);
-	}
-
-	private static void idDetect() {
+    	POOL.addRequest(textToAudioClient, textToAudioCallback);
+    }
+    
+    private static void initIdDetect() {
     	Request idDetectRequest = new IDDetectRequest();
     	IDDetectRequestEntity idDetectEntity = new IDDetectRequestEntity(CardType.BACK, true);
     	idDetectEntity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528361074011&di=3f24d7f66344f3b09b65dfbba112873e&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dpixel_huitu%252C0%252C0%252C294%252C40%2Fsign%3Db05d0b3c38fa828bc52e95a394672458%2Fd788d43f8794a4c2717d681205f41bd5ad6e39a8.jpg");
@@ -164,10 +174,10 @@ public class App {
 			}
     		
     	};
-    	pool.addRequest(idDetectClient, idDetectCallback);
-	}
-
-	private static void plateDetect() {
+    	POOL.addRequest(idDetectClient, idDetectCallback);
+    }
+    
+    private static void initPlateDetect() {
     	Request plateDetectRequest = new PlateDetectRequest();
     	PlateDetectRequestEntity plateDetectRequestEntity = new PlateDetectRequestEntity();
 //    	plateDetectRequestEntity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528277425993&di=c08a42bd6f25f31c49c1cb34d247f1b3&imgtype=jpg&src=http%3A%2F%2Fimg3.imgtn.bdimg.com%2Fit%2Fu%3D1593700053%2C2642362344%26fm%3D214%26gp%3D0.jpg");
@@ -197,10 +207,63 @@ public class App {
 			}
     		
     	};
-    	pool.addRequest(plateDetectClient, plateDetectCallback);
-	}
+    	POOL.addRequest(plateDetectClient, plateDetectCallback);
+    }
+    
+    private static void initFaceDetect() {
+    	Request faceDetectRequest = new FaceDetectRequest();
+    	FaceDectectRequestEntity faceRequestEntity = new FaceDectectRequestEntity();
+//    	faceRequestEntity.setFilePath("D://b.png");
+    	faceRequestEntity.setFileUrl("https://pic4.zhimg.com/v2-334f7a126585e75a87c7a982cae77532_im.jpg");
+    	faceDetectRequest.setParams(faceRequestEntity);
+    	Client faceDetectClient = ClientFactory.constructClient(faceDetectRequest);
+    	CallBack<FaceDetectResult> faceDetectCallBack = new CallBack<FaceDetectResult>() {
 
-	private static void creditCardDetect() {
+			@Override
+			public void onFail(Exception e) {
+				LogUtil.error(e.getMessage());
+				e.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, FaceDetectResult result) {
+				LogUtil.info(isSuccess + " " + errorCode + " " + errorMsg);
+				List<FaceItem> faceList = result.getFaceItemList();
+				faceList.forEach(face -> {
+					LogUtil.info("Gender: " + face.getGender());
+					LogUtil.info("Beauty: " + face.getBeauty());
+					LogUtil.info("Age: " + face.getAge());
+				});
+			}
+    		
+    	};
+    	POOL.addRequest(faceDetectClient, faceDetectCallBack);
+    }
+    
+    private static void initFoodDetect() {
+    	Request foodDetectRequest = new FoodDetectRequest();
+    	FoodDetectRequestEntity requestEntity = new FoodDetectRequestEntity();
+    	requestEntity.setFileUrl("https://pic3.zhimg.com/80/v2-8352df032c855c3967467d4101c2fe6b_hd.jpg");
+    	foodDetectRequest.setParams(requestEntity);
+    	Client client = ClientFactory.constructClient(foodDetectRequest);
+    	CallBack<FoodDetectResult> foodDetectCallBack = new CallBack<FoodDetectResult>() {
+
+			@Override
+			public void onSuccess(boolean isSuccess, String errorCode, String responseString, FoodDetectResult result) {
+				LogUtil.info(result.isFood() + " " + result.getFoodConfidence() * 100);
+			}
+
+			@Override
+			public void onFail(Exception e) {
+				LogUtil.error(e.getMessage());
+				e.printStackTrace();
+			}
+    		
+    	};
+    	POOL.addRequest(client, foodDetectCallBack);
+    }
+    
+    private static void initCreditCardDetect() {
     	Request creditCardDetectRequest = new CreditCardDetectRequest();
     	CreditCradDetectRequestEntity entity = new CreditCradDetectRequestEntity();
     	entity.setFilePath("D://timg.jpg");
@@ -229,70 +292,6 @@ public class App {
 			}
     		
     	};
-    	pool.addRequest(creditCardDetectClient,  creditCardDetectCallback);
-	}
-
-	private static void foodDetect() {
-    	Request foodDetectRequest = new FoodDetectRequest();
-    	FoodDetectRequestEntity requestEntity = new FoodDetectRequestEntity();
-    	requestEntity.setFileUrl("https://pic3.zhimg.com/80/v2-8352df032c855c3967467d4101c2fe6b_hd.jpg");
-    	foodDetectRequest.setParams(requestEntity);
-    	Client client = ClientFactory.constructClient(foodDetectRequest);
-    	CallBack<FoodDetectResult> foodDetectCallBack = new CallBack<FoodDetectResult>() {
-
-			@Override
-			public void onSuccess(boolean isSuccess, String errorCode, String responseString, FoodDetectResult result) {
-				LogUtil.info(result.isFood() + " " + result.getFoodConfidence() * 100);
-			}
-
-			@Override
-			public void onFail(Exception e) {
-				LogUtil.error(e.getMessage());
-				e.printStackTrace();
-			}
-    		
-    	};
-    	pool.addRequest(client, foodDetectCallBack);
-	}
-
-	private static void faceDetect() {
-    	Request faceDetectRequest = new FaceDetectRequest();
-    	FaceDectectRequestEntity faceRequestEntity = new FaceDectectRequestEntity();
-//    	faceRequestEntity.setFilePath("D://b.png");
-    	faceRequestEntity.setFileUrl("https://pic4.zhimg.com/v2-334f7a126585e75a87c7a982cae77532_im.jpg");
-    	faceDetectRequest.setParams(faceRequestEntity);
-    	Client faceDetectClient = ClientFactory.constructClient(faceDetectRequest);
-    	CallBack<FaceDetectResult> faceDetectCallBack = new CallBack<FaceDetectResult>() {
-
-			@Override
-			public void onFail(Exception e) {
-				LogUtil.error(e.getMessage());
-				e.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, FaceDetectResult result) {
-				LogUtil.info(isSuccess + " " + errorCode + " " + errorMsg);
-				List<FaceItem> faceList = result.getFaceItemList();
-				faceList.forEach(face -> {
-					LogUtil.info("Gender: " + face.getGender());
-					LogUtil.info("Beauty: " + face.getBeauty());
-					LogUtil.info("Age: " + face.getAge());
-				});
-			}
-    		
-    	};
-    	pool.addRequest(faceDetectClient, faceDetectCallBack);
-	}
-
-	private static void init() {
-    	Initializer initializer = new Initializer.Builder()
-    			.qq(QQ)
-    			.appId(APP_ID)
-    			.secretId(SECRET_ID)
-    			.secretKey(SECRET_KEY)
-    			.bulid();
-    	initializer.init();
+    	POOL.addRequest(creditCardDetectClient,  creditCardDetectCallback);
     }
-    
 }

@@ -6,6 +6,10 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Set;
 
 /**
@@ -68,7 +72,7 @@ public class FileTypeUtil {
 	 */
 	public static String getFileType(String filePath) {
 		String value = getFileHeader(filePath);
-		String result = "";
+		String result = StringUtils.EMPTY;
 		Set<Entry<String, String>> entrySet = FILE_TYPES.entrySet();
 		for (Entry<String, String> entry : entrySet) {
 			if (value.startsWith(entry.getKey())) {
@@ -86,7 +90,7 @@ public class FileTypeUtil {
 	 * @return 文件头信息
 	 */
 	public static String getFileHeader(String filePath) {
-		String value = "";
+		String value = StringUtils.EMPTY;
 		try {
 			byte[] b = Files.readAllBytes(Paths.get(filePath));
 			value = bytesToHexString(b);
@@ -103,10 +107,10 @@ public class FileTypeUtil {
 	 * @return 文件头十六进制信息
 	 */
 	private static String bytesToHexString(byte[] src) {
-		StringBuilder builder = new StringBuilder();
-		if (src == null || src.length <= 0) {
+		if (Objects.isNull(src) || src.length <= 0) {
 			return null;
 		}
+		StringBuilder builder = new StringBuilder();
 		String hv;
 		for (byte b : src) {
 			// 以十六进制（基数 16）无符号整数形式返回一个整数参数的字符串表示形式，并转换为大写

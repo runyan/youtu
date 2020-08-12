@@ -1,4 +1,4 @@
-package com.maoxiong.youtu.pool.impl;
+package com.maoxiong.youtu.pool.impl.internal;
 
 import java.util.Objects;
 
@@ -11,7 +11,7 @@ import com.maoxiong.youtu.entity.result.BaseResult;
  * @author yanrun
  *
  */
-class PooledTask implements Runnable {
+public class PooledTask implements Runnable {
 
 	private Client client;
 	private CallBack<? extends BaseResult> callback;

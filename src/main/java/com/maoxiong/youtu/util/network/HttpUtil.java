@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.maoxiong.youtu.cache.Cache;
 import com.maoxiong.youtu.cache.impl.CaffeineCache;
 import com.maoxiong.youtu.callback.RequestCallback;
+import com.maoxiong.youtu.constants.HttpConstants;
 import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.util.CacheKeyUtil;
 import com.maoxiong.youtu.util.LogUtil;
@@ -48,7 +49,7 @@ public class HttpUtil {
 		BaseResult resultEntity = RESULT_CACHE.getIfPresent(cacheKey);
 		if (Objects.nonNull(resultEntity)) {
 			LogUtil.info("get response from cache");
-			callback.onSuccess(true, "0", new Gson().toJson(resultEntity), resultEntity);
+			callback.onSuccess(true, HttpConstants.RESPONSE_SUCCESS_CODE, new Gson().toJson(resultEntity), resultEntity);
 		} else {
 			realCall(cacheKey, url, paramJson, callback, responseClass);
 		}
@@ -66,7 +67,8 @@ public class HttpUtil {
 			}
 			String responseBodyStr = response.body().string();
 			BaseResult resultEntity = gson.fromJson(responseBodyStr, responseClass);
-			String msgCode = isSuccessful ? "0" : "-1";
+			String msgCode = isSuccessful ? 
+					HttpConstants.RESPONSE_SUCCESS_CODE : HttpConstants.RESPONSE_FAIL_CODE;
 			String msg = resultEntity.getErrorMsg();
 			if (isSuccessful) {
 				RESULT_CACHE.set(cacheKey, resultEntity);

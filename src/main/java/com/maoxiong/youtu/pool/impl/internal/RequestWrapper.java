@@ -1,4 +1,4 @@
-package com.maoxiong.youtu.pool.impl;
+package com.maoxiong.youtu.pool.impl.internal;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -16,7 +16,7 @@ import com.maoxiong.youtu.util.UniqueIDUtil;
  * @author yanrun
  *
  */
-class RequestWrapper implements Comparable<RequestWrapper> {
+public class RequestWrapper implements Comparable<RequestWrapper> {
 
 	private long id;
 	private Request request;
@@ -25,8 +25,14 @@ class RequestWrapper implements Comparable<RequestWrapper> {
 
 	private String requestUrl;
 	private String requestParam;
+	
+	public RequestWrapper() {}
 
 	public RequestWrapper(Client requestClient, CallBack<? extends BaseResult> callback) {
+		init(requestClient, callback);
+	}
+
+	private void init(Client requestClient, CallBack<? extends BaseResult> callback) {
 		Objects.requireNonNull(requestClient, "null requestClient");
 		Objects.requireNonNull(callback, "null callback");
 		this.id = new UniqueIDUtil(0, 0).nextId();
@@ -37,7 +43,7 @@ class RequestWrapper implements Comparable<RequestWrapper> {
 		this.requestUrl = request.getRequestUrl();
 		this.requestParam = request.getParamsJsonString();
 	}
-
+	
 	public long getId() {
 		return id;
 	}
@@ -49,9 +55,17 @@ class RequestWrapper implements Comparable<RequestWrapper> {
 	public Client getRequestClient() {
 		return requestClient;
 	}
+	
+	public void setRequestClient(Client requestClient) {
+		this.requestClient = requestClient;
+	}
 
 	public CallBack<? extends BaseResult> getCallback() {
 		return callback;
+	}
+	
+	public void setCallback(CallBack<? extends BaseResult> callback) {
+		this.callback = callback;
 	}
 
 	@Override

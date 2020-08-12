@@ -27,6 +27,7 @@ import com.maoxiong.youtu.enums.VoiceSpeed;
 import com.maoxiong.youtu.factory.ClientFactory;
 import com.maoxiong.youtu.initializer.Initializer;
 import com.maoxiong.youtu.pool.impl.DefaultRequestPool;
+import com.maoxiong.youtu.pool.impl.DefaultRequestPoolFactory;
 import com.maoxiong.youtu.request.Request;
 import com.maoxiong.youtu.request.impl.CreditCardDetectRequest;
 import com.maoxiong.youtu.request.impl.FaceDetectRequest;
@@ -68,10 +69,14 @@ public class App {
 	private static final String SECRET_ID = "";
 	private static final String SECRET_KEY = "";
 	
-	private static final DefaultRequestPool POOL = new DefaultRequestPool();
+	private static final DefaultRequestPool POOL;
+	
+	static {
+		init();
+		POOL = DefaultRequestPoolFactory.getDefaultRequestPool(true);
+	}
 	
     public static void main( String... args ) {
-    	init();
     	initFaceDetect();
     	initFoodDetect();
     	initCreditCardDetect();
@@ -80,7 +85,7 @@ public class App {
     	initText2Audio();
     	initInvoiceDetect();
     	POOL.execute();
-//    	pool.close();
+//    	POOL.close();
     }
     
     private static void init() {

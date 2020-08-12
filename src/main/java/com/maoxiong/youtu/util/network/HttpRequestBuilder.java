@@ -5,6 +5,7 @@ import java.net.URL;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.maoxiong.youtu.constants.ContextConstants;
 import com.maoxiong.youtu.constants.HttpConstants;
 import com.maoxiong.youtu.context.Context;
 
@@ -60,12 +61,13 @@ public class HttpRequestBuilder {
 			if (!StringUtils.equalsIgnoreCase(host, HttpConstants.HOST)) {
 				throw new IllegalArgumentException("wrong host, must be: " + HttpConstants.HOST);
 			}
-			MediaType json = MediaType.parse("application/json; charset=utf-8");
-			RequestBody body = RequestBody.create(paramJson, json);
+			MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+			RequestBody body = RequestBody.create(paramJson, mediaType);
 			Headers.Builder headersBuilder = new Headers.Builder();
 			Headers headers = headersBuilder.add("Host", HttpConstants.HOST)
-					.add("Content-Length", String.valueOf(paramJson.length())).add("Content-Type", "text/json")
-					.add("Authorization", String.valueOf(Context.get("sign")))
+					.add("Content-Length", String.valueOf(paramJson.length()))
+					.add("Content-Type", "text/json")
+					.add("Authorization", String.valueOf(Context.get(ContextConstants.SIGN)))
 					.add("User-Agent",
 							"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 Safari/537.36")
 					.build();

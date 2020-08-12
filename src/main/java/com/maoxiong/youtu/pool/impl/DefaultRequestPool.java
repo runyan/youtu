@@ -21,6 +21,8 @@ import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.initializer.Initializer;
 import com.maoxiong.youtu.internal.datastructure.ConcurrentHashSet;
 import com.maoxiong.youtu.pool.RequestPool;
+import com.maoxiong.youtu.pool.impl.internal.PooledTask;
+import com.maoxiong.youtu.pool.impl.internal.RequestWrapper;
 import com.maoxiong.youtu.util.CommonUtil;
 import com.maoxiong.youtu.util.LogUtil;
 
@@ -35,21 +37,22 @@ public class DefaultRequestPool implements RequestPool {
 	private final ExecutorService threadPool;
 	private final Set<RequestWrapper> requestSet;
 	private final boolean shouldShutdownAfterExecution;
-
+	private PoolForRequestPool createPool;
+	
 	private volatile boolean isClosed;
 	private volatile AtomicBoolean isExecuting = new AtomicBoolean(false);
 
-	public DefaultRequestPool() {
+	DefaultRequestPool() {
 		this(true);
 	}
 
-	public DefaultRequestPool(boolean shouldShutdownAfterExecution) {
+	DefaultRequestPool(boolean shouldShutdownAfterExecution) {
 		Initializer.initCheck();
 		this.threadPool = new ThreadPoolExecutor(10, 50, 1, TimeUnit.MINUTES, new LinkedBlockingQueue<>(50),
 				(r) -> new Thread(r, "ThreadPool thread: " + threadSequance.incrementAndGet()));
 		this.requestSet = new ConcurrentHashSet<>();
 		this.shouldShutdownAfterExecution = shouldShutdownAfterExecution;
-		Context.REQUEAT_POOL_QUEUE.offer(this);
+		Context.REQUEST_POOL_QUEUE.offer(this);
 	}
 
 	private void checkBeforeAdd() {
@@ -89,6 +92,7 @@ public class DefaultRequestPool implements RequestPool {
 			if (Objects.isNull(u)) {
 				long timeUsed = ChronoUnit.MILLIS.between(begin, Instant.now());
 				LogUtil.info("total execute time {} s", timeUsed * 1.0 / 1000);
+				
 			} else {
 				u.printStackTrace();
 			}
@@ -99,7 +103,7 @@ public class DefaultRequestPool implements RequestPool {
 			close();
 		}
 	}
-
+	
 	@Override
 	public void cancel() {
 		threadPool.shutdown();
@@ -111,8 +115,11 @@ public class DefaultRequestPool implements RequestPool {
 			threadPool.shutdown();
 		}
 		isClosed = true;
-		Context.REQUEAT_POOL_QUEUE.poll();
+		Context.REQUEST_POOL_QUEUE.poll();
 		isExecuting.set(false);
+		if (Objects.nonNull(createPool)) {
+			createPool.returnObject(this);
+		}
 	}
 
 	@Override
@@ -144,5 +151,9 @@ public class DefaultRequestPool implements RequestPool {
 					currentThreadName, size + CommonUtil.singularOrPlural(size, " request", " requests"));
 		}
 	}
-
+	
+	public void setCreatePool(PoolForRequestPool pool) {
+		this.createPool = pool;
+	}
+	
 }

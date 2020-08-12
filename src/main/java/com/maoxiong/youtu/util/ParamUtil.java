@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.Gson;
+import com.maoxiong.youtu.constants.ContextConstants;
 import com.maoxiong.youtu.context.Context;
 
 /**
@@ -19,7 +20,7 @@ public class ParamUtil {
 
 	private static final Map<String, Object> PARAM_MAP = new HashMap<>(8);
 
-	private final String appId = String.valueOf(Context.get("app_id"));
+	private static final String APP_ID = String.valueOf(Context.get(ContextConstants.APP_ID));
 
 	private ParamUtil() {}
 
@@ -63,7 +64,7 @@ public class ParamUtil {
 
 	public String buildParamJson(Map<String, Object> params) {
 		Objects.requireNonNull(params, "empty param");
-		params.put("app_id", appId);
+		params.put(ContextConstants.APP_ID, APP_ID);
 		Gson gson = new Gson();
 		return gson.toJson(params);
 	}

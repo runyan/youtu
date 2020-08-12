@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.callback.RequestCallback;
 import com.maoxiong.youtu.client.AbstractClient;
+import com.maoxiong.youtu.constants.HttpConstants;
 import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.entity.result.impl.CorDetectResult;
 import com.maoxiong.youtu.util.network.HttpUtil;
@@ -27,7 +28,7 @@ public final class CreditCardDetectClient extends AbstractClient {
 				if (!isSuccess) {
 					callback.onFail(new RuntimeException("server error"));
 				}
-				callback.onSuccess(StringUtils.equals("0", errorCode), errorCode, result.getErrorMsg(), result);
+				callback.onSuccess(StringUtils.equals(HttpConstants.RESPONSE_SUCCESS_CODE, errorCode), errorCode, result.getErrorMsg(), result);
 			}
 
 			@Override

@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.callback.RequestCallback;
 import com.maoxiong.youtu.client.AbstractClient;
+import com.maoxiong.youtu.constants.HttpConstants;
 import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.entity.result.impl.FoodDetectResult;
 import com.maoxiong.youtu.util.network.HttpUtil;
@@ -32,7 +33,7 @@ public final class FoodDetectClient extends AbstractClient {
 				if (!isSuccess) {
 					callback.onFail(new RuntimeException("server error"));
 				}
-				callback.onSuccess(StringUtils.equals("0", errorCode), errorCode, responseEntity.getErrorMsg(),
+				callback.onSuccess(StringUtils.equals(HttpConstants.RESPONSE_SUCCESS_CODE, errorCode), errorCode, responseEntity.getErrorMsg(),
 						responseEntity);
 			}
 		}, FoodDetectResult.class);

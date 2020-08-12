@@ -10,12 +10,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
+import com.maoxiong.youtu.cache.Cache;
+import com.maoxiong.youtu.cache.impl.CaffeineCache;
+import com.maoxiong.youtu.constants.ContextConstants;
 import com.maoxiong.youtu.context.Context;
 
 import net.coobird.thumbnailator.Thumbnails;
@@ -27,8 +27,7 @@ import net.coobird.thumbnailator.Thumbnails;
  */
 public class FileUtil {
 
-	private static final Cache<String, byte[]> BYTE_CACHE = Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES)
-			.maximumSize(16).build();
+	private static final Cache<String, byte[]> BYTE_CACHE = new CaffeineCache<>();
 
 	private static final int MB = 1024 * 1024;
 
@@ -50,7 +49,7 @@ public class FileUtil {
 				throw new FileNotFoundException(filePath);
 			}
 			if (Files.isDirectory(path) || !Files.isReadable(path)) {
-				throw new IllegalArgumentException("file " + filePath + " is either a directory or is not readdable");
+				throw new IllegalArgumentException("file " + filePath + " is either a directory nor is readdable");
 			}
 			long fileSize = Files.size(path);
 			long fileSizeInMb = fileSize / MB;
@@ -64,7 +63,7 @@ public class FileUtil {
 				Files.deleteIfExists(Paths.get(tempFilePath));
 				Thumbnails.of(filePath).scale(fileSizeInMb >= 2 ? 0.25 : 0.5).useOriginalFormat().toFile(tempFilePath);
 				filePath = tempFilePath;
-				Context.set("tempFilePath", tempFilePath);
+				Context.set(ContextConstants.TEMP_FILE_SAVE_PATH, tempFilePath);
 			}
 			try (FileChannel fc = new RandomAccessFile(filePath, "r").getChannel()) {
 				long channelSize = fc.size();
@@ -77,7 +76,7 @@ public class FileUtil {
 				return result;
 			} catch (Exception e) {
 				e.printStackTrace();
-				throw new RuntimeException("cannot convert file: " + filePath + " to bytes");
+				throw new RuntimeException("cannot convert file: " + filePath + " to byte array");
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -93,8 +92,8 @@ public class FileUtil {
 	 */
 	public static String genFileFromBytes(byte[] src, String suffix) {
 		Path path;
-		String filePath = "";
-		String savePath = String.valueOf(Context.get("savePath"));
+		String filePath = StringUtils.EMPTY;
+		String savePath = String.valueOf(Context.get(ContextConstants.SAVE_PATH));
 		String fileSeparator = File.separator;
 		Objects.requireNonNull(savePath, "path cannot be null");
 		try {

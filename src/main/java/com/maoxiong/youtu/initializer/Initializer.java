@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.maoxiong.youtu.annotation.parser.ConfigAnnotationParser;
 import com.maoxiong.youtu.constants.ConfigConstans;
+import com.maoxiong.youtu.constants.ContextConstants;
 import com.maoxiong.youtu.context.Context;
 import com.maoxiong.youtu.util.ConfigFileUtil;
 import com.maoxiong.youtu.util.SignUtil;
@@ -73,7 +74,7 @@ public class Initializer {
 		this.secretId = secretId;
 		this.secretKey = secretKey;
 		String builderFilePath = fileSavePath;
-		Context.set("savePath",
+		Context.set(ContextConstants.SAVE_PATH,
 				StringUtils.isBlank(builderFilePath) ? System.getProperty("user.dir") : builderFilePath);
 	}
 
@@ -98,7 +99,7 @@ public class Initializer {
 	}
 
 	public static void initCheck() {
-		Object signObj = Context.get("sign");
+		Object signObj = Context.get(ContextConstants.SIGN);
 		signObj = Objects.isNull(signObj) ? StringUtils.EMPTY : signObj;
 		String sign = String.valueOf(signObj);
 		if (StringUtils.isBlank(sign)) {

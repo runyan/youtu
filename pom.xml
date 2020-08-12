@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 
 	<name>youtu</name>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/runyan/youtu</url>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -21,6 +21,7 @@
 		<okhttp.version>4.8.0</okhttp.version>
 		<gson.version>2.8.6</gson.version>
 		<commons.lang.version>3.11</commons.lang.version>
+		<commons-pool2.version>2.8.1</commons-pool2.version>
 		<thumbnailator.verision>0.4.11</thumbnailator.verision>
 		<snakeyaml.version>1.26</snakeyaml.version>
 		<kotlin-lib.version>1.3.72</kotlin-lib.version>
@@ -30,6 +31,11 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-pool2</artifactId>
+		    <version>${commons-pool2.version}</version>
+		</dependency>
 		<dependency>
 		    <groupId>net.coobird</groupId>
 		    <artifactId>thumbnailator</artifactId>

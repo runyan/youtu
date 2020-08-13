@@ -10,6 +10,8 @@ import com.maoxiong.youtu.constants.ConfigConstans;
 import com.maoxiong.youtu.constants.ContextConstants;
 import com.maoxiong.youtu.context.Context;
 import com.maoxiong.youtu.util.ConfigFileUtil;
+import com.maoxiong.youtu.util.ExceptionUtil;
+import com.maoxiong.youtu.util.LogUtil;
 import com.maoxiong.youtu.util.SignUtil;
 
 /**
@@ -76,6 +78,14 @@ public class Initializer {
 		String builderFilePath = fileSavePath;
 		Context.set(ContextConstants.SAVE_PATH,
 				StringUtils.isBlank(builderFilePath) ? System.getProperty("user.dir") : builderFilePath);
+		Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+			String stackTrace = ExceptionUtil.getExceptionStackTrace(e);
+			stackTrace = StringUtils.isEmpty(stackTrace) ? StringUtils.EMPTY : stackTrace;
+			LogUtil.error("Exception: Thread name : {}, Exception : {}, "
+					+ "Message: {},\n Stack trace: {}", 
+					t.getName(), e.getClass(), e.getMessage(), 
+					stackTrace);
+		});
 	}
 
 	public void init() {

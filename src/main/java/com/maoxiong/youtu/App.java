@@ -38,77 +38,56 @@ import com.maoxiong.youtu.request.impl.PlateDetectRequest;
 import com.maoxiong.youtu.request.impl.TextToAudioRequest;
 import com.maoxiong.youtu.util.LogUtil;
 
-
 /************************************************************
-*                                                           *
-*  .=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-.       *
-*   |                     ______                     |      *
-*   |                  .-"      "-.                  |      *
-*   |                 /            \                 |      *
-*   |     _          |              |          _     |      *
-*   |    ( \         |,  .-.  .-.  ,|         / )    |      *
-*   |     > "=._     | )(__/  \__)( |     _.=" <     |      *
-*   |    (_/"=._"=._ |/     /\     \| _.="_.="\_)    |      *
-*   |           "=._"(_     ^^     _)"_.="           |      *
-*   |               "=\__|IIIIII|__/="               |      *
-*   |              _.="| \IIIIII/ |"=._              |      *
-*   |    _     _.="_.="\          /"=._"=._     _    |      *
-*   |   ( \_.="_.="     `--------`     "=._"=._/ )   |      *
-*   |    > _.="                            "=._ <    |      *
-*   |   (_/                                    \_)   |      *
-*   |                                                |      *
-*   '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-='      *
-*                                                           *
-*      LASCIATE OGNI SPERANZA, VOI CH'ENTRATE               *
-*      @author yanrun                                       *
-*************************************************************/
+ * * .=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-. * | ______ | * | .-" "-.
+ * | * | / \ | * | _ | | _ | * | ( \ |, .-. .-. ,| / ) | * | > "=._ | )(__/
+ * \__)( | _.=" < | * | (_/"=._"=._ |/ /\ \| _.="_.="\_) | * | "=._"(_ ^^
+ * _)"_.=" | * | "=\__|IIIIII|__/=" | * | _.="| \IIIIII/ |"=._ | * | _ _.="_.="\
+ * /"=._"=._ _ | * | ( \_.="_.=" `--------` "=._"=._/ ) | * | > _.=" "=._ < | *
+ * | (_/ \_) | * | | * '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=' * *
+ * LASCIATE OGNI SPERANZA, VOI CH'ENTRATE *
+ * 
+ * @author yanrun *
+ *************************************************************/
 public class App {
-	
+
 	private static final String QQ = "";
 	private static final String APP_ID = "";
 	private static final String SECRET_ID = "";
 	private static final String SECRET_KEY = "";
-	
-	private static final DefaultRequestPool POOL;
-	
-	static {
+
+	public static void main(String... args) {
 		init();
-		POOL = DefaultRequestPoolFactory.getDefaultRequestPool(true);
+		try (DefaultRequestPool pool = DefaultRequestPoolFactory.getDefaultRequestPool(true)) {
+			initFaceDetect(pool);
+			initFoodDetect(pool);
+			initCreditCardDetect(pool);
+			initPlateDetect(pool);
+			initIdDetect(pool);
+			initText2Audio(pool);
+			initInvoiceDetect(pool);
+			pool.execute();
+		}
 	}
-	
-    public static void main( String... args ) {
-    	initFaceDetect();
-    	initFoodDetect();
-    	initCreditCardDetect();
-    	initPlateDetect();
-    	initIdDetect();
-    	initText2Audio();
-    	initInvoiceDetect();
-    	POOL.execute();
-//    	POOL.close();
-    }
-    
-    private static void init() {
-    	Initializer initializer = new Initializer.Builder()
-    			.qq(QQ)
-    			.appId(APP_ID)
-    			.secretId(SECRET_ID)
-    			.secretKey(SECRET_KEY)
-    			.bulid();
-    	initializer.init();
-    }
-    
-    private static void initInvoiceDetect() {
-    	Request invoiceDetectRequest = new InvoiceDetectRequest();
-    	InvoiceDetectRequestEntity invoiceDetectRequestEntity = new InvoiceDetectRequestEntity();
-    	invoiceDetectRequestEntity.setFileUrl("D://invoice.jpg");
-    	invoiceDetectRequest.setParams(invoiceDetectRequestEntity);
-    	Client invoiceDetectClient = ClientFactory.constructClient(invoiceDetectRequest);
-    	CallBack<InvoiceDetectResult> invoiceDetectCallback = new CallBack<InvoiceDetectResult>() {
+
+	private static void init() {
+		Initializer initializer = new Initializer.Builder().qq(QQ).appId(APP_ID).secretId(SECRET_ID)
+				.secretKey(SECRET_KEY).bulid();
+		initializer.init();
+	}
+
+	private static void initInvoiceDetect(DefaultRequestPool pool) {
+		Request invoiceDetectRequest = new InvoiceDetectRequest();
+		InvoiceDetectRequestEntity invoiceDetectRequestEntity = new InvoiceDetectRequestEntity();
+		invoiceDetectRequestEntity.setFileUrl("D://invoice.jpg");
+		invoiceDetectRequest.setParams(invoiceDetectRequestEntity);
+		Client invoiceDetectClient = ClientFactory.constructClient(invoiceDetectRequest);
+		CallBack<InvoiceDetectResult> invoiceDetectCallback = new CallBack<InvoiceDetectResult>() {
 
 			@Override
-			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, InvoiceDetectResult resultEntity) {
-				List<InvoiceItem>  itemList = resultEntity.getItems();
+			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg,
+					InvoiceDetectResult resultEntity) {
+				List<InvoiceItem> itemList = resultEntity.getItems();
 				itemList.forEach(item -> {
 					LogUtil.info("item:" + item);
 				});
@@ -120,19 +99,19 @@ public class App {
 				e.printStackTrace();
 			}
 
-    	};
-    	POOL.addRequest(invoiceDetectClient, invoiceDetectCallback);
-    }
-    
-    private static void initText2Audio() {
-    	Request text2AudioRequest = new TextToAudioRequest(true);
-    	TextToAudioRequestEntity text2AudioRequestEntity = new TextToAudioRequestEntity();
-    	text2AudioRequestEntity.setModelType(ModelType.FEMALE);
-    	text2AudioRequestEntity.setSpeed(VoiceSpeed.NORMAL);
-    	text2AudioRequestEntity.setText("腾讯优图，让未来在你身边");
-    	text2AudioRequest.setParams(text2AudioRequestEntity);
-    	Client textToAudioClient = ClientFactory.constructClient(text2AudioRequest);
-    	CallBack<TextToAudioResult> textToAudioCallback = new CallBack<TextToAudioResult>() {
+		};
+		pool.addRequest(invoiceDetectClient, invoiceDetectCallback);
+	}
+
+	private static void initText2Audio(DefaultRequestPool pool) {
+		Request text2AudioRequest = new TextToAudioRequest(true);
+		TextToAudioRequestEntity text2AudioRequestEntity = new TextToAudioRequestEntity();
+		text2AudioRequestEntity.setModelType(ModelType.FEMALE);
+		text2AudioRequestEntity.setSpeed(VoiceSpeed.NORMAL);
+		text2AudioRequestEntity.setText("腾讯优图，让未来在你身边");
+		text2AudioRequest.setParams(text2AudioRequestEntity);
+		Client textToAudioClient = ClientFactory.constructClient(text2AudioRequest);
+		CallBack<TextToAudioResult> textToAudioCallback = new CallBack<TextToAudioResult>() {
 
 			@Override
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, TextToAudioResult result) {
@@ -145,19 +124,20 @@ public class App {
 				LogUtil.error(e.getMessage());
 				e.printStackTrace();
 			}
-    		
-    	};
-    	POOL.addRequest(textToAudioClient, textToAudioCallback);
-    }
-    
-    private static void initIdDetect() {
-    	Request idDetectRequest = new IDDetectRequest();
-    	IDDetectRequestEntity idDetectEntity = new IDDetectRequestEntity(CardType.BACK, true);
-    	idDetectEntity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528361074011&di=3f24d7f66344f3b09b65dfbba112873e&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dpixel_huitu%252C0%252C0%252C294%252C40%2Fsign%3Db05d0b3c38fa828bc52e95a394672458%2Fd788d43f8794a4c2717d681205f41bd5ad6e39a8.jpg");
+
+		};
+		pool.addRequest(textToAudioClient, textToAudioCallback);
+	}
+
+	private static void initIdDetect(DefaultRequestPool pool) {
+		Request idDetectRequest = new IDDetectRequest();
+		IDDetectRequestEntity idDetectEntity = new IDDetectRequestEntity(CardType.BACK, true);
+		idDetectEntity.setFileUrl(
+				"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528361074011&di=3f24d7f66344f3b09b65dfbba112873e&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dpixel_huitu%252C0%252C0%252C294%252C40%2Fsign%3Db05d0b3c38fa828bc52e95a394672458%2Fd788d43f8794a4c2717d681205f41bd5ad6e39a8.jpg");
 //    	iDDetectEntity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528361604248&di=7b0023003f834c7a75b2ece009d680ea&imgtype=jpg&src=http%3A%2F%2Fimg2.imgtn.bdimg.com%2Fit%2Fu%3D30879982%2C1711011546%26fm%3D214%26gp%3D0.jpg");
-    	idDetectRequest.setParams(idDetectEntity);
-    	Client idDetectClient = ClientFactory.constructClient(idDetectRequest);
-    	CallBack<IDDetectResult> idDetectCallback = new CallBack<IDDetectResult>() {
+		idDetectRequest.setParams(idDetectEntity);
+		Client idDetectClient = ClientFactory.constructClient(idDetectRequest);
+		CallBack<IDDetectResult> idDetectCallback = new CallBack<IDDetectResult>() {
 
 			@Override
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, IDDetectResult result) {
@@ -177,19 +157,19 @@ public class App {
 				LogUtil.error(e.getMessage());
 				e.printStackTrace();
 			}
-    		
-    	};
-    	POOL.addRequest(idDetectClient, idDetectCallback);
-    }
-    
-    private static void initPlateDetect() {
-    	Request plateDetectRequest = new PlateDetectRequest();
-    	PlateDetectRequestEntity plateDetectRequestEntity = new PlateDetectRequestEntity();
+
+		};
+		pool.addRequest(idDetectClient, idDetectCallback);
+	}
+
+	private static void initPlateDetect(DefaultRequestPool pool) {
+		Request plateDetectRequest = new PlateDetectRequest();
+		PlateDetectRequestEntity plateDetectRequestEntity = new PlateDetectRequestEntity();
 //    	plateDetectRequestEntity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528277425993&di=c08a42bd6f25f31c49c1cb34d247f1b3&imgtype=jpg&src=http%3A%2F%2Fimg3.imgtn.bdimg.com%2Fit%2Fu%3D1593700053%2C2642362344%26fm%3D214%26gp%3D0.jpg");
-    	plateDetectRequestEntity.setFilePath("D:\\plate.jpg");
-    	plateDetectRequest.setParams(plateDetectRequestEntity);
-    	Client plateDetectClient = ClientFactory.constructClient(plateDetectRequest);
-    	CallBack<CorDetectResult> plateDetectCallback = new CallBack<CorDetectResult>() {
+		plateDetectRequestEntity.setFilePath("D:\\plate.jpg");
+		plateDetectRequest.setParams(plateDetectRequestEntity);
+		Client plateDetectClient = ClientFactory.constructClient(plateDetectRequest);
+		CallBack<CorDetectResult> plateDetectCallback = new CallBack<CorDetectResult>() {
 
 			@Override
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, CorDetectResult result) {
@@ -200,8 +180,8 @@ public class App {
 					LogUtil.info("itemString: " + item.getItemString());
 					LogUtil.info("itemConf: " + item.getItemConf() * 100);
 					final ItemCor cor = item.getCor();
-					LogUtil.info("itemCor x: " + cor.getX() + " " + "y: " + cor.getY() + " " + "height: " + cor.getHeight() + " " 
-							+ "width: " + cor.getWidth());
+					LogUtil.info("itemCor x: " + cor.getX() + " " + "y: " + cor.getY() + " " + "height: "
+							+ cor.getHeight() + " " + "width: " + cor.getWidth());
 				});
 			}
 
@@ -210,19 +190,19 @@ public class App {
 				LogUtil.error(e.getMessage());
 				e.printStackTrace();
 			}
-    		
-    	};
-    	POOL.addRequest(plateDetectClient, plateDetectCallback);
-    }
-    
-    private static void initFaceDetect() {
-    	Request faceDetectRequest = new FaceDetectRequest();
-    	FaceDectectRequestEntity faceRequestEntity = new FaceDectectRequestEntity();
+
+		};
+		pool.addRequest(plateDetectClient, plateDetectCallback);
+	}
+
+	private static void initFaceDetect(DefaultRequestPool pool) {
+		Request faceDetectRequest = new FaceDetectRequest();
+		FaceDectectRequestEntity faceRequestEntity = new FaceDectectRequestEntity();
 //    	faceRequestEntity.setFilePath("D://b.png");
-    	faceRequestEntity.setFileUrl("https://pic4.zhimg.com/v2-334f7a126585e75a87c7a982cae77532_im.jpg");
-    	faceDetectRequest.setParams(faceRequestEntity);
-    	Client faceDetectClient = ClientFactory.constructClient(faceDetectRequest);
-    	CallBack<FaceDetectResult> faceDetectCallBack = new CallBack<FaceDetectResult>() {
+		faceRequestEntity.setFileUrl("https://pic4.zhimg.com/v2-334f7a126585e75a87c7a982cae77532_im.jpg");
+		faceDetectRequest.setParams(faceRequestEntity);
+		Client faceDetectClient = ClientFactory.constructClient(faceDetectRequest);
+		CallBack<FaceDetectResult> faceDetectCallBack = new CallBack<FaceDetectResult>() {
 
 			@Override
 			public void onFail(Exception e) {
@@ -240,18 +220,18 @@ public class App {
 					LogUtil.info("Age: " + face.getAge());
 				});
 			}
-    		
-    	};
-    	POOL.addRequest(faceDetectClient, faceDetectCallBack);
-    }
-    
-    private static void initFoodDetect() {
-    	Request foodDetectRequest = new FoodDetectRequest();
-    	FoodDetectRequestEntity requestEntity = new FoodDetectRequestEntity();
-    	requestEntity.setFileUrl("https://pic3.zhimg.com/80/v2-8352df032c855c3967467d4101c2fe6b_hd.jpg");
-    	foodDetectRequest.setParams(requestEntity);
-    	Client client = ClientFactory.constructClient(foodDetectRequest);
-    	CallBack<FoodDetectResult> foodDetectCallBack = new CallBack<FoodDetectResult>() {
+
+		};
+		pool.addRequest(faceDetectClient, faceDetectCallBack);
+	}
+
+	private static void initFoodDetect(DefaultRequestPool pool) {
+		Request foodDetectRequest = new FoodDetectRequest();
+		FoodDetectRequestEntity requestEntity = new FoodDetectRequestEntity();
+		requestEntity.setFileUrl("https://pic3.zhimg.com/80/v2-8352df032c855c3967467d4101c2fe6b_hd.jpg");
+		foodDetectRequest.setParams(requestEntity);
+		Client client = ClientFactory.constructClient(foodDetectRequest);
+		CallBack<FoodDetectResult> foodDetectCallBack = new CallBack<FoodDetectResult>() {
 
 			@Override
 			public void onSuccess(boolean isSuccess, String errorCode, String responseString, FoodDetectResult result) {
@@ -263,18 +243,18 @@ public class App {
 				LogUtil.error(e.getMessage());
 				e.printStackTrace();
 			}
-    		
-    	};
-    	POOL.addRequest(client, foodDetectCallBack);
-    }
-    
-    private static void initCreditCardDetect() {
-    	Request creditCardDetectRequest = new CreditCardDetectRequest();
-    	CreditCradDetectRequestEntity entity = new CreditCradDetectRequestEntity();
-    	entity.setFilePath("D://timg.jpg");
-    	creditCardDetectRequest.setParams(entity);
-    	Client creditCardDetectClient = ClientFactory.constructClient(creditCardDetectRequest);
-    	CallBack<CorDetectResult> creditCardDetectCallback = new CallBack<CorDetectResult>() {
+
+		};
+		pool.addRequest(client, foodDetectCallBack);
+	}
+
+	private static void initCreditCardDetect(DefaultRequestPool pool) {
+		Request creditCardDetectRequest = new CreditCardDetectRequest();
+		CreditCradDetectRequestEntity entity = new CreditCradDetectRequestEntity();
+		entity.setFilePath("D://timg.jpg");
+		creditCardDetectRequest.setParams(entity);
+		Client creditCardDetectClient = ClientFactory.constructClient(creditCardDetectRequest);
+		CallBack<CorDetectResult> creditCardDetectCallback = new CallBack<CorDetectResult>() {
 
 			@Override
 			public void onSuccess(boolean isSuccess, String errorCode, String errorMsg, CorDetectResult result) {
@@ -285,8 +265,8 @@ public class App {
 					LogUtil.info("itemString: " + item.getItemString());
 					LogUtil.info("itemConf: " + item.getItemConf() * 100);
 					final ItemCor cor = item.getCor();
-					LogUtil.info("itemCor x: " + cor.getX() + " " + "y: " + cor.getY() + " " + "height: " + cor.getHeight() + " " 
-							+ "width: " + cor.getWidth());
+					LogUtil.info("itemCor x: " + cor.getX() + " " + "y: " + cor.getY() + " " + "height: "
+							+ cor.getHeight() + " " + "width: " + cor.getWidth());
 				});
 			}
 
@@ -295,8 +275,8 @@ public class App {
 				LogUtil.error(e.getMessage());
 				e.printStackTrace();
 			}
-    		
-    	};
-    	POOL.addRequest(creditCardDetectClient,  creditCardDetectCallback);
-    }
+
+		};
+		pool.addRequest(creditCardDetectClient, creditCardDetectCallback);
+	}
 }

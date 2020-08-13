@@ -119,6 +119,9 @@ public class DefaultRequestPool implements RequestPool {
 		isExecuting.set(false);
 		if (Objects.nonNull(createPool)) {
 			createPool.returnObject(this);
+			if (!createPool.isClosed()) {
+				createPool.close();
+			}
 		}
 	}
 

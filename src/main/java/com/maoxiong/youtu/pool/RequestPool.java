@@ -1,5 +1,7 @@
 package com.maoxiong.youtu.pool;
 
+import java.io.Closeable;
+
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
 import com.maoxiong.youtu.entity.result.BaseResult;
@@ -9,7 +11,7 @@ import com.maoxiong.youtu.entity.result.BaseResult;
  * @author yanrun
  *
  */
-public interface RequestPool {
+public interface RequestPool extends Closeable {
 	
 	/**
 	 * 添加请求

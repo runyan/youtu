@@ -15,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.maoxiong.youtu.constants.ContextConstants;
 import com.maoxiong.youtu.pool.RequestPool;
+import com.maoxiong.youtu.util.ExceptionUtil;
+import com.maoxiong.youtu.util.LogUtil;
 
 /**
  * 
@@ -43,15 +45,14 @@ public class Context {
 				try {
 					Files.deleteIfExists(Paths.get(tempFilePath));
 				} catch (IOException e) {
-					e.printStackTrace();
+					LogUtil.warn(ExceptionUtil.getExceptionStackTrace(e));
 				}
 			}
-			if (!REQUEST_POOL_QUEUE.isEmpty()) {
-				REQUEST_POOL_QUEUE.forEach(pool -> {
-					if (!pool.isClosed()) {
-						pool.close();
-					}
-				});
+			while (!REQUEST_POOL_QUEUE.isEmpty()) {
+				RequestPool pool = REQUEST_POOL_QUEUE.poll();
+				if (!pool.isClosed()) {
+					pool.close();
+				}
 			}
 			PARAM_MAP.clear();
 		}));

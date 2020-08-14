@@ -95,7 +95,8 @@ public class FileTypeUtil {
 			byte[] b = Files.readAllBytes(Paths.get(filePath));
 			value = bytesToHexString(b);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LogUtil.warn("exception in getting file head, stack trace: {}", 
+					ExceptionUtil.getExceptionStackTrace(e));
 		}
 		return value;
 	}

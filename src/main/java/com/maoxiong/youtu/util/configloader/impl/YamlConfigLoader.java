@@ -18,7 +18,7 @@ import com.maoxiong.youtu.util.LogUtil;
  * @author yanrun
  *
  */
-@ConfigLoaderConfiguration(priority = 1, suffix = "yml", defaultFilePath = "youtu.yml")
+@ConfigLoaderConfiguration(priority = 1, suffixs = {"yml", "yaml"}, defaultFilePath = "youtu.yml")
 public class YamlConfigLoader extends AbstractConfigLoader {
 	
 	private static final String YAML_NOT_EXISTS = "java.io.IOException: Stream closed";

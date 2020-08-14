@@ -24,6 +24,7 @@ import com.maoxiong.youtu.pool.RequestPool;
 import com.maoxiong.youtu.pool.impl.internal.PooledTask;
 import com.maoxiong.youtu.pool.impl.internal.RequestWrapper;
 import com.maoxiong.youtu.util.CommonUtil;
+import com.maoxiong.youtu.util.ExceptionUtil;
 import com.maoxiong.youtu.util.LogUtil;
 
 /**
@@ -79,22 +80,21 @@ public class DefaultRequestPool implements RequestPool {
 					currentThreadName);
 			return;
 		}
-		CompletableFuture<Void> completableFuture;
 		List<CompletableFuture<Void>> futureList = new LinkedList<>();
 		Instant begin = Instant.now();
-		for (RequestWrapper request : requestSet) {
-			completableFuture = CompletableFuture
+		requestSet.forEach(request -> {
+			CompletableFuture<Void> completableFuture = CompletableFuture
 					.runAsync(new PooledTask(request.getRequestClient(), request.getCallback()), threadPool);
 			futureList.add(completableFuture);
-		}
-		completableFuture = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[requestSet.size()]));
-		completableFuture.whenComplete((v, u) -> {
+		});
+		CompletableFuture<Void> future = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[requestSet.size()]));
+		future.whenComplete((v, u) -> {
 			if (Objects.isNull(u)) {
 				long timeUsed = ChronoUnit.MILLIS.between(begin, Instant.now());
 				LogUtil.info("total execute time {} s", timeUsed * 1.0 / 1000);
 				
 			} else {
-				u.printStackTrace();
+				LogUtil.warn(ExceptionUtil.getExceptionStackTrace(u));
 			}
 		});
 		isExecuting.set(false);

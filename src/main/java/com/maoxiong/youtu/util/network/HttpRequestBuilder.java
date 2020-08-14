@@ -74,7 +74,6 @@ public class HttpRequestBuilder {
 			Request request = new Request.Builder().url(targetUrl).headers(headers).post(body).build();
 			return request;
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
 			throw new RuntimeException("malformed url:" + url);
 		}
 	}

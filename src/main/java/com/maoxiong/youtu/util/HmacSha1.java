@@ -23,8 +23,8 @@ public class HmacSha1 {
 			mac.init(signingKey);
 			return mac.doFinal(data.getBytes());
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Sign error");
+			LogUtil.error(e.getMessage());
+			throw new RuntimeException("Sign error: " + e.getMessage());
 		}
 	}
 

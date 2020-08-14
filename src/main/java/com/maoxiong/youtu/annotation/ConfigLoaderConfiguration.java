@@ -17,6 +17,6 @@ import java.lang.annotation.Target;
 public @interface ConfigLoaderConfiguration {
 
 	int priority() default Integer.MIN_VALUE;
-	String suffix();
+	String[] suffixs();
 	String defaultFilePath();
 }

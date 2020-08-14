@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 
 import com.maoxiong.youtu.enums.ModelType;
 import com.maoxiong.youtu.enums.VoiceSpeed;
+import com.maoxiong.youtu.util.LogUtil;
 
 import kotlin.text.Charsets;
 
@@ -32,7 +33,8 @@ public class TextToAudioRequestEntity {
 						MAX_TEXT_LENGTH + " bytes");
 			}
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			LogUtil.warn(e.getMessage());
+			throw new RuntimeException("UnsupportedEncodingException: " + e.getMessage());
 		}
 		this.text = text;
 	}

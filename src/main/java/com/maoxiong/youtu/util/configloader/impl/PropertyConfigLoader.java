@@ -14,7 +14,7 @@ import com.maoxiong.youtu.util.LogUtil;
  * @author yanrun
  *
  */
-@ConfigLoaderConfiguration(priority = 2, suffix = "properties", defaultFilePath = "/youtu.properties")
+@ConfigLoaderConfiguration(priority = 2, suffixs = "properties", defaultFilePath = "/youtu.properties")
 public class PropertyConfigLoader extends AbstractConfigLoader {
 	
 	@Override

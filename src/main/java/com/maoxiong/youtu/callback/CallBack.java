@@ -6,6 +6,7 @@ import com.maoxiong.youtu.entity.result.BaseResult;
  * 
  * @author yanrun
  *
+ * @param <T> type of the returned object
  */
 public interface CallBack<T extends BaseResult> {
 

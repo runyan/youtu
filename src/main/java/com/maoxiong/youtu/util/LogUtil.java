@@ -1,5 +1,8 @@
 package com.maoxiong.youtu.util;
 
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +25,7 @@ public class LogUtil {
 	private static StackTraceElement findCaller() {
 		// 获取堆栈信息
 		StackTraceElement[] callStack = Thread.currentThread().getStackTrace();
-		if (null == callStack) {
+		if (Objects.isNull(callStack)) {
 			return null;
 		}
 		// 最原始被调用的堆栈信息
@@ -61,8 +64,8 @@ public class LogUtil {
 	private static Logger logger() {
 		// 最原始被调用的堆栈对象
 		StackTraceElement caller = findCaller();
-		return caller == null ? LoggerFactory.getLogger(LogUtil.class)
-				: LoggerFactory.getLogger(caller.getClassName() + " " + caller.getLineNumber());
+		return Objects.isNull(caller) ? LoggerFactory.getLogger(LogUtil.class)
+				: LoggerFactory.getLogger(caller.getClassName() + StringUtils.SPACE + caller.getLineNumber());
 	}
 
 	public static void trace(String msg) {

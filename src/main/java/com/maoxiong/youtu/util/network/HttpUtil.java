@@ -13,6 +13,7 @@ import com.maoxiong.youtu.callback.RequestCallback;
 import com.maoxiong.youtu.constants.HttpConstants;
 import com.maoxiong.youtu.entity.result.BaseResult;
 import com.maoxiong.youtu.util.CacheKeyUtil;
+import com.maoxiong.youtu.util.ExceptionUtil;
 import com.maoxiong.youtu.util.LogUtil;
 import com.maoxiong.youtu.util.network.interceptor.HttpRetryInterceptor;
 import com.maoxiong.youtu.util.network.interceptor.LogInterceptor;
@@ -77,12 +78,14 @@ public class HttpUtil {
 				callback.onFail(new RuntimeException(msg));
 			}
 		} catch (UnknownHostException uhe) {
-			LogUtil.error("cannot reach: {}", url);
+			LogUtil.error("cannot reach: {}, unknown host", url);
+			throw new RuntimeException(uhe.getMessage());
 		} catch (InterruptedIOException ioe) {
-			LogUtil.error("connection interuptted: {}", url);
-			ioe.printStackTrace();
+			LogUtil.error("connection to {} interuptted", url);
+			throw new RuntimeException(ioe.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			LogUtil.error("exception while communicating to {}, exception: {}", 
+					url, ExceptionUtil.getExceptionStackTrace(e));
 			callback.onFail(e);
 		}
 	}

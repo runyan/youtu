@@ -48,7 +48,6 @@ public class ClientFactory {
 		try {
 			return Reflect.onClass(clientClassName).create().call("setRequest", requestDelegate).get();
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new RuntimeException("cannot create client due to: " + e.getMessage());
 		}
 	}

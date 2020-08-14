@@ -75,7 +75,6 @@ public class FileUtil {
 				}
 				return result;
 			} catch (Exception e) {
-				e.printStackTrace();
 				throw new RuntimeException("cannot convert file: " + filePath + " to byte array");
 			}
 		} catch (Exception e) {
@@ -105,7 +104,6 @@ public class FileUtil {
 			path = Files.write(path, src);
 			filePath = path.toAbsolutePath().toString();
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new RuntimeException("create file error");
 		}
 		return filePath;

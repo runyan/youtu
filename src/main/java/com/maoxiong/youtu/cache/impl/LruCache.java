@@ -11,6 +11,8 @@ import com.maoxiong.youtu.cache.Cache;
  * 
  * @author yanrun
  *
+ * @param <K> the type of keys maintained by this cache
+ * @param <V> the type of mapped values
  */
 public class LruCache<K, V> implements Cache<K, V> {
 

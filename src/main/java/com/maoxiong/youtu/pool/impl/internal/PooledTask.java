@@ -5,6 +5,8 @@ import java.util.Objects;
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
 import com.maoxiong.youtu.entity.result.BaseResult;
+import com.maoxiong.youtu.util.ExceptionUtil;
+import com.maoxiong.youtu.util.LogUtil;
 
 /**
  * 
@@ -28,7 +30,9 @@ public class PooledTask implements Runnable {
 		try {
 			client.execute(callback);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogUtil.warn("cannot execute task: {}, stack trace: {}", 
+					client.getRequest(), ExceptionUtil.getExceptionStackTrace(e));
 		}
 	}
+
 }

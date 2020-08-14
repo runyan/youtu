@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap.KeySetView;
  * 
  * @author yanrun
  *
+ * @param <T> the type of elements maintained by this set
  */
 public class ConcurrentHashSet<T> implements Set<T> {
 

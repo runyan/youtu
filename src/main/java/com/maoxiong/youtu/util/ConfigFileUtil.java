@@ -46,19 +46,14 @@ public class ConfigFileUtil {
 			loadPropertiesFromCustomFilePath(filePath);
 	}
 	
-	@SuppressWarnings("unchecked")
 	private static Properties loadPropertiesFromDefaultFilePath() {
-		CloneablePriorityQueue<Class<?>> theQueue = 
-				(CloneablePriorityQueue<Class<?>>) sortedLoaderQueue.clone();
+		CloneablePriorityQueue<Class<?>> theQueue = sortedLoaderQueue.clone();
 		Properties props;
 		ConfigFileLoader loader;
-		Class<?> clz;
 		while (!theQueue.isEmpty()) {
-			clz = theQueue.peek();
-			loader = INSTANTIATED_CONFIG_LOADER_MAP.get(clz);
-			if (Objects.isNull(loader)) {
-				loader = instantiateConfigLoader(clz);
-			}
+			Class<?> clz = theQueue.poll();
+			loader = INSTANTIATED_CONFIG_LOADER_MAP.computeIfAbsent(clz, 
+					v -> instantiateConfigLoader(clz));
 			props = loader.loadProperties(ConfigableLoaderAnnotaionParser.getDefaultFilePath(clz));
 			if (Objects.nonNull(props)) {
 				return props;
@@ -74,22 +69,21 @@ public class ConfigFileUtil {
 			throw new IllegalArgumentException("unsupportted file type");
 		}
 		Class<?> clz = CONFIG_LOADER_CLASS_MAP.get(suffix);
-		ConfigFileLoader loader = INSTANTIATED_CONFIG_LOADER_MAP.get(clz);
-		if (Objects.isNull(loader)) {
-			loader = instantiateConfigLoader(clz);
-		}
+		ConfigFileLoader loader = INSTANTIATED_CONFIG_LOADER_MAP.computeIfAbsent(clz, 
+				v -> instantiateConfigLoader(clz));
 		return loader.loadProperties(filePath);
 	}
 	
 	private static ConfigFileLoader instantiateConfigLoader(Class<?> clz) {
-		try {
-			ConfigFileLoader loader = (ConfigFileLoader)clz.newInstance();
-			INSTANTIATED_CONFIG_LOADER_MAP.put(clz, loader);
-			return loader;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException("cannot instantiate: " + clz.getName() + 
-					", is it a sub class of " + ConfigFileLoader.class.getName() + "?");
-		}
+		ConfigFileLoader loader = INSTANTIATED_CONFIG_LOADER_MAP.computeIfAbsent(clz, v -> {
+			try {
+				return (ConfigFileLoader)clz.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new RuntimeException("cannot instantiate: " + clz.getName() + 
+						", is it a sub class of " + ConfigFileLoader.class.getName() + "?");
+			}
+		});
+		return loader;
 	}
 
 	private static void init() {
@@ -109,9 +103,14 @@ public class ConfigFileUtil {
 				.distinct()
 				.collect(Collectors.toList());
 		configLoaderClasses.forEach(clz -> {
-			String suffix = ConfigableLoaderAnnotaionParser.getConfigLoaderSuffix(clz);
-			if (StringUtils.isNotEmpty(suffix)) {
-				CONFIG_LOADER_CLASS_MAP.put(suffix, clz);
+			String[] suffixs = ConfigableLoaderAnnotaionParser.getConfigLoaderSuffixs(clz);
+			if (Objects.nonNull(suffixs) && suffixs.length > 0) {
+				for (String suffix : suffixs) {
+					suffix = StringUtils.deleteWhitespace(suffix);
+					if (StringUtils.isNotEmpty(suffix)) {
+						CONFIG_LOADER_CLASS_MAP.put(suffix, clz);
+					}
+				}
 				sortedLoaderQueue.offer(clz);
 			}
 		});

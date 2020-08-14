@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.util.Objects;
 
+import com.maoxiong.youtu.util.ExceptionUtil;
 import com.maoxiong.youtu.util.LogUtil;
 
 import okhttp3.Interceptor;
@@ -49,8 +50,8 @@ public class HttpRetryInterceptor implements Interceptor {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
-			LogUtil.error("got an error while retrying");
+			LogUtil.error("got an error while retrying, stack trace: {}", 
+					ExceptionUtil.getExceptionStackTrace(e));
 		}
 		return response;
 	}

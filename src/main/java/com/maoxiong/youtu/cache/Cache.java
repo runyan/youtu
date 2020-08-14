@@ -6,8 +6,8 @@ import java.util.function.Function;
  * 
  * @author yanrun
  *
- * @param <K>
- * @param <V>
+ * @param <K> the type of keys maintained by this cache
+ * @param <V> the type of mapped values
  */
 public interface Cache<K, V> {
 	

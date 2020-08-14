@@ -21,9 +21,9 @@ public class ConfigableLoaderAnnotaionParser {
 		return config.priority();
 	}
 	
-	public static String getConfigLoaderSuffix(Class<?> clz) {
+	public static String[] getConfigLoaderSuffixs(Class<?> clz) {
 		ConfigLoaderConfiguration config = getAnnotation(clz);
-		return config.suffix();
+		return config.suffixs();
 	}
 	
 	public static String getDefaultFilePath(Class<?> clz) {

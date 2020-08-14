@@ -12,6 +12,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * 获取接口的所有实现类 理论上也可以用来获取类的所有子类
  * 查询路径有限制，只局限于接口所在模块下，比如pandora-gateway,而非整个pandora（会递归搜索该文件夹下所以的实现类）
@@ -58,14 +60,19 @@ public class ClassUtil {
 	private static List<Class<?>> getAllClass(String packagename) {
 		LogUtil.debug("packageName to search: {}", packagename);
 		List<String> classNameList = getClassName(packagename);
-		List<Class<?>> list = classNameList.stream().map(className -> {
-			try {
-				return Class.forName(className, false, Thread.currentThread().getContextClassLoader());
-			} catch (ClassNotFoundException e) {
-				LogUtil.error("load class from {} failed: {}", className, e.getMessage());
-				return null;
-			}
-		}).filter(className -> Objects.nonNull(className)).collect(Collectors.toList());
+		List<Class<?>> list = classNameList.stream()
+				.filter(className -> StringUtils.isNotEmpty(className))
+				.filter(className -> !StringUtils.contains(className.toLowerCase(), "test"))
+				.map(className -> {
+					try {
+						return Class.forName(className, false, Thread.currentThread().getContextClassLoader());
+					} catch (ClassNotFoundException e) {
+						LogUtil.warn("load class from {} failed: {}", className, e.getMessage());
+						return null;
+					}
+				})
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
 		LogUtil.debug("find list size: {}", list.size());
 		return list;
 	}
@@ -79,7 +86,7 @@ public class ClassUtil {
 	public static List<String> getClassName(String packageName) {
 		List<String> fileNames = null;
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		String packagePath = packageName.replace(".", "/");
+		String packagePath = StringUtils.replace(packageName, ".", "/");
 		URL url = loader.getResource(packagePath);
 		if (Objects.nonNull(url)) {
 			String type = url.getProtocol();
@@ -87,7 +94,7 @@ public class ClassUtil {
 			if (TYPE_FILE.equals(type)) {
 				String fileSearchPath = url.getPath();
 				LogUtil.debug("fileSearchPath: {}", fileSearchPath);
-				fileSearchPath = fileSearchPath.substring(0, fileSearchPath.indexOf("/classes"));
+				fileSearchPath = StringUtils.substring(fileSearchPath, 0, StringUtils.indexOf(fileSearchPath, "/classes"));
 				LogUtil.debug("fileSearchPath: {}", fileSearchPath);
 				fileNames = getClassNameByFile(fileSearchPath);
 			} else if (TYPE_JAR.equals(type)) {
@@ -121,10 +128,10 @@ public class ClassUtil {
 				myClassName.addAll(getClassNameByFile(childFile.getPath()));
 			} else {
 				String childFilePath = childFile.getPath();
-				if (childFilePath.endsWith(".class")) {
-					childFilePath = childFilePath.substring(childFilePath.indexOf("\\classes") + 9,
-							childFilePath.lastIndexOf("."));
-					childFilePath = childFilePath.replace("\\", ".");
+				if (StringUtils.endsWith(childFilePath, ".class")) {
+					childFilePath = StringUtils.substring(childFilePath, StringUtils.indexOf(childFilePath, "\\classes") + 9,
+							StringUtils.lastIndexOf(childFilePath, "."));
+					childFilePath = StringUtils.replace(childFilePath, "\\", ".");
 					myClassName.add(childFilePath);
 				}
 			}
@@ -145,8 +152,8 @@ public class ClassUtil {
 			while (entrys.hasMoreElements()) {
 				JarEntry jarEntry = entrys.nextElement();
 				String entryName = jarEntry.getName();
-				if (entryName.endsWith(".class")) {
-					entryName = entryName.replace("/", ".").substring(0, entryName.lastIndexOf("."));
+				if (StringUtils.endsWith(entryName, ".class")) {
+					entryName = StringUtils.substring(StringUtils.replace(entryName, "/", "."), 0, StringUtils.lastIndexOf(entryName, "."));
 					myClassName.add(entryName);
 				}
 			}

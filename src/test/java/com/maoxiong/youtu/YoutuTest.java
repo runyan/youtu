@@ -1,13 +1,14 @@
 package com.maoxiong.youtu;
 
 import java.util.List;
+import java.util.Objects;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import com.maoxiong.youtu.callback.CallBack;
 import com.maoxiong.youtu.client.Client;
-import com.maoxiong.youtu.entity.result.basic.FaceItem;
-import com.maoxiong.youtu.entity.result.basic.InvoiceItem;
-import com.maoxiong.youtu.entity.result.basic.Item;
-import com.maoxiong.youtu.entity.result.basic.ItemCor;
 import com.maoxiong.youtu.entity.request.impl.CreditCradDetectRequestEntity;
 import com.maoxiong.youtu.entity.request.impl.FaceDectectRequestEntity;
 import com.maoxiong.youtu.entity.request.impl.FoodDetectRequestEntity;
@@ -15,6 +16,10 @@ import com.maoxiong.youtu.entity.request.impl.IDDetectRequestEntity;
 import com.maoxiong.youtu.entity.request.impl.InvoiceDetectRequestEntity;
 import com.maoxiong.youtu.entity.request.impl.PlateDetectRequestEntity;
 import com.maoxiong.youtu.entity.request.impl.TextToAudioRequestEntity;
+import com.maoxiong.youtu.entity.result.basic.FaceItem;
+import com.maoxiong.youtu.entity.result.basic.InvoiceItem;
+import com.maoxiong.youtu.entity.result.basic.Item;
+import com.maoxiong.youtu.entity.result.basic.ItemCor;
 import com.maoxiong.youtu.entity.result.impl.CorDetectResult;
 import com.maoxiong.youtu.entity.result.impl.FaceDetectResult;
 import com.maoxiong.youtu.entity.result.impl.FoodDetectResult;
@@ -38,45 +43,26 @@ import com.maoxiong.youtu.request.impl.PlateDetectRequest;
 import com.maoxiong.youtu.request.impl.TextToAudioRequest;
 import com.maoxiong.youtu.util.LogUtil;
 
-/************************************************************
- * * .=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-. * | ______ | * | .-" "-.
- * | * | / \ | * | _ | | _ | * | ( \ |, .-. .-. ,| / ) | * | > "=._ | )(__/
- * \__)( | _.=" < | * | (_/"=._"=._ |/ /\ \| _.="_.="\_) | * | "=._"(_ ^^
- * _)"_.=" | * | "=\__|IIIIII|__/=" | * | _.="| \IIIIII/ |"=._ | * | _ _.="_.="\
- * /"=._"=._ _ | * | ( \_.="_.=" `--------` "=._"=._/ ) | * | > _.=" "=._ < | *
- * | (_/ \_) | * | | * '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=' * *
- * LASCIATE OGNI SPERANZA, VOI CH'ENTRATE *
+/**
  * 
- * @author yanrun *
- *************************************************************/
-public class App {
-
-	private static final String QQ = "";
-	private static final String APP_ID = "";
-	private static final String SECRET_ID = "";
-	private static final String SECRET_KEY = "";
-
-	public static void main(String... args) {
-		init();
-		try (DefaultRequestPool pool = DefaultRequestPoolFactory.getDefaultRequestPool(true)) {
-			initFaceDetect(pool);
-			initFoodDetect(pool);
-			initCreditCardDetect(pool);
-			initPlateDetect(pool);
-			initIdDetect(pool);
-			initText2Audio(pool);
-			initInvoiceDetect(pool);
-			pool.execute();
-		}
-	}
-
-	private static void init() {
-		Initializer initializer = new Initializer.Builder().qq(QQ).appId(APP_ID).secretId(SECRET_ID)
-				.secretKey(SECRET_KEY).bulid();
+ * @author yanrun
+ *
+ */
+public class YoutuTest {
+	
+	public static Initializer initializer;
+	public static DefaultRequestPool pool;
+	
+	@BeforeClass
+	public static void init() {
+		initializer = new Initializer.Builder().qq("1").appId("1").secretId("1")
+				.secretKey("1").bulid();
 		initializer.init();
+		pool = DefaultRequestPoolFactory.getDefaultRequestPool(true);
 	}
-
-	private static void initInvoiceDetect(DefaultRequestPool pool) {
+	
+	@Test
+	public void testInvoiceDetect() {
 		Request invoiceDetectRequest = new InvoiceDetectRequest();
 		InvoiceDetectRequestEntity invoiceDetectRequestEntity = new InvoiceDetectRequestEntity();
 		invoiceDetectRequestEntity.setFileUrl("D://invoice.jpg");
@@ -101,9 +87,11 @@ public class App {
 
 		};
 		pool.addRequest(invoiceDetectClient, invoiceDetectCallback);
+		pool.execute();
 	}
 
-	private static void initText2Audio(DefaultRequestPool pool) {
+	@Test
+	public void testText2Audio() {
 		Request text2AudioRequest = new TextToAudioRequest(true);
 		TextToAudioRequestEntity text2AudioRequestEntity = new TextToAudioRequestEntity();
 		text2AudioRequestEntity.setModelType(ModelType.FEMALE);
@@ -127,9 +115,11 @@ public class App {
 
 		};
 		pool.addRequest(textToAudioClient, textToAudioCallback);
+		pool.execute();
 	}
 
-	private static void initIdDetect(DefaultRequestPool pool) {
+	@Test
+	public void testIdDetect() {
 		Request idDetectRequest = new IDDetectRequest();
 		IDDetectRequestEntity idDetectEntity = new IDDetectRequestEntity(CardType.BACK, true);
 		idDetectEntity.setFileUrl(
@@ -160,9 +150,11 @@ public class App {
 
 		};
 		pool.addRequest(idDetectClient, idDetectCallback);
+		pool.execute();
 	}
 
-	private static void initPlateDetect(DefaultRequestPool pool) {
+	@Test
+	public void testPlateDetect() {
 		Request plateDetectRequest = new PlateDetectRequest();
 		PlateDetectRequestEntity plateDetectRequestEntity = new PlateDetectRequestEntity();
 //    	plateDetectRequestEntity.setFileUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528277425993&di=c08a42bd6f25f31c49c1cb34d247f1b3&imgtype=jpg&src=http%3A%2F%2Fimg3.imgtn.bdimg.com%2Fit%2Fu%3D1593700053%2C2642362344%26fm%3D214%26gp%3D0.jpg");
@@ -193,9 +185,11 @@ public class App {
 
 		};
 		pool.addRequest(plateDetectClient, plateDetectCallback);
+		pool.execute();
 	}
 
-	private static void initFaceDetect(DefaultRequestPool pool) {
+	@Test
+	public void testFaceDetect() {
 		Request faceDetectRequest = new FaceDetectRequest();
 		FaceDectectRequestEntity faceRequestEntity = new FaceDectectRequestEntity();
 //    	faceRequestEntity.setFilePath("D://b.png");
@@ -223,9 +217,11 @@ public class App {
 
 		};
 		pool.addRequest(faceDetectClient, faceDetectCallBack);
+		pool.execute();
 	}
 
-	private static void initFoodDetect(DefaultRequestPool pool) {
+	@Test
+	public void testFoodDetect() {
 		Request foodDetectRequest = new FoodDetectRequest();
 		FoodDetectRequestEntity requestEntity = new FoodDetectRequestEntity();
 		requestEntity.setFileUrl("https://pic3.zhimg.com/80/v2-8352df032c855c3967467d4101c2fe6b_hd.jpg");
@@ -246,9 +242,11 @@ public class App {
 
 		};
 		pool.addRequest(client, foodDetectCallBack);
+		pool.execute();
 	}
 
-	private static void initCreditCardDetect(DefaultRequestPool pool) {
+	@Test
+	public void testCreditCardDetect() {
 		Request creditCardDetectRequest = new CreditCardDetectRequest();
 		CreditCradDetectRequestEntity entity = new CreditCradDetectRequestEntity();
 		entity.setFilePath("D://timg.jpg");
@@ -278,5 +276,14 @@ public class App {
 
 		};
 		pool.addRequest(creditCardDetectClient, creditCardDetectCallback);
+		pool.execute();
 	}
+	
+	@AfterClass
+	public static void close() {
+		if (Objects.nonNull(pool) && !pool.isClosed()) {
+			pool.close();
+		}
+	}
+	
 }

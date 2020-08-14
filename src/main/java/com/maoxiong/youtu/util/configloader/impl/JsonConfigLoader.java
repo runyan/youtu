@@ -21,7 +21,7 @@ import com.maoxiong.youtu.util.configloader.entity.JsonConfigEntity;
  * @author yanrun
  *
  */
-@ConfigLoaderConfiguration(priority = 3, suffix = "json", defaultFilePath = "youtu.json")
+@ConfigLoaderConfiguration(priority = 3, suffixs = "json", defaultFilePath = "youtu.json")
 public class JsonConfigLoader extends AbstractConfigLoader {
 
 	@Override

@@ -68,7 +68,7 @@ public class CloneablePriorityQueue<E> extends AbstractQueue<E> implements Seria
 	}
 
 	@Override
-	public Object clone() {
+	public CloneablePriorityQueue<E> clone() {
 		return new CloneablePriorityQueue<>(priorityQueue);
 	}
 	

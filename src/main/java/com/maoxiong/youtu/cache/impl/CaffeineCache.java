@@ -10,8 +10,8 @@ import com.maoxiong.youtu.cache.Cache;
  * 
  * @author yanrun
  *
- * @param <K>
- * @param <V>
+ * @param <K> the type of keys maintained by this cache
+ * @param <V> the type of mapped values
  */
 public class CaffeineCache<K, V> implements Cache<K, V> {
 

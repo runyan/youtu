@@ -31,15 +31,15 @@ public class Initializer {
 	private String secretKey;
 	
 	private UncaughtExceptionHandler handler;
-	private static final UncaughtExceptionHandler DEFAULT_EXCEPTION__HANDLER = new UncaughtExceptionHandler() {
+	private static final UncaughtExceptionHandler DEFAULT_EXCEPTION_HANDLER = new UncaughtExceptionHandler() {
 
 		@Override
 		public void uncaughtException(Thread t, Throwable e) {
 			String stackTrace = ExceptionUtil.getExceptionStackTrace(e);
 			stackTrace = StringUtils.isEmpty(stackTrace) ? StringUtils.EMPTY : stackTrace;
-			LogUtil.error("Exception: Thread name : {}, Exception : {}, "
+			LogUtil.error("Exception! Thread name : {}, Exception name: {}, "
 					+ "Message: {},\n Stack trace: {}", 
-					t.getName(), e.getClass(), e.getMessage(), 
+					t.getName(), e.getClass().getName(), e.getMessage(), 
 					stackTrace);
 		}
 		
@@ -132,7 +132,7 @@ public class Initializer {
 	}
 	
 	private static UncaughtExceptionHandler defaultExceptionHandler() {
-		return DEFAULT_EXCEPTION__HANDLER;
+		return DEFAULT_EXCEPTION_HANDLER;
 	}
 	
 	public static final class Builder {

@@ -46,7 +46,7 @@ public class ClientFactory {
 		String clientPackage = StringUtils.replace(requestPackage, "request", "client");
 		String clientClassName = clientPackage.concat(".").concat(simpleRequestClassName.replace("Request", "Client"));
 		try {
-			return (Client) Reflect.onClass(clientClassName).create().call("setRequest", requestDelegate).get();
+			return Reflect.onClass(clientClassName).create().call("setRequest", requestDelegate).get();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("cannot create client due to: " + e.getMessage());

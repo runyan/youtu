@@ -17,7 +17,7 @@ class PoolForRequestPool extends GenericObjectPool<DefaultRequestPool> {
 	private PooledObjectFactory<DefaultRequestPool> factory;
 	private GenericObjectPoolConfig<DefaultRequestPool> config;
 	
-	public PoolForRequestPool(PooledObjectFactory<DefaultRequestPool> factory,
+	PoolForRequestPool(PooledObjectFactory<DefaultRequestPool> factory,
 			GenericObjectPoolConfig<DefaultRequestPool> config) {
 		super(factory, Optional.ofNullable(config).orElseGet(PoolForRequestPool::getDefaultConfig));
 		this.factory = factory;
@@ -30,7 +30,7 @@ class PoolForRequestPool extends GenericObjectPool<DefaultRequestPool> {
 	private static GenericObjectPoolConfig<DefaultRequestPool> getDefaultConfig() {
 		GenericObjectPoolConfig<DefaultRequestPool> config = new GenericObjectPoolConfig<>();
 		config.setMaxTotal(50);
-		config.setMaxWaitMillis(5000);
+		config.setMaxWaitMillis(1000);
 		return config;
 	}
 

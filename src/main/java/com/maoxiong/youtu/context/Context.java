@@ -36,29 +36,24 @@ public class Context {
 	public static void init(String sign, String appId) {
 		PARAM_MAP.put(ContextConstants.SIGN, sign);
 		PARAM_MAP.put(ContextConstants.APP_ID, appId);
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				Object pathObj = PARAM_MAP.get(ContextConstants.TEMP_FILE_SAVE_PATH);
-				String tempFilePath = Objects.isNull(pathObj) ? StringUtils.EMPTY : String.valueOf(pathObj);
-				if (StringUtils.isNotBlank(tempFilePath) && !StringUtils.equalsIgnoreCase(tempFilePath, NULL)) {
-					try {
-						Files.deleteIfExists(Paths.get(tempFilePath));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			Object pathObj = PARAM_MAP.get(ContextConstants.TEMP_FILE_SAVE_PATH);
+			String tempFilePath = Objects.isNull(pathObj) ? StringUtils.EMPTY : String.valueOf(pathObj);
+			if (StringUtils.isNotBlank(tempFilePath) && !StringUtils.equalsIgnoreCase(tempFilePath, NULL)) {
+				try {
+					Files.deleteIfExists(Paths.get(tempFilePath));
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-				if (!REQUEST_POOL_QUEUE.isEmpty()) {
-					REQUEST_POOL_QUEUE.forEach(pool -> {
-						if (!pool.isClosed()) {
-							pool.close();
-						}
-					});
-				}
-				PARAM_MAP.clear();
 			}
-
+			if (!REQUEST_POOL_QUEUE.isEmpty()) {
+				REQUEST_POOL_QUEUE.forEach(pool -> {
+					if (!pool.isClosed()) {
+						pool.close();
+					}
+				});
+			}
+			PARAM_MAP.clear();
 		}));
 	}
 

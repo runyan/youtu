@@ -16,7 +16,7 @@ class DefaultRequestPoolObjectFactory extends BasePooledObjectFactory<DefaultReq
 	private boolean shouldShutdownAfterExecution = true;
 	private PoolForRequestPool pool;
 	
-	public DefaultRequestPoolObjectFactory(boolean shouldShutdownAfterExecution) {
+	DefaultRequestPoolObjectFactory(boolean shouldShutdownAfterExecution) {
 		this.shouldShutdownAfterExecution = shouldShutdownAfterExecution;
 	}
 

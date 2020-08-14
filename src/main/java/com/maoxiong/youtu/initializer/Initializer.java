@@ -1,6 +1,8 @@
 package com.maoxiong.youtu.initializer;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +29,21 @@ public class Initializer {
 	private String appId;
 	private String secretId;
 	private String secretKey;
+	
+	private UncaughtExceptionHandler handler;
+	private static final UncaughtExceptionHandler DEFAULT_EXCEPTION__HANDLER = new UncaughtExceptionHandler() {
+
+		@Override
+		public void uncaughtException(Thread t, Throwable e) {
+			String stackTrace = ExceptionUtil.getExceptionStackTrace(e);
+			stackTrace = StringUtils.isEmpty(stackTrace) ? StringUtils.EMPTY : stackTrace;
+			LogUtil.error("Exception: Thread name : {}, Exception : {}, "
+					+ "Message: {},\n Stack trace: {}", 
+					t.getName(), e.getClass(), e.getMessage(), 
+					stackTrace);
+		}
+		
+	};
 
 	public Initializer() {
 		String qq = System.getProperty(ConfigConstans.QQ);
@@ -78,17 +95,10 @@ public class Initializer {
 		String builderFilePath = fileSavePath;
 		Context.set(ContextConstants.SAVE_PATH,
 				StringUtils.isBlank(builderFilePath) ? System.getProperty("user.dir") : builderFilePath);
-		Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-			String stackTrace = ExceptionUtil.getExceptionStackTrace(e);
-			stackTrace = StringUtils.isEmpty(stackTrace) ? StringUtils.EMPTY : stackTrace;
-			LogUtil.error("Exception: Thread name : {}, Exception : {}, "
-					+ "Message: {},\n Stack trace: {}", 
-					t.getName(), e.getClass(), e.getMessage(), 
-					stackTrace);
-		});
 	}
 
 	public void init() {
+		Thread.setDefaultUncaughtExceptionHandler(Optional.ofNullable(handler).orElseGet(Initializer::defaultExceptionHandler));
 		if (initailized) {
 			throw new IllegalStateException("should not init more than once");
 		}
@@ -116,7 +126,15 @@ public class Initializer {
 			throw new IllegalStateException("have not init properly");
 		}
 	}
-
+	
+	public void addGlobalExceptionHandler(UncaughtExceptionHandler handler) {
+		this.handler = handler;
+	}
+	
+	private static UncaughtExceptionHandler defaultExceptionHandler() {
+		return DEFAULT_EXCEPTION__HANDLER;
+	}
+	
 	public static final class Builder {
 		private String qq;
 		private String appId;

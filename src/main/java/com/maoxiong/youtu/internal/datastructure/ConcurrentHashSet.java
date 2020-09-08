@@ -15,11 +15,12 @@ import java.util.concurrent.ConcurrentHashMap.KeySetView;
  */
 public class ConcurrentHashSet<T> implements Set<T> {
 
-	private final static Object PRESENT = new Object();
+	private static final int DEFAULT_CAPACITY = 1 << 4;
+	private static final Object PRESENT = new Object();
 	private final ConcurrentHashMap<T, Object> MAP;
 
 	public ConcurrentHashSet() {
-		this(16);
+		this(DEFAULT_CAPACITY);
 	}
 
 	public ConcurrentHashSet(int capacity) {

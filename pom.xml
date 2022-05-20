@@ -19,7 +19,7 @@
 		<joor.version>0.9.13</joor.version>
 		<caffeine.version>2.8.5</caffeine.version>
 		<okhttp.version>4.8.1</okhttp.version>
-		<gson.version>2.8.6</gson.version>
+		<gson.version>2.8.9</gson.version>
 		<commons.lang.version>3.11</commons.lang.version>
 		<commons-pool2.version>2.8.1</commons-pool2.version>
 		<thumbnailator.verision>0.4.11</thumbnailator.verision>
